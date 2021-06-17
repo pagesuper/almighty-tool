@@ -1,10 +1,5 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
-import {
-  IGeneralResult,
-  IGeneralOptions,
-  IGeneralError,
-  IGeneralOptionsWithT,
-} from '../interfaces/common/general';
+import { IGeneralResult, IGeneralOptions, IGeneralError, IGeneralOptionsWithT } from '../interfaces/common/general';
 
 const MD5 = require('md5.js');
 
@@ -55,9 +50,7 @@ export default {
   },
 
   /** 缓存抓取 */
-  async cacheFetch<T extends IGeneralResult>(
-    options: IGeneralOptionsWithT<T> = {},
-  ): Promise<T | null> {
+  async cacheFetch<T extends IGeneralResult>(options: IGeneralOptionsWithT<T> = {}): Promise<T | null> {
     const cacheKey = `tuitui-lib.general.cache.${options.cacheKey}`;
 
     if (options.cacheable && options.cacher) {

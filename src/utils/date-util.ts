@@ -243,11 +243,7 @@ const dateUtil = {
    * 是否是同一天
    */
   isSameDate(value: Date, value2: Date = new Date()): boolean {
-    return (
-      value.getFullYear() === value2.getFullYear() &&
-      value.getMonth() === value2.getMonth() &&
-      value.getDate() === value2.getDate()
-    );
+    return value.getFullYear() === value2.getFullYear() && value.getMonth() === value2.getMonth() && value.getDate() === value2.getDate();
   },
 };
 

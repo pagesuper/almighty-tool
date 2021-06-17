@@ -100,11 +100,7 @@ export default {
    * - shortTime -> 12:23
    * - time -> 12:23:33
    */
-  showDatetime: (
-    value: Date | string,
-    type: DATETIME_TYPE = 'long',
-    lang: DATETIME_LANG = 'zh-CN',
-  ): string => {
+  showDatetime: (value: Date | string, type: DATETIME_TYPE = 'long', lang: DATETIME_LANG = 'zh-CN'): string => {
     function pad(number: number): string {
       if (number < 10) {
         return `0${number}`;
@@ -136,9 +132,7 @@ export default {
               case 'time':
                 return `${pad(hour)}:${pad(minute)}:${pad(second)}`;
               default:
-                return `${year}-${pad(month)}-${pad(date)} ${pad(hour)}:${pad(minute)}:${pad(
-                  second,
-                )}`;
+                return `${year}-${pad(month)}-${pad(date)} ${pad(hour)}:${pad(minute)}:${pad(second)}`;
             }
 
           default:
@@ -152,9 +146,7 @@ export default {
               case 'time':
                 return `${pad(hour)}:${pad(minute)}:${pad(second)}`;
               default:
-                return `${year}年${pad(month)}月${pad(date)}日 ${pad(hour)}:${pad(minute)}:${pad(
-                  second,
-                )}`;
+                return `${year}年${pad(month)}月${pad(date)}日 ${pad(hour)}:${pad(minute)}:${pad(second)}`;
             }
         }
       }

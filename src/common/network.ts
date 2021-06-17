@@ -201,13 +201,8 @@ const justDoRequest = function <T extends INetwork.IRequestResult>(
 
 const network = {
   /** 格式化请求参数 */
-  normalizeRequestOptions<T extends INetwork.IRequestResult>(
-    options: INetwork.IRequestOptions<T>,
-  ): INetwork.IAxiosRequestOptions {
-    const maxRedirects = basicUtil.ifUndefinedThen(
-      Reflect.get(options, 'maxRedirects'),
-      DEFAULT_MAX_REDIRECTS,
-    );
+  normalizeRequestOptions<T extends INetwork.IRequestResult>(options: INetwork.IRequestOptions<T>): INetwork.IAxiosRequestOptions {
+    const maxRedirects = basicUtil.ifUndefinedThen(Reflect.get(options, 'maxRedirects'), DEFAULT_MAX_REDIRECTS);
 
     const locale = basicUtil.ifUndefinedThen(Reflect.get(options, 'locale'), 'zh-CN');
     const method = basicUtil.ifUndefinedThen(Reflect.get(options, 'method'), 'GET');
@@ -217,10 +212,7 @@ const network = {
     const data = basicUtil.ifUndefinedThen(Reflect.get(options, 'data'), null);
     let newData;
 
-    const params = _.omit(
-      deepmerge(options.fixedParams || {}, options.params || {}),
-      options.omitParamKeys || [],
-    );
+    const params = _.omit(deepmerge(options.fixedParams || {}, options.params || {}), options.omitParamKeys || []);
 
     switch (dataType) {
       case 'form-urlencoded':
