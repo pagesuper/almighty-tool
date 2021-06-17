@@ -26,7 +26,7 @@ declare const _default: {
         cnMobilePhone: RegExp;
     };
     /** 判断是否是手机号码 */
-    isMobilePhone(mobileNumber: string, locale?: string): boolean;
+    isMobileNumber(mobileNumber: string, locale?: string): boolean;
     /** 是否是纯数字 */
     isPureNumber(str: string): boolean;
     /**

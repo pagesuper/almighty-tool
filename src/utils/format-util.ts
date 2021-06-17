@@ -38,7 +38,7 @@ export default {
   },
 
   /** 判断是否是手机号码 */
-  isMobilePhone(mobileNumber: string, locale: string = DEFAULT_LOCALE): boolean {
+  isMobileNumber(mobileNumber: string, locale: string = DEFAULT_LOCALE): boolean {
     if (locale === 'zh-CN') {
       return CN_MOBILE_PHONE_REG_EXP.test(mobileNumber);
     } else {
