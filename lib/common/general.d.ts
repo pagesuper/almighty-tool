@@ -1,4 +1,10 @@
 import { IGeneralResult, IGeneralOptions, IGeneralError, IGeneralOptionsWithT } from '../interfaces/common/general';
+declare type RANDOM_CHARS_GROUP_KEY = 'full' | 'downcase' | 'lower' | 'simple' | 'number';
+interface IGenerateRandomStringParams {
+    length?: number;
+    characters?: string[];
+    group?: RANDOM_CHARS_GROUP_KEY;
+}
 export declare class GeneralError implements IGeneralError {
     constructor(error?: IGeneralError);
     /** 路径 */
@@ -24,6 +30,10 @@ export declare class GeneralResult implements IGeneralResult {
 declare const _default: {
     /** 获取md5 */
     md5(value: string): string;
+    /** 生成安全的随机字符串 */
+    generateSecureRandom(bytes?: number): string;
+    /** 生成随机的字符串 */
+    generateRandomString(options?: IGenerateRandomStringParams): string;
     /** 生成击穿缓存参数 */
     generateIjt(): string;
     /** 缓存抓取 */

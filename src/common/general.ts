@@ -2,6 +2,23 @@
 import { IGeneralResult, IGeneralOptions, IGeneralError, IGeneralOptionsWithT } from '../interfaces/common/general';
 
 const MD5 = require('md5.js');
+const crypto = require('crypto');
+
+const RANDOM_CHARS = {
+  full: '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRST'.split(''),
+  downcase: '0123456789abcdefghijklmnopqrstuvwxyz'.split(''),
+  lower: 'abcdefghijklmnopqrstuvwxyz'.split(''),
+  simple: '13456789abcdefghijklmnopqrstuvwxy'.split(''),
+  number: '0123456789'.split(''),
+};
+
+type RANDOM_CHARS_GROUP_KEY = 'full' | 'downcase' | 'lower' | 'simple' | 'number';
+
+interface IGenerateRandomStringParams {
+  length?: number;
+  characters?: string[];
+  group?: RANDOM_CHARS_GROUP_KEY;
+}
 
 export class GeneralError implements IGeneralError {
   public constructor(error?: IGeneralError) {
@@ -42,6 +59,25 @@ export default {
   /** 获取md5 */
   md5(value: string): string {
     return new MD5().update(value).digest('hex');
+  },
+
+  /** 生成安全的随机字符串 */
+  generateSecureRandom(bytes = 16): string {
+    return crypto.randomBytes(bytes).toString('hex');
+  },
+
+  /** 生成随机的字符串 */
+  generateRandomString(options: IGenerateRandomStringParams = {}): string {
+    const length = options.length || 6;
+    const characters = options.characters || RANDOM_CHARS[options.group || 'full'];
+    const values: string[] = [];
+    const count = characters.length;
+
+    for (let index = 0; index < length; index++) {
+      values.push(characters[Math.floor(Math.random() * count)]);
+    }
+
+    return values.join('');
   },
 
   /** 生成击穿缓存参数 */
