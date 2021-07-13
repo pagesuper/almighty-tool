@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 import { IGeneralResult, IGeneralOptions, IGeneralError, IGeneralOptionsWithT } from '../interfaces/common/general';
+import _ from 'lodash';
 
 const MD5 = require('md5.js');
 const crypto = require('crypto');
@@ -15,9 +16,14 @@ const RANDOM_CHARS = {
 type RANDOM_CHARS_GROUP_KEY = 'full' | 'downcase' | 'lower' | 'simple' | 'number';
 
 interface IGenerateRandomStringParams {
+  /** 默认32 */
   length?: number;
+  /** 可用的字符串 */
   characters?: string[];
+  /** 分组 */
   group?: RANDOM_CHARS_GROUP_KEY;
+  /** 时间的长度 */
+  timeLength?: number;
 }
 
 export class GeneralError implements IGeneralError {
@@ -66,14 +72,36 @@ export default {
     return crypto.randomBytes(bytes).toString('hex');
   },
 
+  /** 获取时间的字符串 */
+  getUtcTimeString(dateTime: Date | null = null): string {
+    const time = dateTime || new Date();
+
+    return [
+      time.getUTCFullYear(),
+      _.padStart(String(time.getUTCMonth() + 1), 2, '0'),
+      _.padStart(String(time.getUTCDate()), 2, '0'),
+      _.padStart(String(time.getUTCHours()), 2, '0'),
+      _.padStart(String(time.getUTCMinutes()), 2, '0'),
+      _.padStart(String(time.getUTCSeconds()), 2, '0'),
+      _.padStart(String(time.getUTCMilliseconds()), 3, '0'),
+    ].join('');
+  },
+
   /** 生成随机的字符串 */
   generateRandomString(options: IGenerateRandomStringParams = {}): string {
-    const length = options.length || 6;
-    const characters = options.characters || RANDOM_CHARS[options.group || 'full'];
+    const length = options.length || 32;
+    const characters = options.characters || RANDOM_CHARS[options.group || 'downcase'];
     const values: string[] = [];
     const count = characters.length;
+    const timeLength = options.timeLength || 0;
+    const randomLength = length - timeLength;
 
-    for (let index = 0; index < length; index++) {
+    if (timeLength > 0) {
+      const time = new Date();
+      values.push(this.getUtcTimeString(time).slice(0, timeLength - 1));
+    }
+
+    for (let index = 0; index < randomLength; index++) {
       values.push(characters[Math.floor(Math.random() * count)]);
     }
 
