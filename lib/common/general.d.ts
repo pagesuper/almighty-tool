@@ -1,9 +1,14 @@
 import { IGeneralResult, IGeneralOptions, IGeneralError, IGeneralOptionsWithT } from '../interfaces/common/general';
 declare type RANDOM_CHARS_GROUP_KEY = 'full' | 'downcase' | 'lower' | 'simple' | 'number';
 interface IGenerateRandomStringParams {
+    /** 默认32 */
     length?: number;
+    /** 可用的字符串 */
     characters?: string[];
+    /** 分组 */
     group?: RANDOM_CHARS_GROUP_KEY;
+    /** 时间的长度 */
+    timeLength?: number;
 }
 export declare class GeneralError implements IGeneralError {
     constructor(error?: IGeneralError);
@@ -32,6 +37,8 @@ declare const _default: {
     md5(value: string): string;
     /** 生成安全的随机字符串 */
     generateSecureRandom(bytes?: number): string;
+    /** 获取时间的字符串 */
+    getUtcTimeString(dateTime?: Date | null): string;
     /** 生成随机的字符串 */
     generateRandomString(options?: IGenerateRandomStringParams): string;
     /** 生成击穿缓存参数 */
