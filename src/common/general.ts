@@ -98,7 +98,7 @@ export default {
 
     if (timeLength > 0) {
       const time = new Date();
-      values.push(this.getUtcTimeString(time).slice(0, timeLength - 1));
+      values.push(this.getUtcTimeString(time).slice(0, timeLength));
     }
 
     for (let index = 0; index < randomLength; index++) {
