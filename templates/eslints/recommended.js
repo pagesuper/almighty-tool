@@ -23,9 +23,6 @@ module.exports = {
     'standard',
     'plugin:@typescript-eslint/recommended',
     'plugin:prettier/recommended',
-    'prettier',
-    'prettier/vue',
-    'prettier/standard',
   ],
 
   plugins: ['import', 'jest', 'node', 'promise', 'prettier', 'standard', 'html'],

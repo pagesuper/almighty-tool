@@ -13,8 +13,8 @@
     "eslint": "eslint --ext .js,.ts,.vue --ignore-path .gitignore ./src",
     "eslint:fix": "yarn run eslint --fix",
     "stylelint": "stylelint src/**/*.{css,scss,sass}",
-    "lint": "yarn run eslint && yarn run stylelint",
-    "lint:fix": "yarn run eslint --fix && yarn run stylelint --fix",
+    "lint": "yarn run eslint",
+    "lint:fix": "yarn run eslint --fix",
     "test": "jest --clearCache && jest --runInBand --detectOpenHandles"
   },
   "typings": "types/index.d.ts",
