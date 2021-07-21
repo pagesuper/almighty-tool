@@ -45,5 +45,7 @@ declare const _default: {
     generateIjt(): string;
     /** 缓存抓取 */
     cacheFetch<T extends IGeneralResult>(options?: IGeneralOptionsWithT<T>): Promise<T | null>;
+    /** 版本比较 */
+    compareVersion(v01: string, v02: string): 0 | 1 | -1;
 };
 export default _default;

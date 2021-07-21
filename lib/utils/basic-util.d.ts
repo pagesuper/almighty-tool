@@ -47,8 +47,6 @@ declare const _default: {
     ifUndefinedThen(object: any, defaultValue: any): any;
     /** 深拷贝 */
     deepCopy(value: any): any;
-    /** 位数补齐 */
-    pad(n: string | number, width: number, z?: string): string;
     /**
      *
      * 给一个对象数组进行去重

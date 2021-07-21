@@ -1,7 +1,5 @@
 import { ICssStyle, CSS_STYLE_TYPE } from '../interfaces/common/general';
-
-/* eslint-disable */
-const _ = require('lodash/core');
+import _ from 'lodash';
 
 export interface SetClipboardDataOptions {
   /**
@@ -167,13 +165,7 @@ export default {
 
   /** 深拷贝 */
   deepCopy(value: any) {
-    return _.deepCopy(value);
-  },
-
-  /** 位数补齐 */
-  pad(n: string | number, width: number, z = '0') {
-    n = `${n}`;
-    return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
+    return _.cloneDeep(value);
   },
 
   /**
