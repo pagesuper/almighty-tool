@@ -14,6 +14,7 @@ describe('cryptoUtil.aes', () => {
     const iv = '1234567890123456';
     const key = '1234567890123456';
 
+    # console.log('cryptoUtil.generateAesKey(): ', cryptoUtil.generateAesKey());
     expect(cryptoUtil.aesEncrypt(data, key, iv)).toBe('bAx40eFUVf/hIxbaV8/GaQ==');
     expect(cryptoUtil.aesDecrypt('bAx40eFUVf/hIxbaV8/GaQ==', key, iv)).toBe(data);
     expect(cryptoUtil.generateAesIv().length).toBe(16);
