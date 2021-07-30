@@ -28,8 +28,6 @@ module.exports = {
     'eslint:recommended',
     'standard',
     'plugin:vue/essential',
-    '@vue/standard',
-    '@vue/typescript',
     'plugin:@typescript-eslint/recommended',
     'plugin:vue/strongly-recommended',
     'plugin:vue-scoped-css/recommended',
