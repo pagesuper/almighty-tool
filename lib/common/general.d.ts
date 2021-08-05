@@ -1,4 +1,6 @@
+/// <reference types="node" />
 import { IGeneralResult, IGeneralOptions, IGeneralError, IGeneralOptionsWithT } from '../interfaces/common/general';
+import { Stream } from 'stream';
 declare type RANDOM_CHARS_GROUP_KEY = 'full' | 'downcase' | 'lower' | 'simple' | 'number';
 interface IGenerateRandomStringParams {
     /** 默认32 */
@@ -34,7 +36,7 @@ export declare class GeneralResult implements IGeneralResult {
 }
 declare const _default: {
     /** 获取md5 */
-    md5(value: string): string;
+    md5(value: string | Buffer | Stream): string;
     /** 生成安全的随机字符串 */
     generateSecureRandom(bytes?: number): string;
     /** 获取时间的字符串 */
