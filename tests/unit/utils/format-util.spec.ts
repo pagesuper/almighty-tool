@@ -1,23 +1,5 @@
 import formatUtil from '../../../src/utils/format-util';
 
-describe('formatUtil.showDatetime', () => {
-  test('成功', async () => {
-    const date = new Date(Date.parse('2020/02/29 23:34:43'));
-
-    expect(formatUtil.showDatetime(date, 'long', 'en-US')).toEqual('2020-02-29 23:34:43');
-    expect(formatUtil.showDatetime(date, 'date', 'en-US')).toEqual('2020-02-29');
-    expect(formatUtil.showDatetime(date, 'shortDate', 'en-US')).toEqual('02-29');
-    expect(formatUtil.showDatetime(date, 'time', 'en-US')).toEqual('23:34:43');
-    expect(formatUtil.showDatetime(date, 'shortTime', 'en-US')).toEqual('23:34');
-
-    expect(formatUtil.showDatetime(date, 'long', 'zh-CN')).toEqual('2020年02月29日 23:34:43');
-    expect(formatUtil.showDatetime(date, 'date', 'zh-CN')).toEqual('2020年02月29日');
-    expect(formatUtil.showDatetime(date, 'shortDate', 'zh-CN')).toEqual('02月29日');
-    expect(formatUtil.showDatetime(date, 'time', 'zh-CN')).toEqual('23:34:43');
-    expect(formatUtil.showDatetime(date, 'shortTime', 'zh-CN')).toEqual('23:34');
-  });
-});
-
 describe('formatUtil.isChinaIDCard', () => {
   test('成功', async () => {
     // 正常手机号
@@ -178,5 +160,17 @@ describe('formatUtil.isMobileNumber', () => {
     expect(formatUtil.isMobileNumber('19712345678')).toBe(true);
     expect(formatUtil.isMobileNumber('19812345678')).toBe(true);
     expect(formatUtil.isMobileNumber('19912345678')).toBe(true);
+  });
+});
+
+describe('general.cssStyleObjectToString()', () => {
+  test('成功', async () => {
+    expect(
+      formatUtil.cssStyleObjectToString({
+        backgroundImage: 'url(https://tva1.sinaimg.cn/large/008i3skNgy1gtj1iasx2jj615o0m87a302.jpg)',
+        height: '89px',
+        display: 'flex',
+      }),
+    ).toEqual('background-image: url(https://tva1.sinaimg.cn/large/008i3skNgy1gtj1iasx2jj615o0m87a302.jpg); height: 89px; display: flex');
   });
 });

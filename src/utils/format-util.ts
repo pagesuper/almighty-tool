@@ -1,5 +1,4 @@
-import dateUtil from './date-util';
-
+import _ from 'lodash';
 export const DEFAULT_LOCALE = process.env.DEFAULT_LOCALE || 'zh-CN';
 export type DATETIME_TYPE = 'long' | 'date' | 'shortDate' | 'shortTime' | 'time';
 export type DATETIME_LANG = 'en-US' | 'zh-CN';
@@ -80,79 +79,34 @@ export default {
     return URL_REG_EXP.test(str);
   },
 
-  /**
-   * 格式换时间
-   *
-   * 中文: lang = 'zh-CN' (默认)
-   *
-   * @type
-   *
-   * - long(默认) -> 2020年12月14日 12:23:33
-   * - date -> 2020年12月14日
-   * - shortDate -> 12月14日
-   * - shortTime -> 12:23
-   * - time -> 12:23:33
-   *
-   * 英文: lang = 'en-US'
-   *
-   * - long(默认) -> 2020-12-14 12:23:33
-   * - date -> 2020-12-14
-   * - shortDate -> 12-14
-   * - shortTime -> 12:23
-   * - time -> 12:23:33
-   */
-  showDatetime: (value: Date | string, type: DATETIME_TYPE = 'long', lang: DATETIME_LANG = 'zh-CN'): string => {
-    function pad(number: number): string {
-      if (number < 10) {
-        return `0${number}`;
-      } else {
-        return `${number}`;
-      }
-    }
-
+  /** 转为中横线命名 */
+  toHyphenName(value: string): string {
     if (value) {
-      const value2 = dateUtil.parse(value);
-
-      if (value2) {
-        const year = value2.getFullYear();
-        const month = value2.getMonth() + 1;
-        const date = value2.getDate();
-        const hour = value2.getHours();
-        const minute = value2.getMinutes();
-        const second = value2.getSeconds();
-
-        switch (lang) {
-          case 'en-US':
-            switch (type) {
-              case 'date':
-                return `${year}-${pad(month)}-${pad(date)}`;
-              case 'shortDate':
-                return `${pad(month)}-${pad(date)}`;
-              case 'shortTime':
-                return `${pad(hour)}:${pad(minute)}`;
-              case 'time':
-                return `${pad(hour)}:${pad(minute)}:${pad(second)}`;
-              default:
-                return `${year}-${pad(month)}-${pad(date)} ${pad(hour)}:${pad(minute)}:${pad(second)}`;
-            }
-
-          default:
-            switch (type) {
-              case 'date':
-                return `${year}年${pad(month)}月${pad(date)}日`;
-              case 'shortDate':
-                return `${pad(month)}月${pad(date)}日`;
-              case 'shortTime':
-                return `${pad(hour)}:${pad(minute)}`;
-              case 'time':
-                return `${pad(hour)}:${pad(minute)}:${pad(second)}`;
-              default:
-                return `${year}年${pad(month)}月${pad(date)}日 ${pad(hour)}:${pad(minute)}:${pad(second)}`;
-            }
-        }
-      }
+      return value.trim().replace(/([A-Z])/g,"-$1").toLowerCase();
     }
 
-    return `${value}`;
+    return '';
+  },
+
+  /** 转为中横线命名 */
+  toHumpName(value: string): string {
+    if (value) {
+      return value.replace(/\-(\w)/g, (_all, letter) => {
+        return letter.toUpperCase();
+      });
+    }
+
+    return '';
+  },
+
+  /** 将css style对象转为字符串 */
+  cssStyleObjectToString(style: Record<string, string>): string {
+    const styles: string[] = [];
+
+    _.keys(style).forEach((key) => {
+      styles.push([this.toHyphenName(key), style[key]].join(': '));
+    });
+
+    return styles.join('; ');
   },
 };

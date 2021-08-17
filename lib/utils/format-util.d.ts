@@ -39,27 +39,11 @@ declare const _default: {
     isChinaIDCard(str: string, type?: 15 | 18): boolean;
     /** 是否是链接 */
     isUrl(str: string): boolean;
-    /**
-     * 格式换时间
-     *
-     * 中文: lang = 'zh-CN' (默认)
-     *
-     * @type
-     *
-     * - long(默认) -> 2020年12月14日 12:23:33
-     * - date -> 2020年12月14日
-     * - shortDate -> 12月14日
-     * - shortTime -> 12:23
-     * - time -> 12:23:33
-     *
-     * 英文: lang = 'en-US'
-     *
-     * - long(默认) -> 2020-12-14 12:23:33
-     * - date -> 2020-12-14
-     * - shortDate -> 12-14
-     * - shortTime -> 12:23
-     * - time -> 12:23:33
-     */
-    showDatetime: (value: Date | string, type?: DATETIME_TYPE, lang?: DATETIME_LANG) => string;
+    /** 转为中横线命名 */
+    toHyphenName(value: string): string;
+    /** 转为中横线命名 */
+    toHumpName(value: string): string;
+    /** 将css style对象转为字符串 */
+    cssStyleObjectToString(style: Record<string, string>): string;
 };
 export default _default;
