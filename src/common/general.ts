@@ -63,6 +63,19 @@ export class GeneralResult implements IGeneralResult {
 }
 
 export default {
+  /** 获取有效值 */
+  getValidValue(inputValue: number, minValue: number, maxValue: number): number {
+    if (inputValue < minValue) {
+      return minValue;
+    }
+
+    if (inputValue > maxValue) {
+      return maxValue;
+    }
+
+    return inputValue;
+  },
+
   /** 获取md5 */
   md5(value: string | Buffer | Stream): string {
     return new MD5().update(value).digest('hex');

@@ -35,6 +35,8 @@ export declare class GeneralResult implements IGeneralResult {
     pushError(error: IGeneralError): void;
 }
 declare const _default: {
+    /** 获取有效值 */
+    getValidValue(inputValue: number, minValue: number, maxValue: number): number;
     /** 获取md5 */
     md5(value: string | Buffer | Stream): string;
     /** 生成安全的随机字符串 */
