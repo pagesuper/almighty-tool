@@ -23,8 +23,8 @@ interface IGenerateRandomStringParams {
   characters?: string[];
   /** 分组 */
   group?: RANDOM_CHARS_GROUP_KEY;
-  /** 时间的长度 */
-  timeLength?: number;
+  /** time类型 */
+  timeType?: 'number' | 'char' | 'none';
 }
 
 export class GeneralError implements IGeneralError {
@@ -106,17 +106,28 @@ export default {
     const length = options.length || 32;
     const characters = options.characters || RANDOM_CHARS[options.group || 'downcase'];
     const values: string[] = [];
-    const count = characters.length;
-    const timeLength = options.timeLength || 0;
-    const randomLength = length - timeLength;
 
-    if (timeLength > 0) {
-      const time = new Date();
-      values.push(this.getUtcTimeString(time).slice(0, timeLength));
+    switch (options.timeType) {
+      case 'number':
+        values.push(this.getUtcTimeString(new Date()));
+        break;
+
+      case 'char':
+        values.push(new Date().valueOf().toString(36));
+        break;
+
+      default:
+        break;
     }
 
+    const randomLength = values[0] ? length - values[0].length : length;
+
     for (let index = 0; index < randomLength; index++) {
-      values.push(characters[Math.floor(Math.random() * count)]);
+      const sample = _.sample(characters);
+
+      if (sample) {
+        values.push(sample);
+      }
     }
 
     return values.join('');

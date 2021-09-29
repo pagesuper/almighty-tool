@@ -9,8 +9,8 @@ interface IGenerateRandomStringParams {
     characters?: string[];
     /** 分组 */
     group?: RANDOM_CHARS_GROUP_KEY;
-    /** 时间的长度 */
-    timeLength?: number;
+    /** time类型 */
+    timeType?: 'number' | 'char' | 'none';
 }
 export declare class GeneralError implements IGeneralError {
     constructor(error?: IGeneralError);

@@ -5,9 +5,11 @@ describe('general.generateRandomString()', () => {
   test('成功', async () => {
     for (let i = 0; i < 100; i++) {
       const string = general.generateRandomString({
-        timeLength: 17,
+        timeType: 'char',
         length: 24,
       });
+
+      console.log(`${i}: ${string}`);
 
       expect(string.length).toEqual(24);
     }
