@@ -82,7 +82,10 @@ export default {
   /** 转为中横线命名 */
   toHyphenName(value: string): string {
     if (value) {
-      return value.trim().replace(/([A-Z])/g,"-$1").toLowerCase();
+      return value
+        .trim()
+        .replace(/([A-Z])/g, '-$1')
+        .toLowerCase();
     }
 
     return '';
@@ -91,7 +94,7 @@ export default {
   /** 转为中横线命名 */
   toHumpName(value: string): string {
     if (value) {
-      return value.replace(/\-(\w)/g, (_all, letter) => {
+      return value.replace(/-(\w)/g, (_all, letter) => {
         return letter.toUpperCase();
       });
     }

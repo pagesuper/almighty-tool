@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 import { ICssStyle, CSS_STYLE_TYPE } from '../interfaces/common/general';
 import _ from 'lodash';
 
@@ -51,7 +53,7 @@ export default {
         if (options && typeof options.success === 'function') {
           options.success({
             data,
-            errMsg: 'setClipboardData:ok'
+            errMsg: 'setClipboardData:ok',
           });
 
           isOk = true;
@@ -60,7 +62,7 @@ export default {
         if (options && typeof options.fail === 'function') {
           options.fail({
             data,
-            errMsg: 'setClipboardData:fail'
+            errMsg: 'setClipboardData:fail',
           });
         }
       } finally {
@@ -68,12 +70,12 @@ export default {
           if (isOk) {
             options.complete({
               data,
-              errMsg: 'setClipboardData:ok'
+              errMsg: 'setClipboardData:ok',
             });
           } else {
             options.complete({
               data,
-              errMsg: 'setClipboardData:fail'
+              errMsg: 'setClipboardData:fail',
             });
           }
         }
@@ -82,14 +84,14 @@ export default {
       if (typeof options !== 'undefined' && typeof options.fail === 'function') {
         options.fail({
           data,
-          errMsg: 'setClipboardData:fail'
+          errMsg: 'setClipboardData:fail',
         });
       }
 
       if (typeof options !== 'undefined' && typeof options.complete === 'function') {
         options.complete({
           data,
-          errMsg: 'setClipboardData:fail'
+          errMsg: 'setClipboardData:fail',
         });
       }
     }
@@ -274,7 +276,6 @@ export default {
 
     return newObjects;
   },
-
 
   /** 打乱一个数组 */
   shuffle(array: any[]): any[] {
