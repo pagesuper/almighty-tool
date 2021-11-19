@@ -70,6 +70,14 @@ export interface IRequestOptions<T extends IRequestResult> extends IGeneralOptio
      */
     before?: () => void;
     /**
+     * 前置将数据进行格式化
+     */
+    superNormalize?: (res: T) => void;
+    /**
+     * 前置将数据进行格式化
+     */
+    asyncSuperNormalize?: (res: T) => Promise<void>;
+    /**
      * 将数据进行格式化
      */
     normalize?: (res: T) => void;

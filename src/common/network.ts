@@ -80,13 +80,33 @@ const doNormalize = async function <T extends INetwork.IRequestResult>(
   result: INetwork.IRequestResult,
   options: INetwork.IRequestOptions<T>,
 ) {
+  let normalized = false;
+
+  if (typeof options.superNormalize === 'function') {
+    normalized = true;
+    result.ndata = result.ndata || {};
+    options.superNormalize(result as T);
+  } 
+
+  if (typeof options.asyncSuperNormalize === 'function') {
+    normalized = true;
+    result.ndata = result.ndata || {};
+    await options.asyncSuperNormalize(result as T);
+  }
+
   if (typeof options.normalize === 'function') {
+    normalized = true;
     result.ndata = result.ndata || {};
     options.normalize(result as T);
-  } else if (typeof options.asyncNormalize === 'function') {
+  } 
+
+  if (typeof options.asyncNormalize === 'function') {
+    normalized = true;
     result.ndata = result.ndata || {};
     await options.asyncNormalize(result as T);
-  } else {
+  }
+
+  if (!normalized) {
     result.ndata = result.data;
   }
 };
