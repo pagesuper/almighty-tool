@@ -296,6 +296,19 @@ const network = {
       }
     });
   },
+
+  /**
+   * 发起GraphQL请求
+   */
+  requestGraphQL<T extends INetwork.IRequestResult>(options: INetwork.IRequestGraphQLOptions<T>): Promise<T> {
+    const data = {
+      operationName: basicUtil.ifUndefinedThen(options.operationName, null),
+      query: options.query,
+      variables: options.variables,
+    };
+
+    return this.request({ ...options, data });
+  },
 };
 
 export default network;
