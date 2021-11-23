@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable no-unused-vars */
 import { IGeneralResult, IGeneralOptionsWithT } from './general';
-import { Method } from 'axios';
+import { AxiosStatic, Method } from 'axios';
 
 export interface IResponseData {}
 
@@ -74,6 +74,9 @@ export interface IRequestTask {
 export interface IRequestOptions<T extends IRequestResult> extends IGeneralOptionsWithT<T> {
   /** 可以是：OPTIONS，GET，HEAD，POST，PUT，DELETE，TRACE，CONNECT */
   method?: Method;
+
+  /** 请求器 */
+  requester?: AxiosStatic;
 
   /**
    * 请求前需调用的参数

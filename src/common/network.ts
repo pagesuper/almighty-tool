@@ -86,7 +86,7 @@ const doNormalize = async function <T extends INetwork.IRequestResult>(
     normalized = true;
     result.ndata = result.ndata || {};
     options.superNormalize(result as T);
-  } 
+  }
 
   if (typeof options.asyncSuperNormalize === 'function') {
     normalized = true;
@@ -98,7 +98,7 @@ const doNormalize = async function <T extends INetwork.IRequestResult>(
     normalized = true;
     result.ndata = result.ndata || {};
     options.normalize(result as T);
-  } 
+  }
 
   if (typeof options.asyncNormalize === 'function') {
     normalized = true;
@@ -140,7 +140,7 @@ const justDoRequest = function <T extends INetwork.IRequestResult>(
   resolve: any,
   reject: any,
 ) {
-  axios
+  (options.requester || axios)
     .request(newOptions)
     .then(async (res: INetwork.IAxiosResponse<T>) => {
       /**
