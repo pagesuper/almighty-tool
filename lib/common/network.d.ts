@@ -1,5 +1,7 @@
 import * as INetwork from '../interfaces/common/network';
+import { AxiosStatic } from 'axios';
 declare const network: {
+    setDefaultRequester(requester: AxiosStatic): void;
     /** 格式化请求参数 */
     normalizeRequestOptions<T extends INetwork.IRequestResult>(options: INetwork.IRequestOptions<T>): INetwork.IAxiosRequestOptions;
     /**

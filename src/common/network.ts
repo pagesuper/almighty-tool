@@ -4,12 +4,18 @@
 import * as INetwork from '../interfaces/common/network';
 import qs from 'qs';
 // http://axios-js.com/docs/
-import axios from 'axios';
+import axios, { AxiosStatic } from 'axios';
 import basicUtil from '../utils/basic-util';
 import General from './general';
 
 const deepmerge = require('deepmerge');
 const _ = require('lodash');
+
+const DefaultSetting: {
+  axios: AxiosStatic,
+} = {
+  axios,
+};
 
 const DEFAULT_TIMEOUT = 60 * 1000;
 const DEFAULT_MAX_REDIRECTS = 5;
@@ -140,7 +146,7 @@ const justDoRequest = function <T extends INetwork.IRequestResult>(
   resolve: any,
   reject: any,
 ) {
-  (options.requester || axios)
+  (options.requester || DefaultSetting.axios)
     .request(newOptions)
     .then(async (res: INetwork.IAxiosResponse<T>) => {
       /**
@@ -220,6 +226,10 @@ const justDoRequest = function <T extends INetwork.IRequestResult>(
 };
 
 const network = {
+  setDefaultRequester(requester: AxiosStatic): void {
+    DefaultSetting.axios = requester;
+  },
+
   /** 格式化请求参数 */
   normalizeRequestOptions<T extends INetwork.IRequestResult>(options: INetwork.IRequestOptions<T>): INetwork.IAxiosRequestOptions {
     const maxRedirects = basicUtil.ifUndefinedThen(Reflect.get(options, 'maxRedirects'), DEFAULT_MAX_REDIRECTS);
