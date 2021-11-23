@@ -226,6 +226,7 @@ const justDoRequest = function <T extends INetwork.IRequestResult>(
 };
 
 const network = {
+  /** 设置默认的请求器 */
   setDefaultRequester(requester: AxiosStatic): void {
     DefaultSetting.axios = requester;
   },
