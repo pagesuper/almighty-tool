@@ -25,6 +25,8 @@ declare const _default: {
     buildUrl(url: string, queryString: string): string;
     /** 如果未定义则转为null */
     undefinedToNull(value: any): any;
+    /** 异步forEach */
+    forEachAsync(arr: any[], callback: (obj: any, index: number, objectArr: any[]) => Promise<void>): Promise<void>;
     /**
      * 判断对象是否为空
      */

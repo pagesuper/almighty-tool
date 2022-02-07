@@ -119,6 +119,21 @@ export default {
     return typeof value === 'undefined' ? null : value;
   },
 
+  /** 异步forEach */
+  async forEachAsync(arr: any[], callback: (obj: any, index: number, objectArr: any[]) => Promise<void>) {
+    const length = arr.length;
+    const objectArr = Object(arr);
+    let k = 0;
+
+    while (k < length) {
+      if (k in objectArr) {
+        await callback(objectArr[k], k, objectArr);
+      }
+
+      k++;
+    }
+  },
+
   /**
    * 判断对象是否为空
    */
@@ -181,7 +196,7 @@ export default {
     const newObjects: any[] = [];
     const cacheObjects = {};
 
-    objects.forEach(function (object: any) {
+    objects.forEach((object: any) => {
       const value = object[key];
 
       if (typeof Reflect.get(cacheObjects, value) === 'undefined') {
@@ -203,7 +218,7 @@ export default {
   objectsIndexByKey(objects: any, key: any) {
     const newObjects = {};
 
-    objects.forEach(function (object: any) {
+    objects.forEach((object: any) => {
       Reflect.set(newObjects, object[key], object);
     });
 
@@ -220,7 +235,7 @@ export default {
   objectsIndexByFn(objects: any, fn: Function) {
     const newObjects = {};
 
-    objects.forEach(function (object: any) {
+    objects.forEach((object: any) => {
       Reflect.set(newObjects, fn(object), object);
     });
 
@@ -237,7 +252,7 @@ export default {
   objectsGroupByKey(objects: any, key: any) {
     const newObjects = {};
 
-    objects.forEach(function (object: any) {
+    objects.forEach((object: any) => {
       const value = object[key];
       let pairObjects = Reflect.get(newObjects, value);
 
@@ -262,7 +277,7 @@ export default {
   objectsGroupByFn(objects: any, fn: Function) {
     const newObjects = {};
 
-    objects.forEach(function (object: any) {
+    objects.forEach((object: any) => {
       const value = fn(object);
       let pairObjects = Reflect.get(newObjects, value);
 
