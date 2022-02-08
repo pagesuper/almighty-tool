@@ -119,6 +119,15 @@ export default {
     return typeof value === 'undefined' ? null : value;
   },
 
+  /** 睡眠等待毫秒 */
+  sleep(timeout: number) {
+    return new Promise((resolve: Function) => {
+      setTimeout(() => {
+        resolve();
+      }, timeout);
+    });
+  },
+
   /** 异步forEach */
   async forEachAsync(arr: any[], callback: (obj: any, index: number, objectArr: any[]) => Promise<void>) {
     const length = arr.length;
