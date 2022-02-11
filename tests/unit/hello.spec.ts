@@ -1,3 +1,5 @@
+import assert from 'power-assert';
+
 // describe('Reflect.get', () => {
 //   test('get by default value', () => {
 //     expect(Reflect.get({}, 'x')).toEqual('age');
@@ -6,9 +8,8 @@
 
 describe('increment', () => {
   test('get 1 at initial', () => {
-    const count = 1;
-
-    expect(count).toBe(1);
+    const count = 0 + 1;
+    assert.equal(count, 1);
   });
 });
 

@@ -9,8 +9,6 @@ describe('general.generateRandomString()', () => {
         length: 24,
       });
 
-      console.log(`${i}: ${string}`);
-
       expect(string.length).toEqual(24);
     }
   });
