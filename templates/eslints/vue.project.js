@@ -31,8 +31,6 @@ module.exports = {
     'plugin:vue-scoped-css/recommended',
     'plugin:prettier/recommended',
     'prettier',
-    'prettier/vue',
-    'prettier/standard',
   ],
 
   rules: require('./rules/recommended'),
