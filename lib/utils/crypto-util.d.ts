@@ -1,11 +1,12 @@
-import { HexBase64Latin1Encoding } from 'crypto';
+/// <reference types="node" />
+import crypto from 'crypto';
 declare const _default: {
     /** 获取md5摘要 */
-    md5(value: string, encoding?: HexBase64Latin1Encoding): string;
+    md5(value: string, encoding?: crypto.BinaryToTextEncoding): string;
     /** 获取sha256摘要 */
-    sha256(value: string, encoding?: HexBase64Latin1Encoding): string;
+    sha256(value: string, encoding?: crypto.BinaryToTextEncoding): string;
     /** 获取sha512摘要 */
-    sha512(value: string, encoding?: HexBase64Latin1Encoding): string;
+    sha512(value: string, encoding?: crypto.BinaryToTextEncoding): string;
     /** base64编码 */
     base64Encode(value: string): string;
     /** base64解码 */
@@ -14,6 +15,8 @@ declare const _default: {
     generateAesIv(algorithm?: string): string;
     /** 生成随机的aes key */
     generateAesKey(algorithm?: string): string;
+    /** 生成随机的字节 */
+    generateRandomBytes(bytes?: number): Buffer;
     /**
      * 加密
      *
