@@ -2,9 +2,7 @@
 import _ from 'lodash';
 import { IGeneralResult, IGeneralOptions, IGeneralError, IGeneralOptionsWithT } from '../interfaces/common/general';
 import { Stream } from 'stream';
-
-const MD5 = require('md5.js');
-const crypto = require('crypto');
+import cryptoUtil from '../utils/crypto-util';
 
 const RANDOM_CHARS = {
   full: '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRST'.split(''),
@@ -78,12 +76,12 @@ export default {
 
   /** 获取md5 */
   md5(value: string | Buffer | Stream): string {
-    return new MD5().update(value).digest('hex');
+    return cryptoUtil.md5(value.toString());
   },
 
   /** 生成安全的随机字符串 */
   generateSecureRandom(bytes = 16): string {
-    return crypto.randomBytes(bytes).toString('hex');
+    return cryptoUtil.generateRandomBytes(bytes).toString();
   },
 
   /** 获取时间的字符串 */

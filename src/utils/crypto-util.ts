@@ -1,4 +1,4 @@
-import crypto, { HexBase64Latin1Encoding } from 'crypto';
+import crypto from 'crypto';
 import general from '../common/general';
 
 /**
@@ -6,17 +6,17 @@ import general from '../common/general';
  */
 export default {
   /** 获取md5摘要 */
-  md5(value: string, encoding: HexBase64Latin1Encoding = 'hex'): string {
+  md5(value: string, encoding: crypto.BinaryToTextEncoding = 'hex'): string {
     return crypto.createHash('md5').update(value).digest(encoding);
   },
 
   /** 获取sha256摘要 */
-  sha256(value: string, encoding: HexBase64Latin1Encoding = 'hex'): string {
+  sha256(value: string, encoding: crypto.BinaryToTextEncoding = 'hex'): string {
     return crypto.createHash('sha256').update(value).digest(encoding);
   },
 
   /** 获取sha512摘要 */
-  sha512(value: string, encoding: HexBase64Latin1Encoding = 'hex'): string {
+  sha512(value: string, encoding: crypto.BinaryToTextEncoding = 'hex'): string {
     return crypto.createHash('sha512').update(value).digest(encoding);
   },
 
@@ -38,6 +38,11 @@ export default {
   /** 生成随机的aes key */
   generateAesKey(algorithm = 'aes-128-cbc'): string {
     return general.generateRandomString({ length: Number(algorithm.split('-')[1]) / 8 });
+  },
+
+  /** 生成随机的字节 */
+  generateRandomBytes(bytes = 16): Buffer {
+    return crypto.randomBytes(bytes);
   },
 
   /**
