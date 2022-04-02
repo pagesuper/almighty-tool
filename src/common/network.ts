@@ -12,7 +12,7 @@ const deepmerge = require('deepmerge');
 const _ = require('lodash');
 
 const DefaultSetting: {
-  axios: AxiosStatic,
+  axios: AxiosStatic;
 } = {
   axios,
 };
