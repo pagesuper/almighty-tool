@@ -1747,11 +1747,6 @@
   resolved "https://registry.npm.taobao.org/@types/color-name/download/@types/color-name-1.1.1.tgz?cache=0&sync_timestamp=1588200011932&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2F%40types%2Fcolor-name%2Fdownload%2F%40types%2Fcolor-name-1.1.1.tgz#1c1261bbeaa10a8055bbc5d8ab84b7b2afc846a0"
   integrity sha1-HBJhu+qhCoBVu8XYq4S3sq/IRqA=
 
-"@types/crypto-js@^4.1.1":
-  version "4.1.1"
-  resolved "https://registry.npmmirror.com/@types/crypto-js/-/crypto-js-4.1.1.tgz#602859584cecc91894eb23a4892f38cfa927890d"
-  integrity sha512-BG7fQKZ689HIoc5h+6D2Dgq1fABRa0RbBWKBd9SP/MVRVXROflpm5fhwyATX5duFmbStzyzyycPB8qUYKDH3NA==
-
 "@types/empower-core@*":
   version "1.2.1"
   resolved "https://registry.npmmirror.com/@types/empower-core/-/empower-core-1.2.1.tgz#561fc0b454b34e96bf976ed59e36695c54904c61"
@@ -1771,6 +1766,11 @@
   integrity sha1-A5rzX+Jr7DUAPo2G0u6cWGNUNI8=
   dependencies:
     "@types/node" "*"
+
+"@types/html5plus@^1.0.2":
+  version "1.0.2"
+  resolved "https://registry.npmmirror.com/@types/html5plus/-/html5plus-1.0.2.tgz#43e1aaca4584e7e2cf0db082389f42fbba98062c"
+  integrity sha512-OklP5lrmLq8/6TUOLgWc0LndUVvAiTWX5dnyoCFhIUtFW9opWsnCtG/UxPgeuC28Rv2XNbFfft/hEEI39P/4Ag==
 
 "@types/istanbul-lib-coverage@*", "@types/istanbul-lib-coverage@^2.0.0", "@types/istanbul-lib-coverage@^2.0.1":
   version "2.0.1"
