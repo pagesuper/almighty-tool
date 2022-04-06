@@ -11,12 +11,10 @@
     "experimentalDecorators":true,
     "sourceMap": true,
     "baseUrl": ".",
-    "typeRoots": [
-      "./src/types",
-      "./node_modules/vue/types"
-    ],
     "types": [
+      "node",
       "webpack-env",
+      "jest",
       "@dcloudio/types/uni-app"
     ],
     "paths": {
