@@ -4,6 +4,7 @@ module.exports = {
   'vue-scoped-css/no-unused-selector': 'off',
   'comma-dangle': ['error', 'always-multiline'],
   'no-multiple-empty-lines': ['error', { max: 1, maxBOF: 1, maxEOF: 1 }],
+  'no-undef': 'off',
   'no-use-before-define': 'off',
   '@typescript-eslint/no-namespace': 'off',
   '@typescript-eslint/ban-types': 'off',
