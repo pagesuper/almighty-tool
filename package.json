@@ -1,7 +1,7 @@
 {
   "name": "tuitui-lib",
-  "version": "1.0.0",
-  "description": "推推Lib",
+  "version": "0.0.1",
+  "description": "Tuitui Lib",
   "author": "happy",
   "private": true,
   "_moduleAliases": {
