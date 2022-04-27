@@ -1,4 +1,3 @@
-import { ICssStyle } from '../interfaces/common/general';
 export interface SetClipboardDataOptions {
     /**
      * 需要设置的内容
@@ -18,7 +17,6 @@ export interface SetClipboardDataOptions {
     complete?: (result: any) => void;
 }
 declare const _default: {
-    styleToString(style: ICssStyle): string;
     /** 文本复制: 暂支持h5端网页版 */
     setClipboardData(options: SetClipboardDataOptions): void;
     /** 根据baseUrl and queryString构造URL */
@@ -93,5 +91,10 @@ declare const _default: {
     objectsGroupByFn(objects: any, fn: Function): {};
     /** 打乱一个数组 */
     shuffle(array: any[]): any[];
+    /** 将对象按照特定的key进行排序 */
+    sortKeys(object: any, options?: {
+        deep?: boolean | undefined;
+        compare?: ((a: string, b: string) => number) | undefined;
+    }): any;
 };
 export default _default;

@@ -43,7 +43,7 @@ declare const _default: {
     toHyphenName(value: string): string;
     /** 转为中横线命名 */
     toHumpName(value: string): string;
-    /** 将css style对象转为字符串 */
+    /** 将对象类型的css样式转化为字符串 */
     cssStyleObjectToString(style: Record<string, string>): string;
 };
 export default _default;
