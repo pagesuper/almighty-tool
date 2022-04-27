@@ -1,5 +1,6 @@
 module.exports = {
   semi: ['error', 'always'],
+  '@typescript-eslint/no-empty-function': 'off',
   'arrow-parens': ['error', 'always'],
   'vue-scoped-css/no-unused-selector': 'off',
   'comma-dangle': ['error', 'always-multiline'],
@@ -9,7 +10,7 @@ module.exports = {
   '@typescript-eslint/no-namespace': 'off',
   '@typescript-eslint/ban-types': 'off',
   'space-before-function-paren': 'off',
-  '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
+  '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
   '@typescript-eslint/no-this-alias': [
     'error',
     {
