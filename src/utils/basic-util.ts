@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
-import { ICssStyle, CSS_STYLE_TYPE } from '../interfaces/common/general';
+import { isPlainObject } from 'is-what';
 import _ from 'lodash';
 
 export interface SetClipboardDataOptions {
@@ -23,18 +23,6 @@ export interface SetClipboardDataOptions {
 }
 
 export default {
-  styleToString(style: ICssStyle): string {
-    const styles: string[] = [];
-
-    _.each(style, (value: CSS_STYLE_TYPE, key: string) => {
-      if (value !== null && value !== false) {
-        styles.push(`${key}: ${value}`);
-      }
-    });
-
-    return styles.join('; ');
-  },
-
   /** 文本复制: 暂支持h5端网页版 */
   setClipboardData(options: SetClipboardDataOptions): void {
     const data = (options || {}).data || '';
@@ -304,5 +292,80 @@ export default {
   /** 打乱一个数组 */
   shuffle(array: any[]): any[] {
     return _.shuffle(array);
+  },
+
+  /** 将对象按照特定的key进行排序 */
+  sortKeys(object: any, options: { deep?: boolean; compare?: (a: string, b: string) => number } = {}) {
+    if (!isPlainObject(object) && !Array.isArray(object)) {
+      throw new TypeError('Expected a plain object or array');
+    }
+
+    const { deep, compare } = options;
+    const seenInput: any[] = [];
+    const seenOutput: any[] = [];
+
+    const deepSortArray = (array: any[]) => {
+      const seenIndex = seenInput.indexOf(array);
+      if (seenIndex !== -1) {
+        return seenOutput[seenIndex];
+      }
+
+      const result: any[] = [];
+
+      seenInput.push(array);
+      seenOutput.push(result);
+
+      array.map((item) => {
+        if (Array.isArray(item)) {
+          array.push(deepSortArray(item));
+        }
+
+        if (isPlainObject(item)) {
+          array.push(_sortKeys(item));
+        }
+
+        array.push(item);
+      });
+
+      return result;
+    };
+
+    const _sortKeys = (object: any) => {
+      const seenIndex = seenInput.indexOf(object);
+
+      if (seenIndex !== -1) {
+        return seenOutput[seenIndex];
+      }
+
+      const result = {};
+      const keys = Object.keys(object).sort(compare);
+
+      seenInput.push(object);
+      seenOutput.push(result);
+
+      for (const key of keys) {
+        const value = object[key];
+        let newValue;
+
+        if (deep && Array.isArray(value)) {
+          newValue = deepSortArray(value);
+        } else {
+          newValue = deep && isPlainObject(value) ? _sortKeys(value) : value;
+        }
+
+        Object.defineProperty(result, key, {
+          ...Object.getOwnPropertyDescriptor(object, key),
+          value: newValue,
+        });
+      }
+
+      return result;
+    };
+
+    if (Array.isArray(object)) {
+      return deep ? deepSortArray(object) : object.slice();
+    }
+
+    return _sortKeys(object);
   },
 };

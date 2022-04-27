@@ -100,7 +100,7 @@ export default {
     return '';
   },
 
-  /** 将css style对象转为字符串 */
+  /** 将对象类型的css样式转化为字符串 */
   cssStyleObjectToString(style: Record<string, string>): string {
     const styles: string[] = [];
 
