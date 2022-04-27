@@ -1,6 +1,11 @@
 import _ from 'lodash';
 export const DEFAULT_LOCALE = process.env.DEFAULT_LOCALE || 'zh-CN';
-export type DATETIME_TYPE = 'long' | 'date' | 'shortDate' | 'shortTime' | 'time';
+export type DATETIME_TYPE =
+  | 'long'
+  | 'date'
+  | 'shortDate'
+  | 'shortTime'
+  | 'time';
 export type DATETIME_LANG = 'en-US' | 'zh-CN';
 
 /** URL正则 */
@@ -8,10 +13,12 @@ export const URL_REG_EXP =
   /^(?!mailto:)(?:(?:http|https|ftp):\/\/|\/\/)(?:\S+(?::\S*)?@)?(?:(?:(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[0-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]+-*)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]+-*)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,})))|localhost)(?::\d{2,5})?(?:(\/|\?|#)[^\s]*)?$/i;
 
 /** 邮箱正则 */
-export const EMAIL_REG_EXP = /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+export const EMAIL_REG_EXP =
+  /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
 
 /** 国内身份证15位正则 */
-export const CN_ID_CARD_REG_EXP15 = /^[1-9]\d{5}\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{2}[0-9Xx]$/;
+export const CN_ID_CARD_REG_EXP15 =
+  /^[1-9]\d{5}\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{2}[0-9Xx]$/;
 
 /** 国内身份证18位正则 */
 export const CN_ID_CARD_REG_EXP18 =
@@ -36,7 +43,10 @@ export default {
   },
 
   /** 判断是否是手机号码 */
-  isMobileNumber(mobileNumber: string, locale: string = DEFAULT_LOCALE): boolean {
+  isMobileNumber(
+    mobileNumber: string,
+    locale: string = DEFAULT_LOCALE,
+  ): boolean {
     if (locale === 'zh-CN') {
       return CN_MOBILE_PHONE_REG_EXP.test(mobileNumber);
     } else {

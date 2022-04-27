@@ -32,12 +32,16 @@ export default {
 
   /** 生成随机的aes iv */
   generateAesIv(algorithm = 'aes-128-cbc'): string {
-    return general.generateRandomString({ length: Number(algorithm.split('-')[1]) / 8 });
+    return general.generateRandomString({
+      length: Number(algorithm.split('-')[1]) / 8,
+    });
   },
 
   /** 生成随机的aes key */
   generateAesKey(algorithm = 'aes-128-cbc'): string {
-    return general.generateRandomString({ length: Number(algorithm.split('-')[1]) / 8 });
+    return general.generateRandomString({
+      length: Number(algorithm.split('-')[1]) / 8,
+    });
   },
 
   /** 生成随机的字节 */
@@ -50,7 +54,12 @@ export default {
    *
    * iv-length: 192/8
    */
-  aesEncrypt(data: string, key: string, iv: string, algorithm = 'aes-128-cbc'): string {
+  aesEncrypt(
+    data: string,
+    key: string,
+    iv: string,
+    algorithm = 'aes-128-cbc',
+  ): string {
     const cipherChunks = [];
     const cipher = crypto.createCipheriv(algorithm, key, iv);
 
@@ -64,7 +73,12 @@ export default {
   /**
    * 解密
    */
-  aesDecrypt(data: string, key: string, iv: string, algorithm = 'aes-128-cbc'): string {
+  aesDecrypt(
+    data: string,
+    key: string,
+    iv: string,
+    algorithm = 'aes-128-cbc',
+  ): string {
     const cipherChunks = [];
     const decipher = crypto.createDecipheriv(algorithm, key, iv);
 

@@ -8,7 +8,7 @@ module.exports = {
   /** 使用tab进行缩进 */
   useTabs: false,
   /** 单行宽度 */
-  printWidth: 140,
+  printWidth: 80,
   /** 将多行JSX元素的 > 放在最后一行的末尾，而不是单独放在下一行（不适用于自闭元素） */
   jsxBracketSameLine: false,
   /** 尾随逗号 */

@@ -94,7 +94,12 @@ const dateUtil = {
    * @param unit 单位
    * @param fixMonthDay 是否修复月份里的日期
    */
-  subtract(date: Date, amount: number, unit: RANGE_UNIT = 'seconds', fixMonthDay = true): Date {
+  subtract(
+    date: Date,
+    amount: number,
+    unit: RANGE_UNIT = 'seconds',
+    fixMonthDay = true,
+  ): Date {
     const value = date.valueOf();
     let newDate: Date;
     let newYear: number;
@@ -243,7 +248,11 @@ const dateUtil = {
    * 是否是同一天
    */
   isSameDate(value: Date, value2: Date = new Date()): boolean {
-    return value.getFullYear() === value2.getFullYear() && value.getMonth() === value2.getMonth() && value.getDate() === value2.getDate();
+    return (
+      value.getFullYear() === value2.getFullYear() &&
+      value.getMonth() === value2.getMonth() &&
+      value.getDate() === value2.getDate()
+    );
   },
 };
 

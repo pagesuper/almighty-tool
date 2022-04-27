@@ -42,7 +42,13 @@ export interface ILoadSliceOptions {
   size: number;
 }
 
-export type IPageParamsValueType = string | string[] | null | IPageParams | IPageParams[] | undefined;
+export type IPageParamsValueType =
+  | string
+  | string[]
+  | null
+  | IPageParams
+  | IPageParams[]
+  | undefined;
 
 export interface IPageParams extends Record<string, IPageParamsValueType> {
   [propName: string]: IPageParamsValueType;
@@ -97,7 +103,11 @@ export interface IGeneralCacher {
   /** 获取存储 */
   getStorage(usage: string): any;
   /** 设置存储 */
-  setStorage(usage: string, value: any, options?: IGeneralSetStorageOptions): void;
+  setStorage(
+    usage: string,
+    value: any,
+    options?: IGeneralSetStorageOptions,
+  ): void;
 }
 
 export interface IGeneralOptionsWithT<T> extends IGeneralOptions {

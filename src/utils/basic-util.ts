@@ -28,7 +28,10 @@ export default {
     const data = (options || {}).data || '';
     let isOk = false;
 
-    if (typeof document !== 'undefined' && typeof document.createElement !== 'undefined') {
+    if (
+      typeof document !== 'undefined' &&
+      typeof document.createElement !== 'undefined'
+    ) {
       const textarea = document.createElement('textarea');
 
       try {
@@ -69,14 +72,20 @@ export default {
         }
       }
     } else {
-      if (typeof options !== 'undefined' && typeof options.fail === 'function') {
+      if (
+        typeof options !== 'undefined' &&
+        typeof options.fail === 'function'
+      ) {
         options.fail({
           data,
           errMsg: 'setClipboardData:fail',
         });
       }
 
-      if (typeof options !== 'undefined' && typeof options.complete === 'function') {
+      if (
+        typeof options !== 'undefined' &&
+        typeof options.complete === 'function'
+      ) {
         options.complete({
           data,
           errMsg: 'setClipboardData:fail',
@@ -117,7 +126,10 @@ export default {
   },
 
   /** 异步forEach */
-  async forEachAsync(arr: any[], callback: (obj: any, index: number, objectArr: any[]) => Promise<void>) {
+  async forEachAsync(
+    arr: any[],
+    callback: (obj: any, index: number, objectArr: any[]) => Promise<void>,
+  ) {
     const length = arr.length;
     const objectArr = Object(arr);
     let k = 0;
@@ -295,7 +307,13 @@ export default {
   },
 
   /** 将对象按照特定的key进行排序 */
-  sortKeys(object: any, options: { deep?: boolean; compare?: (a: string, b: string) => number } = {}) {
+  sortKeys(
+    object: any,
+    options: {
+      deep?: boolean;
+      compare?: (a: string, b: string) => number;
+    } = {},
+  ) {
     if (!isPlainObject(object) && !Array.isArray(object)) {
       throw new TypeError('Expected a plain object or array');
     }
@@ -315,7 +333,7 @@ export default {
       seenInput.push(array);
       seenOutput.push(result);
 
-      array.map((item) => {
+      array.forEach((item) => {
         if (Array.isArray(item)) {
           array.push(deepSortArray(item));
         }
