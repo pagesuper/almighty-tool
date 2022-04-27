@@ -4,7 +4,7 @@
 import * as INetwork from '../interfaces/common/network';
 import qs from 'qs';
 // http://axios-js.com/docs/
-import axios, { AxiosStatic } from 'axios';
+import axios, { AxiosResponse, AxiosStatic } from 'axios';
 import basicUtil from '../utils/basic-util';
 import General from './general';
 
@@ -148,7 +148,7 @@ const justDoRequest = function <T extends INetwork.IRequestResult>(
 ) {
   (options.requester || DefaultSetting.axios)
     .request(newOptions)
-    .then(async (res: INetwork.IAxiosResponse<T>) => {
+    .then(async (res: AxiosResponse<T>) => {
       /**
        * 成功的请求处理
        */
@@ -161,7 +161,7 @@ const justDoRequest = function <T extends INetwork.IRequestResult>(
         statusCode: res.status,
         header: res.headers,
         data: res.data,
-        cookies: res.cookies,
+        cookies: Reflect.get(res, 'cookies'),
       };
 
       await doResolve(result, options, resolve);
