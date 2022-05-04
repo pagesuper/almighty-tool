@@ -2,7 +2,7 @@
 import { IGeneralResult, IGeneralOptions, IGeneralError, IGeneralOptionsWithT } from '../interfaces/common/general';
 import { Stream } from 'stream';
 declare type RANDOM_CHARS_GROUP_KEY = 'full' | 'downcase' | 'lower' | 'simple' | 'number';
-interface IGenerateRandomStringParams {
+export interface IGenerateRandomStringParams {
     /** 默认32 */
     length?: number;
     /** 可用的字符串 */

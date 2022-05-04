@@ -24,7 +24,7 @@ type RANDOM_CHARS_GROUP_KEY =
   | 'simple'
   | 'number';
 
-interface IGenerateRandomStringParams {
+export interface IGenerateRandomStringParams {
   /** 默认32 */
   length?: number;
   /** 可用的字符串 */
