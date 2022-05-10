@@ -6,6 +6,7 @@
     "jsx": "preserve",
     "noImplicitAny": false,
     "importHelpers": true,
+    "resolveJsonModule": true,
     "moduleResolution": "node",
     "experimentalDecorators": true,
     "esModuleInterop": true,
