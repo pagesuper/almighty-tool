@@ -28,10 +28,7 @@ export default {
     const data = (options || {}).data || '';
     let isOk = false;
 
-    if (
-      typeof document !== 'undefined' &&
-      typeof document.createElement !== 'undefined'
-    ) {
+    if (typeof document !== 'undefined' && typeof document.createElement !== 'undefined') {
       const textarea = document.createElement('textarea');
 
       try {
@@ -72,20 +69,14 @@ export default {
         }
       }
     } else {
-      if (
-        typeof options !== 'undefined' &&
-        typeof options.fail === 'function'
-      ) {
+      if (typeof options !== 'undefined' && typeof options.fail === 'function') {
         options.fail({
           data,
           errMsg: 'setClipboardData:fail',
         });
       }
 
-      if (
-        typeof options !== 'undefined' &&
-        typeof options.complete === 'function'
-      ) {
+      if (typeof options !== 'undefined' && typeof options.complete === 'function') {
         options.complete({
           data,
           errMsg: 'setClipboardData:fail',

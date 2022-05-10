@@ -103,11 +103,7 @@ export interface IGeneralCacher {
   /** 获取存储 */
   getStorage(usage: string): any;
   /** 设置存储 */
-  setStorage(
-    usage: string,
-    value: any,
-    options?: IGeneralSetStorageOptions,
-  ): void;
+  setStorage(usage: string, value: any, options?: IGeneralSetStorageOptions): void;
 }
 
 export interface IGeneralOptionsWithT<T> extends IGeneralOptions {

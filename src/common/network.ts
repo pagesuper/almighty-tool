@@ -169,18 +169,10 @@ const justDoRequest = function <T extends INetwork.IRequestResult>(
     .catch((error) => {
       // 默认为true
       if (options.printError !== false) {
-        console.error(
-          'network.request fail, options is: ',
-          options,
-          'error is: ',
-          error,
-        );
+        console.error('network.request fail, options is: ', options, 'error is: ', error);
 
         if (error.response) {
-          console.error(
-            'network.request fail, error response is: ',
-            error.response,
-          );
+          console.error('network.request fail, error response is: ', error.response);
         }
 
         if (error.stack) {
@@ -248,26 +240,11 @@ const network = {
       DEFAULT_MAX_REDIRECTS,
     );
 
-    const locale = basicUtil.ifUndefinedThen(
-      Reflect.get(options, 'locale'),
-      'zh-CN',
-    );
-    const method = basicUtil.ifUndefinedThen(
-      Reflect.get(options, 'method'),
-      'GET',
-    );
-    const timeout = basicUtil.ifUndefinedThen(
-      Reflect.get(options, 'timeout'),
-      DEFAULT_TIMEOUT,
-    );
-    const dataType = basicUtil.ifUndefinedThen(
-      Reflect.get(options, 'dataType'),
-      null,
-    );
-    const headers = basicUtil.ifUndefinedThen(
-      Reflect.get(options, 'header'),
-      {},
-    );
+    const locale = basicUtil.ifUndefinedThen(Reflect.get(options, 'locale'), 'zh-CN');
+    const method = basicUtil.ifUndefinedThen(Reflect.get(options, 'method'), 'GET');
+    const timeout = basicUtil.ifUndefinedThen(Reflect.get(options, 'timeout'), DEFAULT_TIMEOUT);
+    const dataType = basicUtil.ifUndefinedThen(Reflect.get(options, 'dataType'), null);
+    const headers = basicUtil.ifUndefinedThen(Reflect.get(options, 'header'), {});
     const data = basicUtil.ifUndefinedThen(Reflect.get(options, 'data'), null);
     let newData;
 
@@ -279,11 +256,7 @@ const network = {
     switch (dataType) {
       case 'form-urlencoded':
         newData = qs.stringify(data);
-        Reflect.set(
-          headers,
-          'Content-Type',
-          'application/x-www-form-urlencoded',
-        );
+        Reflect.set(headers, 'Content-Type', 'application/x-www-form-urlencoded');
 
         break;
 
@@ -345,16 +318,11 @@ const network = {
   /**
    * 发起请求
    */
-  request<T extends INetwork.IRequestResult>(
-    options: INetwork.IRequestOptions<T>,
-  ): Promise<T> {
+  request<T extends INetwork.IRequestResult>(options: INetwork.IRequestOptions<T>): Promise<T> {
     const newOptions = network.normalizeRequestOptions(options);
 
     return new Promise((resolve, reject) => {
-      if (
-        options.skipValidate !== true &&
-        typeof options.validate === 'function'
-      ) {
+      if (options.skipValidate !== true && typeof options.validate === 'function') {
         const result = options.validate(options.options || options);
 
         if (result.errors.length === 0) {

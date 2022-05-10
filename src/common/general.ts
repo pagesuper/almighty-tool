@@ -17,12 +17,7 @@ const RANDOM_CHARS = {
   number: '0123456789'.split(''),
 };
 
-type RANDOM_CHARS_GROUP_KEY =
-  | 'full'
-  | 'downcase'
-  | 'lower'
-  | 'simple'
-  | 'number';
+type RANDOM_CHARS_GROUP_KEY = 'full' | 'downcase' | 'lower' | 'simple' | 'number';
 
 export interface IGenerateRandomStringParams {
   /** 默认32 */
@@ -72,11 +67,7 @@ export class GeneralResult implements IGeneralResult {
 
 export default {
   /** 获取有效值 */
-  getValidValue(
-    inputValue: number,
-    minValue: number,
-    maxValue: number,
-  ): number {
+  getValidValue(inputValue: number, minValue: number, maxValue: number): number {
     if (inputValue < minValue) {
       return minValue;
     }
@@ -116,8 +107,7 @@ export default {
   /** 生成随机的字符串 */
   generateRandomString(options: IGenerateRandomStringParams = {}): string {
     const length = options.length || 32;
-    const characters =
-      options.characters || RANDOM_CHARS[options.group || 'downcase'];
+    const characters = options.characters || RANDOM_CHARS[options.group || 'downcase'];
     const values: string[] = [];
 
     switch (options.timeType) {

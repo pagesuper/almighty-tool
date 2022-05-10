@@ -54,12 +54,7 @@ export default {
    *
    * iv-length: 192/8
    */
-  aesEncrypt(
-    data: string,
-    key: string,
-    iv: string,
-    algorithm = 'aes-128-cbc',
-  ): string {
+  aesEncrypt(data: string, key: string, iv: string, algorithm = 'aes-128-cbc'): string {
     const cipherChunks = [];
     const cipher = crypto.createCipheriv(algorithm, key, iv);
 
@@ -73,12 +68,7 @@ export default {
   /**
    * 解密
    */
-  aesDecrypt(
-    data: string,
-    key: string,
-    iv: string,
-    algorithm = 'aes-128-cbc',
-  ): string {
+  aesDecrypt(data: string, key: string, iv: string, algorithm = 'aes-128-cbc'): string {
     const cipherChunks = [];
     const decipher = crypto.createDecipheriv(algorithm, key, iv);
 

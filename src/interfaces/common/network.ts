@@ -71,8 +71,7 @@ export interface IRequestTask {
 }
 
 /** network的请求参数 */
-export interface IRequestOptions<T extends IRequestResult>
-  extends IGeneralOptionsWithT<T> {
+export interface IRequestOptions<T extends IRequestResult> extends IGeneralOptionsWithT<T> {
   /** 可以是：OPTIONS，GET，HEAD，POST，PUT，DELETE，TRACE，CONNECT */
   method?: Method;
 
@@ -120,8 +119,7 @@ export interface IRequestOptions<T extends IRequestResult>
   complete?: (res?: T) => void;
 }
 
-export interface IRequestGraphQLOptions<T extends IRequestResult>
-  extends IRequestOptions<T> {
+export interface IRequestGraphQLOptions<T extends IRequestResult> extends IRequestOptions<T> {
   /** 操作名称 */
   operationName?: string | null;
   /** 查询 */
