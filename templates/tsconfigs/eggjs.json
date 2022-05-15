@@ -5,6 +5,7 @@
     "module": "commonjs",
     "strict": true,
     "noImplicitAny": false,
+    "resolveJsonModule": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "charset": "utf8",
