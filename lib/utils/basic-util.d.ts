@@ -20,7 +20,7 @@ declare const _default: {
     /** 文本复制: 暂支持h5端网页版 */
     setClipboardData(options: SetClipboardDataOptions): void;
     /** 根据baseUrl and queryString构造URL */
-    buildUrl(url: string, queryString: string): string;
+    buildUrl(url: string, query?: string | object): string;
     /** 如果未定义则转为null */
     undefinedToNull(value: any): any;
     /** 睡眠等待毫秒 */

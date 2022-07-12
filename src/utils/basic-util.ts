@@ -2,6 +2,7 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 import { isPlainObject } from 'is-what';
 import _ from 'lodash';
+import qs from 'qs';
 
 export interface SetClipboardDataOptions {
   /**
@@ -86,7 +87,9 @@ export default {
   },
 
   /** 根据baseUrl and queryString构造URL */
-  buildUrl(url: string, queryString: string): string {
+  buildUrl(url: string, query: string | object = {}): string {
+    const queryString = typeof query === 'string' ? query : qs.stringify(query);
+
     if (queryString) {
       if (url.includes('?')) {
         if (url.endsWith('&')) {
@@ -97,9 +100,9 @@ export default {
       } else {
         return `${url}?${queryString}`;
       }
-    } else {
-      return url;
     }
+
+    return url;
   },
 
   /** 如果未定义则转为null */
