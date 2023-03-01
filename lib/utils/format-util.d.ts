@@ -1,6 +1,6 @@
 export declare const DEFAULT_LOCALE: string;
-export declare type DATETIME_TYPE = 'long' | 'date' | 'shortDate' | 'shortTime' | 'time';
-export declare type DATETIME_LANG = 'en-US' | 'zh-CN';
+export type DATETIME_TYPE = 'long' | 'date' | 'shortDate' | 'shortTime' | 'time';
+export type DATETIME_LANG = 'en-US' | 'zh-CN';
 /** URL正则 */
 export declare const URL_REG_EXP: RegExp;
 /** 邮箱正则 */

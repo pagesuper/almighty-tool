@@ -9,11 +9,18 @@ import {
 import { Stream } from 'stream';
 import cryptoUtil from '../utils/crypto-util';
 
+const DEFAULT_KEY = '__TUITUI_LIB_DEFAULT__';
+
 const RANDOM_CHARS = {
+  /** 全字符 */
   full: '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRST'.split(''),
+  /** 小写 + 数字 */
   downcase: '0123456789abcdefghijklmnopqrstuvwxyz'.split(''),
+  /** 小写字母 */
   lower: 'abcdefghijklmnopqrstuvwxyz'.split(''),
+  /** 简单没有0 */
   simple: '13456789abcdefghijklmnopqrstuvwxy'.split(''),
+  /** 数值 */
   number: '0123456789'.split(''),
 };
 
@@ -66,6 +73,41 @@ export class GeneralResult implements IGeneralResult {
 }
 
 export default {
+  /** 获取全局 */
+  getGlobal(): Object {
+    if (typeof window !== 'undefined') {
+      return window;
+    }
+
+    return global;
+  },
+
+  /** 设置默认值 */
+  setDefault<T>(key: string, value: T): void {
+    const g = this.getGlobal();
+    const PRE_DEFAULT = Reflect.get(g, DEFAULT_KEY);
+    const DEFAULT = PRE_DEFAULT || {};
+
+    if (!PRE_DEFAULT) {
+      Reflect.set(g, DEFAULT_KEY, DEFAULT);
+    }
+
+    Reflect.set(DEFAULT, key, value);
+  },
+
+  /** 获取默认值 */
+  getDefault<T>(key: string): T {
+    const g = this.getGlobal();
+    const PRE_DEFAULT = Reflect.get(g, DEFAULT_KEY);
+    const DEFAULT = PRE_DEFAULT || {};
+
+    if (!PRE_DEFAULT) {
+      Reflect.set(g, DEFAULT_KEY, DEFAULT);
+    }
+
+    return Reflect.get(DEFAULT, key) ?? null;
+  },
+
   /** 获取有效值 */
   getValidValue(inputValue: number, minValue: number, maxValue: number): number {
     if (inputValue < minValue) {

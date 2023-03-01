@@ -1,4 +1,4 @@
-export interface SetClipboardDataOptions {
+export interface ISetClipboardDataOptions {
     /**
      * 需要设置的内容
      */
@@ -18,7 +18,7 @@ export interface SetClipboardDataOptions {
 }
 declare const _default: {
     /** 文本复制: 暂支持h5端网页版 */
-    setClipboardData(options: SetClipboardDataOptions): void;
+    setClipboardData(options: ISetClipboardDataOptions): void;
     /** 根据baseUrl and queryString构造URL */
     buildUrl(url: string, query?: string | object): string;
     /** 如果未定义则转为null */

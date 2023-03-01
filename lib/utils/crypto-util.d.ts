@@ -1,5 +1,8 @@
 /// <reference types="node" />
 import crypto from 'crypto';
+/**
+ * http://nodejs.cn/api/crypto.html
+ */
 declare const _default: {
     /** 获取md5摘要 */
     md5(value: string, encoding?: crypto.BinaryToTextEncoding): string;
@@ -28,7 +31,4 @@ declare const _default: {
      */
     aesDecrypt(data: string, key: string, iv: string, algorithm?: string): string;
 };
-/**
- * http://nodejs.cn/api/crypto.html
- */
 export default _default;

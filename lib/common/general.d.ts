@@ -1,7 +1,7 @@
 /// <reference types="node" />
 import { IGeneralResult, IGeneralOptions, IGeneralError, IGeneralOptionsWithT } from '../interfaces/common/general';
 import { Stream } from 'stream';
-declare type RANDOM_CHARS_GROUP_KEY = 'full' | 'downcase' | 'lower' | 'simple' | 'number';
+type RANDOM_CHARS_GROUP_KEY = 'full' | 'downcase' | 'lower' | 'simple' | 'number';
 export interface IGenerateRandomStringParams {
     /** 默认32 */
     length?: number;
@@ -35,6 +35,12 @@ export declare class GeneralResult implements IGeneralResult {
     pushError(error: IGeneralError): void;
 }
 declare const _default: {
+    /** 获取全局 */
+    getGlobal(): Object;
+    /** 设置默认值 */
+    setDefault<T>(key: string, value: T): void;
+    /** 获取默认值 */
+    getDefault<T_1>(key: string): T_1;
     /** 获取有效值 */
     getValidValue(inputValue: number, minValue: number, maxValue: number): number;
     /** 获取md5 */
@@ -48,7 +54,7 @@ declare const _default: {
     /** 生成击穿缓存参数 */
     generateIjt(): string;
     /** 缓存抓取 */
-    cacheFetch<T extends IGeneralResult>(options?: IGeneralOptionsWithT<T>): Promise<T | null>;
+    cacheFetch<T_2 extends IGeneralResult>(options?: IGeneralOptionsWithT<T_2>): Promise<T_2 | null>;
     /** 版本比较 */
     compareVersion(v01: string, v02: string): 0 | 1 | -1;
 };

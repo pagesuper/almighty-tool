@@ -1,24 +1,24 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable no-unused-vars */
-import * as INetwork from '../interfaces/common/network';
 import qs from 'qs';
+import * as INetwork from '../interfaces/common/network';
 // http://axios-js.com/docs/
-import axios, { AxiosResponse, AxiosStatic } from 'axios';
+import axios, { AxiosResponse } from 'axios';
+import deepmerge from 'deepmerge';
+import _ from 'lodash';
+import { IInterceptOptions } from '../interfaces/common/network';
 import basicUtil from '../utils/basic-util';
-import General from './general';
+import general from './general';
 
-const deepmerge = require('deepmerge');
-const _ = require('lodash');
+type CATCHER = (error: any) => void;
 
-const DefaultSetting: {
-  axios: AxiosStatic;
-} = {
-  axios,
-};
-
+const merge = require('deepmerge');
 const DEFAULT_TIMEOUT = 60 * 1000;
 const DEFAULT_MAX_REDIRECTS = 5;
+const DEFAULT_HEADERS_KEY = 'kinlong-lib/common/network#DefaultHeaders';
+const DEFAULT_INTERCEPT_KEY = 'kinlong-lib/common/network#DefaultIntercept';
+const DEFAULT_CATCHES_KEY = 'kinlong-lib/common/network#DefaultCatchesKey';
 
 const doReject = function <T extends INetwork.IRequestResult>(
   options: INetwork.IRequestOptions<T>,
@@ -65,13 +65,23 @@ const doRequestWithCache = function <T extends INetwork.IRequestResult>(
   resolve: any,
   reject: any,
 ) {
+  let cached = false;
+  /** 默认为false */
+  const cachedCancel = options.cachedCancel === true;
+
   if (options.cacheable === true && options.cacher && options.cacheKey) {
     const cacheKey = getCacheKey(options.cacheKey);
     const cacheInfo = options.cacher.getStorageInfo(cacheKey);
 
     // 没有过期
     if (!cacheInfo.expired && cacheInfo.value !== null) {
-      doNormalize(cacheInfo.value, options);
+      cached = true;
+
+      if (cachedCancel && cached) {
+        doResolve(cacheInfo.value, options, resolve);
+      } else {
+        doNormalize(cacheInfo.value, options);
+      }
 
       if (typeof options.cached === 'function') {
         options.cached(cacheInfo.value as T);
@@ -79,40 +89,22 @@ const doRequestWithCache = function <T extends INetwork.IRequestResult>(
     }
   }
 
-  justDoRequest(newOptions, options, resolve, reject);
+  if (!cachedCancel || !cached) {
+    justDoRequest(newOptions, options, resolve, reject);
+  }
 };
 
 const doNormalize = async function <T extends INetwork.IRequestResult>(
   result: INetwork.IRequestResult,
   options: INetwork.IRequestOptions<T>,
 ) {
-  let normalized = false;
-
-  if (typeof options.superNormalize === 'function') {
-    normalized = true;
-    result.ndata = result.ndata || {};
-    options.superNormalize(result as T);
-  }
-
-  if (typeof options.asyncSuperNormalize === 'function') {
-    normalized = true;
-    result.ndata = result.ndata || {};
-    await options.asyncSuperNormalize(result as T);
-  }
-
   if (typeof options.normalize === 'function') {
-    normalized = true;
     result.ndata = result.ndata || {};
     options.normalize(result as T);
-  }
-
-  if (typeof options.asyncNormalize === 'function') {
-    normalized = true;
+  } else if (typeof options.asyncNormalize === 'function') {
     result.ndata = result.ndata || {};
     await options.asyncNormalize(result as T);
-  }
-
-  if (!normalized) {
+  } else {
     result.ndata = result.data;
   }
 };
@@ -122,7 +114,10 @@ const doResolve = async function <T extends INetwork.IRequestResult>(
   options: INetwork.IRequestOptions<T>,
   resolve: any,
 ) {
-  await doNormalize(result, options);
+  if (!network.getIntercept().normalize(result, options)) {
+    await doNormalize(result, options);
+  }
+
   resolve(result as T);
 
   if (options.cacheable === true && options.cacher && options.cacheKey) {
@@ -146,9 +141,19 @@ const justDoRequest = function <T extends INetwork.IRequestResult>(
   resolve: any,
   reject: any,
 ) {
-  (options.requester || DefaultSetting.axios)
+  const startAt = new Date().valueOf();
+
+  if (typeof options.beforeRequest === 'function') {
+    options.beforeRequest();
+  }
+
+  axios
     .request(newOptions)
     .then(async (res: AxiosResponse<T>) => {
+      if (typeof options.afterRequest === 'function') {
+        options.afterRequest();
+      }
+
       /**
        * 成功的请求处理
        */
@@ -161,23 +166,52 @@ const justDoRequest = function <T extends INetwork.IRequestResult>(
         statusCode: res.status,
         header: res.headers,
         data: res.data,
-        cookies: Reflect.get(res, 'cookies'),
+        // cookies: res.cookies,
       };
 
       await doResolve(result, options, resolve);
+
+      if (options.printLog !== false) {
+        const messages = [];
+        const duration = new Date().valueOf() - startAt;
+
+        messages.push(`==> network ok, [${duration}ms] (${options.method}) ${options.url}`);
+        messages.push(`\n - options is: `, JSON.stringify(options));
+        messages.push(`\n - result is: `, JSON.stringify(result));
+
+        console.log(...messages);
+      }
     })
     .catch((error) => {
-      // 默认为true
+      _.entries((general.getDefault(DEFAULT_CATCHES_KEY) || {}) as Record<string, CATCHER>).forEach(
+        ([_key, cacher]) => {
+          try {
+            cacher(error);
+            // eslint-disable-next-line no-empty
+          } catch (_err) {}
+        },
+      );
+
+      if (typeof options.afterRequest === 'function') {
+        options.afterRequest();
+      }
+
       if (options.printError !== false) {
-        console.error('network.request fail, options is: ', options, 'error is: ', error);
+        const messages = [];
+        const duration = new Date().valueOf() - startAt;
+
+        messages.push(`==> network fail, [${duration}ms] ${options.method} ${options.url}`);
+        messages.push(`\n - options is: `, options);
 
         if (error.response) {
-          console.error('network.request fail, error response is: ', error.response);
+          messages.push('\n - response is: ', error.response);
         }
 
         if (error.stack) {
-          console.error('network.request fail, error stack is: ', error.stack);
+          messages.push('\n - stack is: ', error.stack);
         }
+
+        console.error(...messages);
       }
 
       /**
@@ -226,9 +260,50 @@ const justDoRequest = function <T extends INetwork.IRequestResult>(
 };
 
 const network = {
-  /** 设置默认的请求器 */
-  setDefaultRequester(requester: AxiosStatic): void {
-    DefaultSetting.axios = requester;
+  /** 设置默认的请求头 */
+  setDefaultHeaders: (headers: Record<string, string>): void => {
+    general.setDefault(
+      DEFAULT_HEADERS_KEY,
+      _.merge(general.getDefault(DEFAULT_HEADERS_KEY) ?? {}, headers),
+    );
+  },
+
+  /** 移除默认的请求头 */
+  removeDefaultHeaders: (headerKeys: string[]): void => {
+    general.setDefault(
+      DEFAULT_HEADERS_KEY,
+      _.omit(general.getDefault(DEFAULT_HEADERS_KEY) ?? {}, headerKeys),
+    );
+  },
+
+  addDefaultCatch: (options: Record<string, CATCHER>): void => {
+    general.setDefault<CATCHER>(
+      DEFAULT_CATCHES_KEY,
+      _.merge(general.getDefault<CATCHER>(DEFAULT_CATCHES_KEY) ?? {}, options),
+    );
+  },
+
+  removeDefaultCatch: (keys: string[]): void => {
+    general.setDefault(
+      DEFAULT_CATCHES_KEY,
+      _.omit(general.getDefault(DEFAULT_CATCHES_KEY) ?? {}, keys),
+    );
+  },
+
+  /** 设置拦截功能 */
+  setIntercept: (interceptOptions: IInterceptOptions): void => {
+    general.setDefault(DEFAULT_INTERCEPT_KEY, interceptOptions);
+  },
+
+  /** 获取拦截功能 */
+  getIntercept: (): IInterceptOptions => {
+    return (
+      general.getDefault(DEFAULT_INTERCEPT_KEY) || {
+        normalize: (_result: any, _options: any) => {
+          return false;
+        },
+      }
+    );
   },
 
   /** 格式化请求参数 */
@@ -240,16 +315,25 @@ const network = {
       DEFAULT_MAX_REDIRECTS,
     );
 
-    const locale = basicUtil.ifUndefinedThen(Reflect.get(options, 'locale'), 'zh-CN');
+    const defaultLocale =
+      typeof navigator !== 'undefined' && navigator.language ? navigator.language : undefined;
+    const locale = basicUtil.ifUndefinedThen(Reflect.get(options, 'locale'), defaultLocale);
     const method = basicUtil.ifUndefinedThen(Reflect.get(options, 'method'), 'GET');
     const timeout = basicUtil.ifUndefinedThen(Reflect.get(options, 'timeout'), DEFAULT_TIMEOUT);
     const dataType = basicUtil.ifUndefinedThen(Reflect.get(options, 'dataType'), null);
-    const headers = basicUtil.ifUndefinedThen(Reflect.get(options, 'header'), {});
+    const headers: Record<string, string> = basicUtil.ifUndefinedThen(
+      Reflect.get(options, 'header'),
+      {},
+    );
     const data = basicUtil.ifUndefinedThen(Reflect.get(options, 'data'), null);
     let newData;
 
+    if (options && options.options) {
+      Reflect.set(options, 'options', _.cloneDeep(options.options));
+    }
+
     const params = _.omit(
-      deepmerge(options.fixedParams || {}, options.params || {}),
+      merge(options.fixedParams || {}, options.params || {}),
       options.omitParamKeys || [],
     );
 
@@ -266,7 +350,7 @@ const network = {
     }
 
     if (options.ijt !== false) {
-      Reflect.set(params, '_ijt', General.generateIjt());
+      Reflect.set(params, '_ijt', general.generateIjt());
     }
 
     if (typeof options.before === 'function') {
@@ -308,7 +392,7 @@ const network = {
       locale,
       url,
       method,
-      headers,
+      headers: deepmerge(general.getDefault(DEFAULT_HEADERS_KEY) ?? {}, headers),
       data: newData,
       timeout,
       maxRedirects,

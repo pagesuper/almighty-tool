@@ -1,9 +1,9 @@
 import { GeneralResult } from '../../common/general';
-export declare type CSS_STYLE_TYPE = string | number | boolean | null;
+export type CSS_STYLE_TYPE = string | number | boolean | null;
 export interface ICssStyle {
     [propName: string]: CSS_STYLE_TYPE;
 }
-export declare type LOADMORE_STATUS = 'loading' | 'more' | 'noMore' | 'empty' | 'fail';
+export type LOADMORE_STATUS = 'loading' | 'more' | 'noMore' | 'empty' | 'fail';
 export interface ILoadPaginateOptions {
     /**
      * 当前页数
@@ -32,7 +32,7 @@ export interface ILoadSliceOptions {
      */
     size: number;
 }
-export declare type IPageParamsValueType = string | string[] | null | IPageParams | IPageParams[] | undefined;
+export type IPageParamsValueType = string | string[] | null | IPageParams | IPageParams[] | undefined;
 export interface IPageParams extends Record<string, IPageParamsValueType> {
     [propName: string]: IPageParamsValueType;
 }
@@ -99,16 +99,24 @@ export interface IGeneralOptions {
     cacheKey?: string;
     /** 缓存的选项 */
     cacheOptions?: IGeneralSetStorageOptions;
+    /** 缓存命中则放弃真实请求 */
+    cachedCancel?: boolean;
     /** 请求的命名: 会回传给对应的result */
     name?: string;
     /** 是否打印错误异常 */
     printError?: boolean;
+    /** 是否打印日志 */
+    printLog?: boolean;
     /** 请求的标识: 会回传给对应的result */
     mark?: string;
     /** 用户传来的请求 */
     options?: IGeneralOptions;
     /** 校验方法 */
     validate?(options: IGeneralOptions): GeneralResult;
+    /** 发送请求前 */
+    beforeRequest?(): void;
+    /** 发送请求后 */
+    afterRequest?(): void;
     /** 前置过滤 */
     beforeFilter?(options?: IGeneralOptions): boolean;
     /** 语言 */

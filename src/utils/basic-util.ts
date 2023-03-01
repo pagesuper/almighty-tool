@@ -4,7 +4,7 @@ import { isPlainObject } from 'is-what';
 import _ from 'lodash';
 import qs from 'qs';
 
-export interface SetClipboardDataOptions {
+export interface ISetClipboardDataOptions {
   /**
    * 需要设置的内容
    */
@@ -25,7 +25,7 @@ export interface SetClipboardDataOptions {
 
 export default {
   /** 文本复制: 暂支持h5端网页版 */
-  setClipboardData(options: SetClipboardDataOptions): void {
+  setClipboardData(options: ISetClipboardDataOptions): void {
     const data = (options || {}).data || '';
     let isOk = false;
 
