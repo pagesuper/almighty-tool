@@ -9,7 +9,7 @@ import general from '../common/general';
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type I18nValues = any[] | { [key: string]: any };
 
-const DEFAULT_I18N_KEY = 'kinlong-lib/formats/date-format#i18n';
+const DEFAULT_I18N_KEY = 'tuitui-lib/formats/date-format#i18n';
 
 const i18n = {
   t: (key: string, _values?: I18nValues): string => {

@@ -4,7 +4,7 @@
 import qs from 'qs';
 import * as INetwork from '../interfaces/common/network';
 // http://axios-js.com/docs/
-import axios, { AxiosResponse } from 'axios';
+import axios, { AxiosResponse, AxiosStatic } from 'axios';
 import deepmerge from 'deepmerge';
 import _ from 'lodash';
 import { IInterceptOptions } from '../interfaces/common/network';
@@ -16,9 +16,10 @@ type CATCHER = (error: any) => void;
 const merge = require('deepmerge');
 const DEFAULT_TIMEOUT = 60 * 1000;
 const DEFAULT_MAX_REDIRECTS = 5;
-const DEFAULT_HEADERS_KEY = 'kinlong-lib/common/network#DefaultHeaders';
-const DEFAULT_INTERCEPT_KEY = 'kinlong-lib/common/network#DefaultIntercept';
-const DEFAULT_CATCHES_KEY = 'kinlong-lib/common/network#DefaultCatchesKey';
+const DEFAULT_REQUESTER_KEY = 'tuitui-lib/common/network#DefaultRequester';
+const DEFAULT_HEADERS_KEY = 'tuitui-lib/common/network#DefaultHeaders';
+const DEFAULT_INTERCEPT_KEY = 'tuitui-lib/common/network#DefaultIntercept';
+const DEFAULT_CATCHES_KEY = 'tuitui-lib/common/network#DefaultCatchesKey';
 
 const doReject = function <T extends INetwork.IRequestResult>(
   options: INetwork.IRequestOptions<T>,
@@ -147,7 +148,7 @@ const justDoRequest = function <T extends INetwork.IRequestResult>(
     options.beforeRequest();
   }
 
-  axios
+  ((general.getDefault(DEFAULT_REQUESTER_KEY) || axios) as AxiosStatic)
     .request(newOptions)
     .then(async (res: AxiosResponse<T>) => {
       if (typeof options.afterRequest === 'function') {
@@ -176,8 +177,10 @@ const justDoRequest = function <T extends INetwork.IRequestResult>(
         const duration = new Date().valueOf() - startAt;
 
         messages.push(`==> network ok, [${duration}ms] (${options.method}) ${options.url}`);
-        messages.push(`\n - options is: `, JSON.stringify(options));
-        messages.push(`\n - result is: `, JSON.stringify(result));
+        // messages.push(`\n - options is: `, JSON.stringify(options));
+        // messages.push(`\n - result is: `, JSON.stringify(result));
+        messages.push(`\n - options is: `, options);
+        messages.push(`\n - result is: `, result);
 
         console.log(...messages);
       }
@@ -260,6 +263,11 @@ const justDoRequest = function <T extends INetwork.IRequestResult>(
 };
 
 const network = {
+  /** 设置默认的请求器 */
+  setDefaultRequester(requester: AxiosStatic): void {
+    general.setDefault(DEFAULT_REQUESTER_KEY, requester);
+  },
+
   /** 设置默认的请求头 */
   setDefaultHeaders: (headers: Record<string, string>): void => {
     general.setDefault(
