@@ -1,6 +1,6 @@
 {
   "name": "tuitui-lib",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "description": "Tuitui Lib",
   "author": "happy",
   "private": false,
@@ -48,7 +48,8 @@
     "prettier": "^2.8.4",
     "qs": "^6.11.0",
     "tslib": "^2.4.0",
-    "typescript": "^4.9.5"
+    "typescript": "^4.9.5",
+    "uuid": "^9.0.0"
   },
   "devDependencies": {
     "@babel/plugin-syntax-typescript": "^7.20.0",

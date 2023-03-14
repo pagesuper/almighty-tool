@@ -1,10 +1,24 @@
 import crypto from 'crypto';
 import general from '../common/general';
+import uuid from 'uuid';
+
+export type UUID_VERSION = 'v1' | 'v4';
 
 /**
  * http://nodejs.cn/api/crypto.html
  */
 export default {
+  generateUUID(type: UUID_VERSION = 'v4') {
+    switch (type) {
+      case 'v1':
+        return uuid.v1();
+
+      case 'v4':
+      default:
+        return uuid.v4();
+    }
+  },
+
   /** 获取md5摘要 */
   md5(value: string, encoding: crypto.BinaryToTextEncoding = 'hex'): string {
     return crypto.createHash('md5').update(value).digest(encoding);
