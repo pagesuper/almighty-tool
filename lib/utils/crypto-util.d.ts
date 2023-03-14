@@ -1,11 +1,9 @@
 /// <reference types="node" />
 import crypto from 'crypto';
-export type UUID_VERSION = 'v1' | 'v4';
 /**
  * http://nodejs.cn/api/crypto.html
  */
 declare const _default: {
-    generateUUID(type?: UUID_VERSION): string;
     /** 获取md5摘要 */
     md5(value: string, encoding?: crypto.BinaryToTextEncoding): string;
     /** 获取sha256摘要 */
