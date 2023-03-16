@@ -33,5 +33,9 @@ module.exports = {
     'prettier',
   ],
 
-  rules: require('./rules/recommended'),
+  rules: {
+    ...require('./rules/recommended'),
+    'vue/max-attributes-per-line': 'off',
+    'vue/singleline-html-element-content-newline': 'off',
+  },
 };
