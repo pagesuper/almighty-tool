@@ -134,6 +134,7 @@ export default {
           len = str.split('.')[1].length;
         }
       }
+      // eslint-disable-next-line no-useless-catch
     } catch (e) {
       throw e;
     } finally {
@@ -141,6 +142,7 @@ export default {
         len = 0;
       }
 
+      // eslint-disable-next-line no-unsafe-finally
       return len;
     }
   },
