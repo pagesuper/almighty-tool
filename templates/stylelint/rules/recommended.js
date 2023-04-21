@@ -9,4 +9,5 @@ module.exports = {
   'color-function-notation': 'legacy',
   'selector-pseudo-element-no-unknown': null,
   'alpha-value-notation': null,
+  'scss/dollar-variable-pattern': null,
 };
