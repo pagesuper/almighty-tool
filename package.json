@@ -11,7 +11,7 @@
   "scripts": {
     "tsc": "./node_modules/.bin/tsc -p tsconfig.json",
     "check": "npm run test && npm run eslint",
-    "eslint": "eslint --ext .js,.ts,.vue --ignore-path .gitignore ./src",
+    "eslint": "eslint --ext .js,.ts,.vue ./src",
     "eslint:fix": "yarn run eslint --fix",
     "stylelint": "stylelint src/**/*.{css,scss,sass}",
     "lint": "yarn run eslint",
