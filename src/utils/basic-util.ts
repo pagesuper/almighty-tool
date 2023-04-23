@@ -4,7 +4,11 @@ import { isPlainObject } from 'is-what';
 import _ from 'lodash';
 import qs from 'qs';
 
-export interface ISetClipboardDataOptions {
+
+
+
+
+      export interface ISetClipboardDataOptions {
   /**
    * 需要设置的内容
    */
