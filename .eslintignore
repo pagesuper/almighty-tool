@@ -1,5 +1,6 @@
 /tests/fixtures
 /build/
+/lib/
 /config/
 /dist/
 /*.js
