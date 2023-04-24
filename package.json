@@ -3,7 +3,7 @@
   "version": "0.0.15",
   "description": "Tuitui Lib",
   "author": "happy",
-  "private": false,
+  "private": true,
   "license": "MIT",
   "_moduleAliases": {
     "@root": "."
@@ -16,7 +16,8 @@
     "stylelint": "stylelint src/**/*.{css,scss,sass}",
     "lint": "yarn run eslint",
     "lint:fix": "yarn run eslint --fix",
-    "test": "jest --clearCache && jest --runInBand --detectOpenHandles"
+    "test": "jest --clearCache && jest --runInBand --detectOpenHandles",
+    "prepare": "husky install"
   },
   "typings": "types/index.d.ts",
   "dependencies": {
@@ -31,7 +32,6 @@
     "dayjs": "^1.11.7",
     "deepmerge": "^4.3.0",
     "ets": "^1.0.3",
-    "husky": "^8.0.3",
     "i18next": "^22.4.10",
     "is-what": "^4.1.8",
     "lodash": "^4.17.21",
@@ -76,6 +76,7 @@
     "eslint-plugin-standard": "5.0.0",
     "eslint-plugin-vue": "9.1.1",
     "eslint-plugin-vue-scoped-css": "2.2.0",
+    "husky": "8.0.3",
     "jest": "^29.4.3",
     "lint-staged": "^13.1.2",
     "ts-jest": "^29.0.5",
