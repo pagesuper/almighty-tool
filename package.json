@@ -3,7 +3,7 @@
   "version": "0.0.16",
   "description": "Tuitui Lib",
   "author": "happy",
-  "private": true,
+  "private": false,
   "license": "MIT",
   "_moduleAliases": {
     "@root": "."
