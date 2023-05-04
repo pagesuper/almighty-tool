@@ -22,10 +22,10 @@
   },
   "lint-staged": {
     "*.{js,ts,vue}": [
-      "yarn run eslint:fix"
+      "eslint --fix"
     ],
     "*.{css,scss}": [
-      "yarn run stylelint:fix"
+      "stylelint --fix"
     ]
   },
   "typings": "types/index.d.ts",
