@@ -186,14 +186,12 @@ const justDoRequest = function <T extends INetwork.IRequestResult>(
       }
     })
     .catch((error) => {
-      _.entries((general.getDefault(DEFAULT_CATCHES_KEY) || {}) as Record<string, CATCHER>).forEach(
-        ([_key, cacher]) => {
-          try {
-            cacher(error);
-            // eslint-disable-next-line no-empty
-          } catch (_err) {}
-        },
-      );
+      _.entries((general.getDefault(DEFAULT_CATCHES_KEY) || {}) as Record<string, CATCHER>).forEach(([_key, cacher]) => {
+        try {
+          cacher(error);
+          // eslint-disable-next-line no-empty
+        } catch (_err) {}
+      });
 
       if (typeof options.afterRequest === 'function') {
         options.afterRequest();
@@ -270,32 +268,20 @@ const network = {
 
   /** 设置默认的请求头 */
   setDefaultHeaders: (headers: Record<string, string>): void => {
-    general.setDefault(
-      DEFAULT_HEADERS_KEY,
-      _.merge(general.getDefault(DEFAULT_HEADERS_KEY) ?? {}, headers),
-    );
+    general.setDefault(DEFAULT_HEADERS_KEY, _.merge(general.getDefault(DEFAULT_HEADERS_KEY) ?? {}, headers));
   },
 
   /** 移除默认的请求头 */
   removeDefaultHeaders: (headerKeys: string[]): void => {
-    general.setDefault(
-      DEFAULT_HEADERS_KEY,
-      _.omit(general.getDefault(DEFAULT_HEADERS_KEY) ?? {}, headerKeys),
-    );
+    general.setDefault(DEFAULT_HEADERS_KEY, _.omit(general.getDefault(DEFAULT_HEADERS_KEY) ?? {}, headerKeys));
   },
 
   addDefaultCatch: (options: Record<string, CATCHER>): void => {
-    general.setDefault<CATCHER>(
-      DEFAULT_CATCHES_KEY,
-      _.merge(general.getDefault<CATCHER>(DEFAULT_CATCHES_KEY) ?? {}, options),
-    );
+    general.setDefault<CATCHER>(DEFAULT_CATCHES_KEY, _.merge(general.getDefault<CATCHER>(DEFAULT_CATCHES_KEY) ?? {}, options));
   },
 
   removeDefaultCatch: (keys: string[]): void => {
-    general.setDefault(
-      DEFAULT_CATCHES_KEY,
-      _.omit(general.getDefault(DEFAULT_CATCHES_KEY) ?? {}, keys),
-    );
+    general.setDefault(DEFAULT_CATCHES_KEY, _.omit(general.getDefault(DEFAULT_CATCHES_KEY) ?? {}, keys));
   },
 
   /** 设置拦截功能 */
@@ -318,21 +304,14 @@ const network = {
   normalizeRequestOptions<T extends INetwork.IRequestResult>(
     options: INetwork.IRequestOptions<T>,
   ): INetwork.IAxiosRequestOptions {
-    const maxRedirects = basicUtil.ifUndefinedThen(
-      Reflect.get(options, 'maxRedirects'),
-      DEFAULT_MAX_REDIRECTS,
-    );
+    const maxRedirects = basicUtil.ifUndefinedThen(Reflect.get(options, 'maxRedirects'), DEFAULT_MAX_REDIRECTS);
 
-    const defaultLocale =
-      typeof navigator !== 'undefined' && navigator.language ? navigator.language : undefined;
+    const defaultLocale = typeof navigator !== 'undefined' && navigator.language ? navigator.language : undefined;
     const locale = basicUtil.ifUndefinedThen(Reflect.get(options, 'locale'), defaultLocale);
     const method = basicUtil.ifUndefinedThen(Reflect.get(options, 'method'), 'GET');
     const timeout = basicUtil.ifUndefinedThen(Reflect.get(options, 'timeout'), DEFAULT_TIMEOUT);
     const dataType = basicUtil.ifUndefinedThen(Reflect.get(options, 'dataType'), null);
-    const headers: Record<string, string> = basicUtil.ifUndefinedThen(
-      Reflect.get(options, 'header'),
-      {},
-    );
+    const headers: Record<string, string> = basicUtil.ifUndefinedThen(Reflect.get(options, 'header'), {});
     const data = basicUtil.ifUndefinedThen(Reflect.get(options, 'data'), null);
     let newData;
 
@@ -340,10 +319,7 @@ const network = {
       Reflect.set(options, 'options', _.cloneDeep(options.options));
     }
 
-    const params = _.omit(
-      merge(options.fixedParams || {}, options.params || {}),
-      options.omitParamKeys || [],
-    );
+    const params = _.omit(merge(options.fixedParams || {}, options.params || {}), options.omitParamKeys || []);
 
     switch (dataType) {
       case 'form-urlencoded':
@@ -431,9 +407,7 @@ const network = {
   /**
    * 发起GraphQL请求
    */
-  requestGraphQL<T extends INetwork.IRequestResult>(
-    options: INetwork.IRequestGraphQLOptions<T>,
-  ): Promise<T> {
+  requestGraphQL<T extends INetwork.IRequestResult>(options: INetwork.IRequestGraphQLOptions<T>): Promise<T> {
     const data = {
       operationName: basicUtil.ifUndefinedThen(options.operationName, null),
       query: options.query,

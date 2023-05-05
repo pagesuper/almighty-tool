@@ -1,11 +1,6 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 import _ from 'lodash';
-import {
-  IGeneralResult,
-  IGeneralOptions,
-  IGeneralError,
-  IGeneralOptionsWithT,
-} from '../interfaces/common/general';
+import { IGeneralResult, IGeneralOptions, IGeneralError, IGeneralOptionsWithT } from '../interfaces/common/general';
 import { Stream } from 'stream';
 
 import cryptoUtil from '../utils/crypto-util';
@@ -185,9 +180,7 @@ export default {
   },
 
   /** 缓存抓取 */
-  async cacheFetch<T extends IGeneralResult>(
-    options: IGeneralOptionsWithT<T> = {},
-  ): Promise<T | null> {
+  async cacheFetch<T extends IGeneralResult>(options: IGeneralOptionsWithT<T> = {}): Promise<T | null> {
     const cacheKey = `tuitui-lib.general.cache.${options.cacheKey}`;
 
     if (options.cacheable && options.cacher) {

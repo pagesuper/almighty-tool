@@ -30,11 +30,7 @@
     "stylelint-scss": "4.2.0",
  */
 module.exports = {
-  extends: [
-    'stylelint-config-standard',
-    'stylelint-config-standard-scss',
-    'stylelint-config-rational-order',
-  ],
+  extends: ['stylelint-config-standard', 'stylelint-config-standard-scss', 'stylelint-config-rational-order'],
   plugins: ['stylelint-scss', 'stylelint-order'],
   overrides: [
     {

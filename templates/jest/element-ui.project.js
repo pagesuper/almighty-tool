@@ -18,8 +18,7 @@ module.exports = {
   transform: {
     // process *.vue files with vue-jest
     '^.+\\.vue$': require.resolve('vue-jest'),
-    '.+\\.(css|styl|less|sass|scss|svg|png|jpg|ttf|woff|woff2)$':
-      require.resolve('jest-transform-stub'),
+    '.+\\.(css|styl|less|sass|scss|svg|png|jpg|ttf|woff|woff2)$': require.resolve('jest-transform-stub'),
     '^.+\\.jsx?$': require.resolve('babel-jest'),
     '^.+\\.tsx?$': require.resolve('ts-jest'),
   },
@@ -41,8 +40,5 @@ module.exports = {
   // https://github.com/facebook/jest/issues/6766
   testURL: 'http://localhost/',
 
-  watchPlugins: [
-    require.resolve('jest-watch-typeahead/filename'),
-    require.resolve('jest-watch-typeahead/testname'),
-  ],
+  watchPlugins: [require.resolve('jest-watch-typeahead/filename'), require.resolve('jest-watch-typeahead/testname')],
 };

@@ -11,8 +11,7 @@ export const URL_REG_EXP =
 export const EMAIL_REG_EXP = /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
 
 /** 国内身份证15位正则 */
-export const CN_ID_CARD_REG_EXP15 =
-  /^[1-9]\d{5}\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{2}[0-9Xx]$/;
+export const CN_ID_CARD_REG_EXP15 = /^[1-9]\d{5}\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{2}[0-9Xx]$/;
 
 /** 国内身份证18位正则 */
 export const CN_ID_CARD_REG_EXP18 =
