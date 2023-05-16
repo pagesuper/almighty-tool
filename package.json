@@ -1,6 +1,6 @@
 {
   "name": "tuitui-lib",
-  "version": "0.0.17",
+  "version": "0.0.19",
   "description": "Tuitui Lib",
   "author": "happy",
   "private": false,
@@ -22,10 +22,10 @@
   },
   "lint-staged": {
     "*.{js,ts,vue}": [
-      "yarn run eslint:fix"
+      "eslint --fix"
     ],
     "*.{css,scss}": [
-      "yarn run stylelint:fix"
+      "stylelint --fix"
     ]
   },
   "typings": "types/index.d.ts",

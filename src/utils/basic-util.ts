@@ -120,10 +120,7 @@ export default {
   },
 
   /** 异步forEach */
-  async forEachAsync(
-    arr: any[],
-    callback: (obj: any, index: number, objectArr: any[]) => Promise<void>,
-  ) {
+  async forEachAsync(arr: any[], callback: (obj: any, index: number, objectArr: any[]) => Promise<void>) {
     const length = arr.length;
     const objectArr = Object(arr);
     let k = 0;

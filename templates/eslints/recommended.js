@@ -18,12 +18,7 @@ module.exports = {
     jest: true,
   },
 
-  extends: [
-    'eslint:recommended',
-    'standard',
-    'plugin:@typescript-eslint/recommended',
-    'plugin:prettier/recommended',
-  ],
+  extends: ['eslint:recommended', 'standard', 'plugin:@typescript-eslint/recommended', 'plugin:prettier/recommended'],
 
   plugins: ['import', 'jest', 'node', 'promise', 'prettier', 'standard', 'html'],
 

@@ -42,13 +42,7 @@ export interface ILoadSliceOptions {
   size: number;
 }
 
-export type IPageParamsValueType =
-  | string
-  | string[]
-  | null
-  | IPageParams
-  | IPageParams[]
-  | undefined;
+export type IPageParamsValueType = string | string[] | null | IPageParams | IPageParams[] | undefined;
 
 export interface IPageParams extends Record<string, IPageParamsValueType> {
   [propName: string]: IPageParamsValueType;

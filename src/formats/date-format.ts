@@ -62,38 +62,19 @@ const dateFormat = {
         case 'shortStep':
           if (now.startOf('day').diff(day) <= 0 && now.add(1, 'day').startOf('day').diff(day) > 0) {
             /** 今天 */
-            return day
-              .locale(locale)
-              .format(_i18n.t(`TuituiLib.DateFormat.${options.formatter}.today`).toString());
-          } else if (
-            now.add(1, 'day').startOf('day').diff(day) <= 0 &&
-            now.add(2, 'day').startOf('day').diff(day) > 0
-          ) {
+            return day.locale(locale).format(_i18n.t(`TuituiLib.DateFormat.${options.formatter}.today`).toString());
+          } else if (now.add(1, 'day').startOf('day').diff(day) <= 0 && now.add(2, 'day').startOf('day').diff(day) > 0) {
             /** 明天 */
-            return day
-              .locale(locale)
-              .format(_i18n.t(`TuituiLib.DateFormat.${options.formatter}.tomorrow`).toString());
-          } else if (
-            now.subtract(1, 'day').startOf('day').diff(day) <= 0 &&
-            now.startOf('day').diff(day) > 0
-          ) {
+            return day.locale(locale).format(_i18n.t(`TuituiLib.DateFormat.${options.formatter}.tomorrow`).toString());
+          } else if (now.subtract(1, 'day').startOf('day').diff(day) <= 0 && now.startOf('day').diff(day) > 0) {
             /** 昨天 */
-            return day
-              .locale(locale)
-              .format(_i18n.t(`TuituiLib.DateFormat.${options.formatter}.yesterday`).toString());
-          } else if (
-            now.startOf('year').diff(day) <= 0 &&
-            now.add(1, 'year').startOf('year').diff(day) > 0
-          ) {
+            return day.locale(locale).format(_i18n.t(`TuituiLib.DateFormat.${options.formatter}.yesterday`).toString());
+          } else if (now.startOf('year').diff(day) <= 0 && now.add(1, 'year').startOf('year').diff(day) > 0) {
             /** 今年 */
-            return day
-              .locale(locale)
-              .format(_i18n.t(`TuituiLib.DateFormat.${options.formatter}.thisYear`).toString());
+            return day.locale(locale).format(_i18n.t(`TuituiLib.DateFormat.${options.formatter}.thisYear`).toString());
           }
 
-          return day
-            .locale(locale)
-            .format(_i18n.t(`TuituiLib.DateFormat.${options.formatter}.longAgo`).toString());
+          return day.locale(locale).format(_i18n.t(`TuituiLib.DateFormat.${options.formatter}.longAgo`).toString());
 
         case 'fromNow':
           dayjs.extend(relativeTime);
