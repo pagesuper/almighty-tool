@@ -1,5 +1,5 @@
 declare const _default: {
-    KinlongLib: {
+    TuituiLib: {
         DateFormat: {
             locale: string;
             am: string;

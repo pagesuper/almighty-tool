@@ -1,5 +1,5 @@
 export default {
-  KinlongLib: {
+  TuituiLib: {
     DateFormat: {
       locale: 'en',
       am: 'AM',

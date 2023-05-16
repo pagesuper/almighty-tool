@@ -52,7 +52,7 @@ const dateFormat = {
   format: (date: Date | string | null, options: IDateFormatOptions = {}): string => {
     if (date) {
       const _i18n = general.getDefault<IDateFormatI18n | null>(DEFAULT_I18N_KEY) || i18n;
-      const locale = _i18n.t('KinlongLib.DateFormat.locale').toString();
+      const locale = _i18n.t('TuituiLib.DateFormat.locale').toString();
       const template = options.template ?? dateFormat.getFormatTemplate(options.formatter);
       const day = dayjs(date);
       const now = dayjs();
@@ -64,7 +64,7 @@ const dateFormat = {
             /** 今天 */
             return day
               .locale(locale)
-              .format(_i18n.t(`KinlongLib.DateFormat.${options.formatter}.today`).toString());
+              .format(_i18n.t(`TuituiLib.DateFormat.${options.formatter}.today`).toString());
           } else if (
             now.add(1, 'day').startOf('day').diff(day) <= 0 &&
             now.add(2, 'day').startOf('day').diff(day) > 0
@@ -72,7 +72,7 @@ const dateFormat = {
             /** 明天 */
             return day
               .locale(locale)
-              .format(_i18n.t(`KinlongLib.DateFormat.${options.formatter}.tomorrow`).toString());
+              .format(_i18n.t(`TuituiLib.DateFormat.${options.formatter}.tomorrow`).toString());
           } else if (
             now.subtract(1, 'day').startOf('day').diff(day) <= 0 &&
             now.startOf('day').diff(day) > 0
@@ -80,7 +80,7 @@ const dateFormat = {
             /** 昨天 */
             return day
               .locale(locale)
-              .format(_i18n.t(`KinlongLib.DateFormat.${options.formatter}.yesterday`).toString());
+              .format(_i18n.t(`TuituiLib.DateFormat.${options.formatter}.yesterday`).toString());
           } else if (
             now.startOf('year').diff(day) <= 0 &&
             now.add(1, 'year').startOf('year').diff(day) > 0
@@ -88,12 +88,12 @@ const dateFormat = {
             /** 今年 */
             return day
               .locale(locale)
-              .format(_i18n.t(`KinlongLib.DateFormat.${options.formatter}.thisYear`).toString());
+              .format(_i18n.t(`TuituiLib.DateFormat.${options.formatter}.thisYear`).toString());
           }
 
           return day
             .locale(locale)
-            .format(_i18n.t(`KinlongLib.DateFormat.${options.formatter}.longAgo`).toString());
+            .format(_i18n.t(`TuituiLib.DateFormat.${options.formatter}.longAgo`).toString());
 
         case 'fromNow':
           dayjs.extend(relativeTime);
@@ -114,7 +114,7 @@ const dateFormat = {
   /** 获取格式化模板 */
   getFormatTemplate(formatter: DATE_FORMAT_FORMATTER = 'default'): string {
     const _i18n = general.getDefault<IDateFormatI18n | null>(DEFAULT_I18N_KEY) || i18n;
-    return _i18n.t(`KinlongLib.DateFormat.formats.${formatter}`);
+    return _i18n.t(`TuituiLib.DateFormat.formats.${formatter}`);
   },
 
   /** 设置默认的i18n对象 */
