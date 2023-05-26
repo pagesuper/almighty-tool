@@ -2,15 +2,13 @@
 import { GeneralResult } from './general';
 import Schema, { Rules, ValidateError, ValidateOption, Values } from 'async-validator';
 
-namespace IValidate {
-  export interface Options {
-    /** 字段的前缀 */
-    prefix?: string;
-    /** 前置的结果 */
-    previousResult?: GeneralResult;
-    /** 校验的options */
-    options?: ValidateOption;
-  }
+export interface IValidateOptions {
+  /** 字段的前缀 */
+  prefix?: string;
+  /** 前置的结果 */
+  previousResult?: GeneralResult;
+  /** 校验的options */
+  options?: ValidateOption;
 }
 
 export default {
@@ -20,7 +18,7 @@ export default {
    * @param source 校验的源
    * @param options 校验选项
    */
-  validate(rules: Rules, source: Values, options: IValidate.Options = {}): GeneralResult {
+  validate(rules: Rules, source: Values, options: IValidateOptions = {}): GeneralResult {
     const generalResult: GeneralResult = options.previousResult || new GeneralResult();
     const schema = new Schema(rules);
 
