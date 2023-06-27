@@ -10,4 +10,13 @@ module.exports = {
   'selector-pseudo-element-no-unknown': null,
   'alpha-value-notation': null,
   'scss/dollar-variable-pattern': null,
+  'no-invalid-position-at-import-rule': null,
+  'selector-pseudo-class-no-unknown': null,
+  'scss/no-global-function-names': null,
+  'scss/operator-no-unspaced': null,
+  'property-no-unknown': null,
+  'selector-pseudo-element-colon-notation': null,
+  'at-rule-no-unknown': null,
+  'property-case': null,
+  'max-line-length': null,
 };
