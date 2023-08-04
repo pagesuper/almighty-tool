@@ -10,7 +10,7 @@ export interface IGenerateRandomStringParams {
     /** 分组 */
     group?: RANDOM_CHARS_GROUP_KEY;
     /** time类型 */
-    timeType?: 'number' | 'char' | 'none';
+    timeType?: 'date' | 'number' | 'char' | 'none';
 }
 export declare class GeneralError implements IGeneralError {
     constructor(error?: IGeneralError);

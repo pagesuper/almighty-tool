@@ -30,7 +30,7 @@ export interface IGenerateRandomStringParams {
   /** 分组 */
   group?: RANDOM_CHARS_GROUP_KEY;
   /** time类型 */
-  timeType?: 'number' | 'char' | 'none';
+  timeType?: 'date' | 'number' | 'char' | 'none';
 }
 
 export class GeneralError implements IGeneralError {
@@ -149,8 +149,12 @@ export default {
     const values: string[] = [];
 
     switch (options.timeType) {
-      case 'number':
+      case 'date':
         values.push(this.getUtcTimeString(new Date()));
+        break;
+
+      case 'number':
+        values.push(new Date().valueOf().toString(10));
         break;
 
       case 'char':
