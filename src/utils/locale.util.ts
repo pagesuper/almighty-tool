@@ -23,7 +23,7 @@ export function setDefaultLocale(key: string) {
 }
 
 export function getDefaultLocale() {
-  return general.getDefault(DEFAULT_LOCALE_MEMORY_KEY) ?? DEFAULT_LOCALE;
+  return general.getDefault<string>(DEFAULT_LOCALE_MEMORY_KEY) ?? DEFAULT_LOCALE;
 }
 
 // http://userguide.icu-project.org/locale

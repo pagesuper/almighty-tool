@@ -6,7 +6,7 @@ interface IReturnValue {
     script?: string;
 }
 export declare function setDefaultLocale(key: string): void;
-export declare function getDefaultLocale(): {};
+export declare function getDefaultLocale(): string;
 export default function parse(locale?: string): IReturnValue | undefined;
 export declare function getLanguage(locale: string): string | undefined;
 export declare function getCountry(locale: string): string | undefined;
