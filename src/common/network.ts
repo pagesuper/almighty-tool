@@ -8,7 +8,7 @@ import axios, { AxiosResponse, AxiosStatic } from 'axios';
 import deepmerge from 'deepmerge';
 import _ from 'lodash';
 import { IInterceptOptions } from '../interfaces/common/network';
-import basicUtil from '../utils/basic-util';
+import basicUtil from '../utils/basic.util';
 import general from './general';
 
 type CATCHER = (error: any) => void;

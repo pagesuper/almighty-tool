@@ -3,7 +3,7 @@ import _ from 'lodash';
 import { IGeneralResult, IGeneralOptions, IGeneralError, IGeneralOptionsWithT } from '../interfaces/common/general';
 import { Stream } from 'stream';
 
-import cryptoUtil from '../utils/crypto-util';
+import cryptoUtil from '../utils/crypto.util';
 
 const DEFAULT_KEY = '__TUITUI_LIB_DEFAULT__';
 

@@ -1,5 +1,5 @@
 import assert from 'power-assert';
-import cryptoUtil from '../../../src/utils/crypto-util';
+import cryptoUtil from '../../../src/utils/crypto.util';
 
 describe('cryptoUtil.base64', () => {
   test('成功', async () => {

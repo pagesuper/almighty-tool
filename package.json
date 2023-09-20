@@ -97,6 +97,7 @@
     "stylelint-order": "^5.0.0",
     "stylelint-scss": "^4.2.0",
     "ts-jest": "^29.0.5",
-    "webpack-env": "^0.8.0"
+    "webpack-env": "^0.8.0",
+    "yorkie": "^2.0.0"
   }
 }

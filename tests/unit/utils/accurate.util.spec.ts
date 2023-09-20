@@ -1,5 +1,5 @@
 import assert from 'assert';
-import accurateUtil from '../../../src/utils/accurate-util';
+import accurateUtil from '../../../src/utils/accurate.util';
 
 describe('AccurateUtil.add()', () => {
   test('ok', async () => {

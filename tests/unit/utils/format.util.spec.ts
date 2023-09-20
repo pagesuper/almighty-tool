@@ -1,5 +1,5 @@
 import assert from 'power-assert';
-import formatUtil from '../../../src/utils/format-util';
+import formatUtil from '../../../src/utils/format.util';
 
 describe('formatUtil.isChinaIDCard', () => {
   test('成功', async () => {

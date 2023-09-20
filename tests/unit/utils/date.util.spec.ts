@@ -1,5 +1,5 @@
 import assert from 'power-assert';
-import dateUtil from '../../../src/utils/date-util';
+import dateUtil from '../../../src/utils/date.util';
 
 function getDate(str: string): Date {
   return new Date(Date.parse(str));

@@ -7,7 +7,7 @@ import parse, {
   getVariant,
   normalizeAcceptLanguage,
   getBest,
-} from '../../../src/utils/locale-util';
+} from '../../../src/utils/locale.util';
 
 describe('LocaleID', () => {
   it('should be able to parse locale IDs', () => {

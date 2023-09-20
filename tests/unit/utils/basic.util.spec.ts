@@ -1,5 +1,5 @@
 import assert from 'power-assert';
-import basicUtil from '../../../src/utils/basic-util';
+import basicUtil from '../../../src/utils/basic.util';
 
 describe('basicUtil.buildUrl()', () => {
   test('无query', async () => {
