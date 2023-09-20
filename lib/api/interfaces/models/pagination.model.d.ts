@@ -6,7 +6,7 @@ import { IBasicModel } from './basic.model';
  * - Next=向上滑动
  * - Back=下拉加载
  */
-export type SLICE_PAGINATION_MOVE = 'Next' | 'Back';
+export declare type SLICE_PAGINATION_MOVE = 'Next' | 'Back';
 /** 标准分页器 */
 export interface IPagination extends IBasicModel {
     /** 每页条数 */

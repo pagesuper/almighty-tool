@@ -9,9 +9,9 @@ export interface ICommonResult<T> {
     data?: T;
 }
 /** 分页方式 */
-export type PAGINATION_TYPE = 'page' | 'slice' | 'all';
+export declare type PAGINATION_TYPE = 'page' | 'slice' | 'all';
 /** 分页方向 */
-export type PAGINATION_MOVE = 'Next' | 'Back';
+export declare type PAGINATION_MOVE = 'Next' | 'Back';
 export interface IPaginationQuery {
     /** 类型: 默认page */
     paginationType?: PAGINATION_TYPE;

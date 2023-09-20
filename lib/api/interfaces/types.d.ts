@@ -4,4 +4,4 @@ export interface IApiResultData<T> {
     message: string;
     data?: T;
 }
-export type IBasicApiResultData = IApiResultData<null>;
+export declare type IBasicApiResultData = IApiResultData<null>;

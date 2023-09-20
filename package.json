@@ -1,6 +1,6 @@
 {
   "name": "tuitui-lib",
-  "version": "0.0.30",
+  "version": "0.0.31",
   "description": "Tuitui Lib",
   "author": "happy",
   "private": false,
@@ -54,7 +54,7 @@
     "prettier": "^2.8.4",
     "qs": "^6.11.0",
     "tslib": "^2.4.0",
-    "typescript": "^4.9.5",
+    "typescript": "~4.5.5",
     "uuid": "^9.0.0",
     "yorkie": "^2.0.0"
   },

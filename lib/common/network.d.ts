@@ -1,7 +1,7 @@
 import * as INetwork from '../interfaces/common/network';
 import { AxiosStatic } from 'axios';
 import { IInterceptOptions } from '../interfaces/common/network';
-type CATCHER = (error: any) => void;
+declare type CATCHER = (error: any) => void;
 declare const network: {
     /** 设置默认的请求器 */
     setDefaultRequester(requester: AxiosStatic): void;

@@ -1,4 +1,4 @@
-export type I18nValues = any[] | {
+export declare type I18nValues = any[] | {
     [key: string]: any;
 };
 export interface IEnumObjectI18n {

@@ -4,9 +4,6 @@ interface IGenerateRsaKeyPairOptions {
     modulusLength?: number;
     publicExponent?: number;
 }
-/**
- * http://nodejs.cn/api/crypto.html
- */
 declare const _default: {
     /** 私钥加密: 对长文字进行 */
     longPrivateEncrypt(privateKey: string | Buffer, buffer: string | Buffer): {
@@ -62,4 +59,7 @@ declare const _default: {
      */
     aesDecrypt(data: string, key: string, iv: string, algorithm?: string): string;
 };
+/**
+ * http://nodejs.cn/api/crypto.html
+ */
 export default _default;

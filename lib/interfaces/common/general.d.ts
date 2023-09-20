@@ -1,9 +1,9 @@
 import { GeneralResult } from '../../common/general';
-export type CSS_STYLE_TYPE = string | number | boolean | null;
+export declare type CSS_STYLE_TYPE = string | number | boolean | null;
 export interface ICssStyle {
     [propName: string]: CSS_STYLE_TYPE;
 }
-export type LOADMORE_STATUS = 'loading' | 'more' | 'noMore' | 'empty' | 'fail';
+export declare type LOADMORE_STATUS = 'loading' | 'more' | 'noMore' | 'empty' | 'fail';
 export interface ILoadPaginateOptions {
     /**
      * 当前页数
@@ -32,7 +32,7 @@ export interface ILoadSliceOptions {
      */
     size: number;
 }
-export type IPageParamsValueType = string | string[] | null | IPageParams | IPageParams[] | undefined;
+export declare type IPageParamsValueType = string | string[] | null | IPageParams | IPageParams[] | undefined;
 export interface IPageParams extends Record<string, IPageParamsValueType> {
     [propName: string]: IPageParamsValueType;
 }
