@@ -3,6 +3,7 @@ import capitalize from 'lodash/capitalize';
 import forEach from 'lodash/forEach';
 import isArray from 'lodash/isArray';
 import debug from 'debug';
+import general from '../common/general';
 
 const log = debug('locale-id');
 
@@ -12,6 +13,17 @@ interface IReturnValue {
   variant?: string;
   country?: string;
   script?: string;
+}
+
+const DEFAULT_LOCALE_MEMORY_KEY = 'tuitui-lib/locale.util#default-locale';
+const DEFAULT_LOCALE = process.env.DEFAULT_LOCALE ?? 'zh-cn';
+
+export function setDefaultLocale(key: string) {
+  return general.setDefault(DEFAULT_LOCALE_MEMORY_KEY, key);
+}
+
+export function getDefaultLocale() {
+  return general.getDefault(DEFAULT_LOCALE_MEMORY_KEY) ?? DEFAULT_LOCALE;
 }
 
 // http://userguide.icu-project.org/locale
