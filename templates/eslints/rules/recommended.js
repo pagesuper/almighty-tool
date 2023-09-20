@@ -3,6 +3,7 @@ module.exports = {
   '@typescript-eslint/no-empty-function': 'off',
   'arrow-parens': ['error', 'always'],
   'vue-scoped-css/no-unused-selector': 'off',
+  'vue-scoped-css/enforce-style-type': 'off',
   'comma-dangle': ['error', 'always-multiline'],
   'no-multiple-empty-lines': ['error', { max: 1, maxBOF: 1, maxEOF: 1 }],
   'no-undef': 'off',
