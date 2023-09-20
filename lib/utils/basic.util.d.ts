@@ -17,6 +17,8 @@ export interface ISetClipboardDataOptions {
     complete?: (result: any) => void;
 }
 declare const _default: {
+    /** 将css样式对象转为字符串 */
+    cssObjectToString(style: Record<string, string | boolean>): string;
     /** 文本复制: 暂支持h5端网页版 */
     setClipboardData(options: ISetClipboardDataOptions): void;
     /** 根据baseUrl and queryString构造URL */

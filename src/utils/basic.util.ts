@@ -24,6 +24,19 @@ export interface ISetClipboardDataOptions {
 }
 
 export default {
+  /** 将css样式对象转为字符串 */
+  cssObjectToString(style: Record<string, string | boolean>): string {
+    const styles: string[] = [];
+
+    _.each(style, (value: string | boolean, key: string) => {
+      if (value !== null && value !== false) {
+        styles.push(`${key}: ${value}`);
+      }
+    });
+
+    return styles.join('; ');
+  },
+
   /** 文本复制: 暂支持h5端网页版 */
   setClipboardData(options: ISetClipboardDataOptions): void {
     const data = (options || {}).data || '';
