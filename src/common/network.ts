@@ -4,7 +4,7 @@
 import qs from 'qs';
 import * as INetwork from '../interfaces/common/network';
 // http://axios-js.com/docs/
-import axios, { AxiosResponse, AxiosStatic } from 'axios';
+import axios, { AxiosResponse, AxiosResponseHeaders, AxiosStatic, RawAxiosResponseHeaders } from 'axios';
 import deepmerge from 'deepmerge';
 import _ from 'lodash';
 import { IInterceptOptions } from '../interfaces/common/network';
@@ -136,6 +136,11 @@ const doResolve = async function <T extends INetwork.IRequestResult>(
   }
 };
 
+interface IResponse<T> extends AxiosResponse<T> {
+  statusCode?: number;
+  header?: RawAxiosResponseHeaders | AxiosResponseHeaders;
+}
+
 const justDoRequest = function <T extends INetwork.IRequestResult>(
   newOptions: INetwork.IAxiosRequestOptions,
   options: INetwork.IRequestOptions<T>,
@@ -150,39 +155,48 @@ const justDoRequest = function <T extends INetwork.IRequestResult>(
 
   ((general.getDefault(DEFAULT_REQUESTER_KEY) || axios) as AxiosStatic)
     .request(newOptions)
-    .then(async (res: AxiosResponse<T>) => {
+    .then(async (originRes: IResponse<T> | IResponse<T>[]) => {
       if (typeof options.afterRequest === 'function') {
         options.afterRequest();
       }
 
-      /**
-       * 成功的请求处理
-       */
-      const result: INetwork.IRequestResult = {
-        name: options.name,
-        mark: options.mark,
-        errors: [],
-        options,
-        errMsg: 'request:ok',
-        statusCode: res.status,
-        header: res.headers,
-        data: res.data,
-        // cookies: res.cookies,
-      };
+      const res = (Array.isArray(originRes) ? originRes.find((r) => r) : originRes) as IResponse<T>;
+      const statusCode = res.status ?? Reflect.get(res, 'statusCode');
 
-      await doResolve(result, options, resolve);
+      if (statusCode < 400) {
+        /**
+         * 成功的请求处理
+         */
+        const result: INetwork.IRequestResult = {
+          name: options.name,
+          mark: options.mark,
+          errors: [],
+          options,
+          errMsg: 'request:ok',
+          statusCode,
+          header: res.headers ?? Reflect.get(res, 'header'),
+          data: res.data,
+          // cookies: res.cookies,
+        };
 
-      if (options.printLog !== false) {
-        const messages = [];
-        const duration = new Date().valueOf() - startAt;
+        await doResolve(result, options, resolve);
 
-        messages.push(`==> network ok, [${duration}ms] (${options.method}) ${options.url}`);
-        // messages.push(`\n - options is: `, JSON.stringify(options));
-        // messages.push(`\n - result is: `, JSON.stringify(result));
-        messages.push(`\n - options is: `, options);
-        messages.push(`\n - result is: `, result);
+        if (options.printLog !== false) {
+          const messages = [];
+          const duration = new Date().valueOf() - startAt;
 
-        console.log(...messages);
+          messages.push(`==> network ok, [${duration}ms] (${options.method}) ${options.url}`);
+          // messages.push(`\n - options is: `, JSON.stringify(options));
+          // messages.push(`\n - result is: `, JSON.stringify(result));
+          messages.push(`\n - options is: `, options);
+          messages.push(`\n - result is: `, result);
+
+          console.log(...messages);
+        }
+      } else {
+        Reflect.set(res, 'errInfo', `Request failed with status code ${statusCode}`);
+        // eslint-disable-next-line no-throw-literal
+        throw { response: res };
       }
     })
     .catch((error) => {
@@ -196,6 +210,15 @@ const justDoRequest = function <T extends INetwork.IRequestResult>(
       if (typeof options.afterRequest === 'function') {
         options.afterRequest();
       }
+
+      const errInfo =
+        error.response?.errInfo ??
+        error.response?.errMsg ??
+        error.response?.message ??
+        error.errInfo ??
+        error.errMsg ??
+        error.message ??
+        error.toString();
 
       if (options.printError !== false) {
         const messages = [];
@@ -226,15 +249,15 @@ const justDoRequest = function <T extends INetwork.IRequestResult>(
           errors: [
             {
               path: 'base.network',
-              message: error.toString(),
+              message: errInfo,
               info: 'request:fail',
             },
           ],
           options,
           errMsg: 'request:fail',
-          errInfo: error.toString(),
-          statusCode: error.response.status,
-          header: error.response.headers,
+          errInfo,
+          statusCode: error.response.status ?? Reflect.get(error.response, 'statusCode'),
+          header: error.response.headers ?? Reflect.get(error.response, 'header'),
           data: error.response.data,
           cookies: error.response.cookies,
         };
@@ -246,13 +269,13 @@ const justDoRequest = function <T extends INetwork.IRequestResult>(
           errors: [
             {
               path: 'base.network',
-              message: error.toString(),
+              message: errInfo,
               info: 'request:fail',
             },
           ],
           options,
           errMsg: 'request:fail',
-          errInfo: error.toString(),
+          errInfo,
         };
 
         doReject(options, result, reject);
