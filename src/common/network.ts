@@ -346,9 +346,8 @@ const network = {
 
     switch (dataType) {
       case 'form-urlencoded':
-        newData = qs.stringify(data);
+        newData = data;
         Reflect.set(headers, 'Content-Type', 'application/x-www-form-urlencoded');
-
         break;
 
       default:
