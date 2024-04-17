@@ -37,5 +37,7 @@ module.exports = {
     'prettier',
   ],
 
-  rules: require('./rules/recommended'),
+  rules: {
+    ...require('./rules/vue'),
+  },
 };
