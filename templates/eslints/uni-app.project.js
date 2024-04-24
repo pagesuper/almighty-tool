@@ -39,5 +39,7 @@ module.exports = {
     'prettier/standard',
   ],
 
-  rules: require('./rules/recommended'),
+  rules: {
+    ...require('./rules/vue'),
+  },
 };

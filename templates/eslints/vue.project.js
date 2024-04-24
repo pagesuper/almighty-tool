@@ -34,9 +34,6 @@ module.exports = {
   ],
 
   rules: {
-    ...require('./rules/recommended'),
-    'vue/max-attributes-per-line': 'off',
-    'vue/singleline-html-element-content-newline': 'off',
-    'vue/no-multiple-template-root': 'off',
+    ...require('./rules/vue'),
   },
 };
