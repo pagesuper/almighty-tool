@@ -5,7 +5,7 @@ import { IGeneralOptionsWithT, IGeneralResult, IGenerateRandomStringParams } fro
 
 import cryptoUtil from '../utils/crypto.util';
 
-const DEFAULT_KEY = '__ALMIGHTY_LIB_DEFAULT__';
+const DEFAULT_KEY = '__ALMIGHTY_TOOL_DEFAULT__';
 
 const RANDOM_CHARS = {
   /** 全字符 */
@@ -137,7 +137,7 @@ export default {
 
   /** 缓存抓取 */
   async cacheFetch<T extends IGeneralResult>(options: IGeneralOptionsWithT<T> = {}): Promise<T | null> {
-    const cacheKey = `almighty-lib.general.cache.${options.cacheKey}`;
+    const cacheKey = `almighty-tool.general.cache.${options.cacheKey}`;
 
     if (options.cacheable && options.cacher) {
       const cacheInfo = options.cacher.getStorageInfo(cacheKey);

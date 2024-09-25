@@ -23,7 +23,7 @@ module.exports = {
     '^.+\\.tsx?$': require.resolve('ts-jest'),
   },
 
-  transformIgnorePatterns: ['/node_modules/(?!(tuitui-ele|almighty-lib)/)'],
+  transformIgnorePatterns: ['/node_modules/(?!(tuitui-ele|almighty-tool)/)'],
 
   // support the same @ -> src alias mapping in source code
   moduleNameMapper: {

@@ -15,7 +15,7 @@ interface IReturnValue {
   script?: string;
 }
 
-const DEFAULT_LOCALE_MEMORY_KEY = 'almighty-lib/locale.util#default-locale';
+const DEFAULT_LOCALE_MEMORY_KEY = 'almighty-tool/locale.util#default-locale';
 const DEFAULT_LOCALE = process.env.DEFAULT_LOCALE ?? 'zh-cn';
 
 export function setDefaultLocale(key: string) {

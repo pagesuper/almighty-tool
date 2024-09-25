@@ -1,4 +1,4 @@
-# almighty-lib
+# almighty-tool
 
 > tuitui common lib
 

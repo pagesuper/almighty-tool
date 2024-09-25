@@ -3,7 +3,7 @@ import general from './general';
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type I18nValues = any[] | { [key: string]: any };
 
-const DEFAULT_I18N_KEY = 'almighty-lib/common/enum-object#i18n';
+const DEFAULT_I18N_KEY = 'almighty-tool/common/enum-object#i18n';
 
 const i18n = {
   t: (key: string, _values?: I18nValues): string => {
