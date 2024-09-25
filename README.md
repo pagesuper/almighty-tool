@@ -1,6 +1,6 @@
 # almighty-tool
 
-> tuitui common lib
+> almighty common lib
 
 ## Build Setup
 

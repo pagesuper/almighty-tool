@@ -1,5 +1,5 @@
 /**
- * tuitui eslint推荐vue.project
+ * almighty eslint推荐vue.project
  */
 module.exports = {
   root: true,

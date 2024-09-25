@@ -1,5 +1,5 @@
 /**
- * tuitui eslint推荐for uni-app
+ * almighty eslint推荐for uni-app
  */
 module.exports = {
   root: true,

@@ -1,4 +1,4 @@
 /**
- * tuitui eslint推荐element-ui.project
+ * almighty eslint推荐element-ui.project
  */
 module.exports = require('./vue.project');
