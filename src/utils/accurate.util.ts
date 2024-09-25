@@ -4,63 +4,33 @@
 
 export default {
   /** 加法 */
-  add(arg1: number, arg2: number): number {
-    let r1, r2;
+  add(num1: number, num2: number): number {
+    const decimalPlaces1 = (num1.toString().split('.')[1] || '').length;
+    const decimalPlaces2 = (num2.toString().split('.')[1] || '').length;
+    const maxDecimalPlaces = Math.max(decimalPlaces1, decimalPlaces2);
 
-    try {
-      r1 = arg1.toString().split('.')[1].length;
-    } catch (e) {
-      r1 = 0;
-    }
+    const multiplier = Math.pow(10, maxDecimalPlaces);
+    const adjustedNum1 = num1 * multiplier;
+    const adjustedNum2 = num2 * multiplier;
 
-    try {
-      r2 = arg2.toString().split('.')[1].length;
-    } catch (e) {
-      r2 = 0;
-    }
-
-    const c = Math.abs(r1 - r2);
-    const m = Math.pow(10, Math.max(r1, r2));
-
-    if (c > 0) {
-      const cm = Math.pow(10, c);
-      if (r1 > r2) {
-        arg1 = Number(arg1.toString().replace('.', ''));
-        arg2 = Number(arg2.toString().replace('.', '')) * cm;
-      } else {
-        arg1 = Number(arg1.toString().replace('.', '')) * cm;
-        arg2 = Number(arg2.toString().replace('.', ''));
-      }
-    } else {
-      arg1 = Number(arg1.toString().replace('.', ''));
-      arg2 = Number(arg2.toString().replace('.', ''));
-    }
-
-    return (arg1 + arg2) / m;
+    const sum = adjustedNum1 + adjustedNum2;
+    return sum / multiplier;
   },
 
   /**
    * 减法
    */
-  sub(arg1: number, arg2: number): number {
-    let r1, r2;
+  sub(num1: number, num2: number): number {
+    const decimalPlaces1 = (num1.toString().split('.')[1] || '').length;
+    const decimalPlaces2 = (num2.toString().split('.')[1] || '').length;
+    const maxDecimalPlaces = Math.max(decimalPlaces1, decimalPlaces2);
 
-    try {
-      r1 = arg1.toString().split('.')[1].length;
-    } catch (e) {
-      r1 = 0;
-    }
+    const multiplier = Math.pow(10, maxDecimalPlaces);
+    const adjustedNum1 = num1 * multiplier;
+    const adjustedNum2 = num2 * multiplier;
 
-    try {
-      r2 = arg2.toString().split('.')[1].length;
-    } catch (e) {
-      r2 = 0;
-    }
-
-    const m = Math.pow(10, Math.max(r1, r2));
-    const n = r1 >= r2 ? r1 : r2;
-
-    return Number(((arg1 * m - arg2 * m) / m).toFixed(n));
+    const difference = adjustedNum1 - adjustedNum2;
+    return difference / multiplier;
   },
 
   /**
@@ -105,7 +75,7 @@ export default {
   /**
    * 计算位数
    */
-  countDecimals(num: number): number {
+  countDecimals(num: any): number {
     let len = 0;
 
     try {
@@ -150,8 +120,8 @@ export default {
   /**
    * 转为数字类型
    */
-  convertToNumber(n: any): number {
-    const num = Number(n);
+  convertToNumber(num: any): number {
+    num = Number(num);
     let newNum = num;
     const times = this.countDecimals(num);
     const tempNum = num.toString().toUpperCase();
