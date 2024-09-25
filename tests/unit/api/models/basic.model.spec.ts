@@ -11,7 +11,6 @@ export interface IUser extends IBasicModel {
 /** 用户 */
 export class User extends BasicModel implements IUser {
   __typename = User.name;
-  __classname = User.name;
 
   public id: string | null = null;
   public name: string | null = null;

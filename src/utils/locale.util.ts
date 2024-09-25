@@ -15,7 +15,7 @@ interface IReturnValue {
   script?: string;
 }
 
-const DEFAULT_LOCALE_MEMORY_KEY = 'tuitui-lib/locale.util#default-locale';
+const DEFAULT_LOCALE_MEMORY_KEY = 'almighty-lib/locale.util#default-locale';
 const DEFAULT_LOCALE = process.env.DEFAULT_LOCALE ?? 'zh-cn';
 
 export function setDefaultLocale(key: string) {
@@ -35,9 +35,7 @@ export default function parse(locale?: string) {
   // extract keyword
   const stringLocale = String(locale);
   const keywordPos = stringLocale.indexOf('@');
-
   const keyword = keywordPos !== -1 ? stringLocale.substr(keywordPos + 1) : undefined;
-
   const localeWithoutKeyword = keywordPos !== -1 ? stringLocale.substr(0, keywordPos) : stringLocale;
 
   // en-us => en_us

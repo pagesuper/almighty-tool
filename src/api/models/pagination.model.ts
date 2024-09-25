@@ -11,7 +11,6 @@ export interface ILoadOptions {
 
 export class Pagination<T extends BasicModel> extends BasicModel implements IPagination {
   __typename = Pagination.name;
-  __classname = Pagination.name;
 
   public page = 1;
   public total: number | null = null;

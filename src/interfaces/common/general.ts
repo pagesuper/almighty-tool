@@ -1,6 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { GeneralResult } from '../../common/general';
-
 export type CSS_STYLE_TYPE = string | number | boolean | null;
 
 export interface ICssStyle {
@@ -173,4 +170,52 @@ export interface IGeneralOptions {
   withCredentials?: boolean;
   /** 定义在 node.js 中 follow 的最大重定向数目；默认: 5 */
   maxRedirects?: number;
+}
+
+export type RANDOM_CHARS_GROUP_KEY = 'full' | 'downcase' | 'lower' | 'simple' | 'number';
+
+export interface IGenerateRandomStringParams {
+  /** 默认32 */
+  length?: number;
+  /** 可用的字符串 */
+  characters?: string[];
+  /** 分组 */
+  group?: RANDOM_CHARS_GROUP_KEY;
+  /** time类型 */
+  timeType?: 'date' | 'number' | 'char' | 'none';
+}
+
+export class GeneralError implements IGeneralError {
+  public constructor(error?: IGeneralError) {
+    Object.assign(this, error);
+  }
+
+  /** 路径 */
+  path!: string;
+  /** 错误信息 */
+  message!: string;
+  /** 错误逻辑 */
+  info!: string;
+}
+
+export class GeneralResult implements IGeneralResult {
+  public constructor(options?: IGeneralOptions) {
+    if (options) {
+      this.options = options;
+    }
+  }
+
+  /** 状态 */
+  errMsg?: string;
+  /** 请求失败的结果 */
+  errInfo?: string;
+  /** 请求的参数 */
+  options: IGeneralOptions = {};
+  /** 错误 */
+  errors: GeneralError[] = [];
+
+  /** 增加错误 */
+  pushError(error: IGeneralError): void {
+    this.errors.push(new GeneralError(error));
+  }
 }

@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 import _ from 'lodash';
-import { IGeneralResult, IGeneralOptions, IGeneralError, IGeneralOptionsWithT } from '../interfaces/common/general';
 import { Stream } from 'stream';
+import { IGeneralOptionsWithT, IGeneralResult, IGenerateRandomStringParams } from '../interfaces/common/general';
 
 import cryptoUtil from '../utils/crypto.util';
 
-const DEFAULT_KEY = '__TUITUI_LIB_DEFAULT__';
+const DEFAULT_KEY = '__ALMIGHTY_LIB_DEFAULT__';
 
 const RANDOM_CHARS = {
   /** 全字符 */
@@ -19,54 +19,6 @@ const RANDOM_CHARS = {
   /** 数值 */
   number: '0123456789'.split(''),
 };
-
-type RANDOM_CHARS_GROUP_KEY = 'full' | 'downcase' | 'lower' | 'simple' | 'number';
-
-export interface IGenerateRandomStringParams {
-  /** 默认32 */
-  length?: number;
-  /** 可用的字符串 */
-  characters?: string[];
-  /** 分组 */
-  group?: RANDOM_CHARS_GROUP_KEY;
-  /** time类型 */
-  timeType?: 'date' | 'number' | 'char' | 'none';
-}
-
-export class GeneralError implements IGeneralError {
-  public constructor(error?: IGeneralError) {
-    Object.assign(this, error);
-  }
-
-  /** 路径 */
-  path!: string;
-  /** 错误信息 */
-  message!: string;
-  /** 错误逻辑 */
-  info!: string;
-}
-
-export class GeneralResult implements IGeneralResult {
-  public constructor(options?: IGeneralOptions) {
-    if (options) {
-      this.options = options;
-    }
-  }
-
-  /** 状态 */
-  errMsg?: string;
-  /** 请求失败的结果 */
-  errInfo?: string;
-  /** 请求的参数 */
-  options: IGeneralOptions = {};
-  /** 错误 */
-  errors: GeneralError[] = [];
-
-  /** 增加错误 */
-  pushError(error: IGeneralError): void {
-    this.errors.push(new GeneralError(error));
-  }
-}
 
 export default {
   /** 获取全局 */
@@ -185,7 +137,7 @@ export default {
 
   /** 缓存抓取 */
   async cacheFetch<T extends IGeneralResult>(options: IGeneralOptionsWithT<T> = {}): Promise<T | null> {
-    const cacheKey = `tuitui-lib.general.cache.${options.cacheKey}`;
+    const cacheKey = `almighty-lib.general.cache.${options.cacheKey}`;
 
     if (options.cacheable && options.cacher) {
       const cacheInfo = options.cacher.getStorageInfo(cacheKey);

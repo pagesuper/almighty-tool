@@ -1,6 +1,6 @@
 /* eslint-disable */
-import { GeneralResult } from './general';
 import Schema, { Rules, ValidateError, ValidateOption, Values } from 'async-validator';
+import { GeneralResult } from '../interfaces/common/general';
 
 export interface IValidateOptions {
   /** 字段的前缀 */

@@ -150,8 +150,8 @@ export default {
   /**
    * 转为数字类型
    */
-  convertToNumber(num: number): number {
-    num = Number(num);
+  convertToNumber(n: any): number {
+    const num = Number(n);
     let newNum = num;
     const times = this.countDecimals(num);
     const tempNum = num.toString().toUpperCase();
