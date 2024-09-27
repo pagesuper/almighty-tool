@@ -1,8 +1,9 @@
 import dayjs from 'dayjs';
 import 'dayjs/locale/en';
-import '../dayjs/locales/zh-cn';
+import 'dayjs/locale/zh-cn';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import _ from 'lodash';
+import en from '../locales/en';
 import zhCN from '../locales/zh-cn';
 import general from '../common/general';
 
@@ -12,8 +13,15 @@ export type I18nValues = any[] | { [key: string]: any };
 const DEFAULT_I18N_KEY = 'almighty-tool/formats/date-format#i18n';
 
 const i18n = {
-  t: (key: string, _values?: I18nValues): string => {
-    return _.get(zhCN, key);
+  t: (key: string, _values?: I18nValues, locale?: string): string => {
+    switch (locale) {
+      case 'en':
+        return _.get(en, key);
+
+      case 'zh-cn':
+      default:
+        return _.get(zhCN, key);
+    }
   },
 };
 
@@ -52,48 +60,57 @@ const dateFormat = {
    * - options 格式化选项
    */
   format: (date: Date | string | null, options: IDateFormatOptions = {}): string => {
+    let result = '';
+
     if (date) {
-      const _i18n = general.getDefault<IDateFormatI18n | null>(DEFAULT_I18N_KEY) || i18n;
-      const locale = options.locale ?? _i18n.t('AlmightyTool.DateFormat.locale').toString();
-      const template = options.template ?? dateFormat.getFormatTemplate(options.formatter);
-      const day = dayjs(date);
-      const now = dayjs();
-      const localeDay = day.locale(locale);
-      const i18nPrefix = `AlmightyTool.DateFormat.${options.formatter}`;
+      try {
+        const _i18n = general.getDefault<IDateFormatI18n | null>(DEFAULT_I18N_KEY) || i18n;
+        const locale = (options.locale ?? _i18n.t('AlmightyTool.DateFormat.locale').toString()).toLowerCase();
+        const template = options.template ?? dateFormat.getFormatTemplate(options.formatter);
+        const day = dayjs(date);
+        const now = dayjs();
+        const localeDay = day.locale(locale);
+        const i18nPrefix = `AlmightyTool.DateFormat.${options.formatter}`;
 
-      switch (options.formatter) {
-        case 'step':
-        case 'shortStep':
-          if (now.startOf('day').diff(day) <= 0 && now.add(1, 'day').startOf('day').diff(day) > 0) {
-            /** 今天 */
-            return localeDay.format(_i18n.t(`${i18nPrefix}.today`).toString());
-          } else if (now.add(1, 'day').startOf('day').diff(day) <= 0 && now.add(2, 'day').startOf('day').diff(day) > 0) {
-            /** 明天 */
-            return localeDay.format(_i18n.t(`i18nPrefix.tomorrow`).toString());
-          } else if (now.subtract(1, 'day').startOf('day').diff(day) <= 0 && now.startOf('day').diff(day) > 0) {
-            /** 昨天 */
-            return localeDay.format(_i18n.t(`i18nPrefix.yesterday`).toString());
-          } else if (now.startOf('year').diff(day) <= 0 && now.add(1, 'year').startOf('year').diff(day) > 0) {
-            /** 今年 */
-            return localeDay.format(_i18n.t(`i18nPrefix.thisYear`).toString());
-          }
+        switch (options.formatter) {
+          case 'step':
+          case 'shortStep':
+            if (now.startOf('day').diff(day) <= 0 && now.add(1, 'day').startOf('day').diff(day) > 0) {
+              /** 今天 */
+              result = localeDay.format(_i18n.t(`${i18nPrefix}.today`, undefined, locale));
+            } else if (now.add(1, 'day').startOf('day').diff(day) <= 0 && now.add(2, 'day').startOf('day').diff(day) > 0) {
+              /** 明天 */
+              result = localeDay.format(_i18n.t(`${i18nPrefix}.tomorrow`, undefined, locale));
+            } else if (now.subtract(1, 'day').startOf('day').diff(day) <= 0 && now.startOf('day').diff(day) > 0) {
+              /** 昨天 */
+              result = localeDay.format(_i18n.t(`${i18nPrefix}.yesterday`, undefined, locale));
+            } else if (now.startOf('year').diff(day) <= 0 && now.add(1, 'year').startOf('year').diff(day) > 0) {
+              /** 今年 */
+              result = localeDay.format(_i18n.t(`${i18nPrefix}.thisYear`, undefined, locale));
+            } else {
+              result = localeDay.format(_i18n.t(`${i18nPrefix}.longAgo`, undefined, locale));
+            }
 
-          return localeDay.format(_i18n.t(`i18nPrefix.longAgo`).toString());
+            break;
 
-        case 'fromNow':
-          dayjs.extend(relativeTime);
-          return localeDay.fromNow();
+          case 'fromNow':
+            dayjs.extend(relativeTime);
+            result = localeDay.fromNow();
+            break;
 
-        case 'toNow':
-          dayjs.extend(relativeTime);
-          return localeDay.toNow();
+          case 'toNow':
+            dayjs.extend(relativeTime);
+            result = localeDay.toNow();
+            break;
 
-        default:
-          return localeDay.format(template);
-      }
+          default:
+            result = localeDay.format(template);
+            break;
+        }
+      } catch (error) {}
     }
 
-    return '';
+    return result;
   },
 
   /** 获取格式化模板 */
