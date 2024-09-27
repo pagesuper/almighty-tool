@@ -39,6 +39,8 @@ export interface IDateFormatOptions {
   template?: string;
   /** 格式化 */
   formatter?: DATE_FORMAT_FORMATTER;
+  /** 语言 */
+  locale?: string;
 }
 
 /** 日期格式化工具 */
@@ -52,40 +54,42 @@ const dateFormat = {
   format: (date: Date | string | null, options: IDateFormatOptions = {}): string => {
     if (date) {
       const _i18n = general.getDefault<IDateFormatI18n | null>(DEFAULT_I18N_KEY) || i18n;
-      const locale = _i18n.t('TuituiLib.DateFormat.locale').toString();
+      const locale = options.locale ?? _i18n.t('AlmightyTool.DateFormat.locale').toString();
       const template = options.template ?? dateFormat.getFormatTemplate(options.formatter);
       const day = dayjs(date);
       const now = dayjs();
+      const localeDay = day.locale(locale);
+      const i18nPrefix = `AlmightyTool.DateFormat.${options.formatter}`;
 
       switch (options.formatter) {
         case 'step':
         case 'shortStep':
           if (now.startOf('day').diff(day) <= 0 && now.add(1, 'day').startOf('day').diff(day) > 0) {
             /** 今天 */
-            return day.locale(locale).format(_i18n.t(`TuituiLib.DateFormat.${options.formatter}.today`).toString());
+            return localeDay.format(_i18n.t(`${i18nPrefix}.today`).toString());
           } else if (now.add(1, 'day').startOf('day').diff(day) <= 0 && now.add(2, 'day').startOf('day').diff(day) > 0) {
             /** 明天 */
-            return day.locale(locale).format(_i18n.t(`TuituiLib.DateFormat.${options.formatter}.tomorrow`).toString());
+            return localeDay.format(_i18n.t(`i18nPrefix.tomorrow`).toString());
           } else if (now.subtract(1, 'day').startOf('day').diff(day) <= 0 && now.startOf('day').diff(day) > 0) {
             /** 昨天 */
-            return day.locale(locale).format(_i18n.t(`TuituiLib.DateFormat.${options.formatter}.yesterday`).toString());
+            return localeDay.format(_i18n.t(`i18nPrefix.yesterday`).toString());
           } else if (now.startOf('year').diff(day) <= 0 && now.add(1, 'year').startOf('year').diff(day) > 0) {
             /** 今年 */
-            return day.locale(locale).format(_i18n.t(`TuituiLib.DateFormat.${options.formatter}.thisYear`).toString());
+            return localeDay.format(_i18n.t(`i18nPrefix.thisYear`).toString());
           }
 
-          return day.locale(locale).format(_i18n.t(`TuituiLib.DateFormat.${options.formatter}.longAgo`).toString());
+          return localeDay.format(_i18n.t(`i18nPrefix.longAgo`).toString());
 
         case 'fromNow':
           dayjs.extend(relativeTime);
-          return day.locale(locale).fromNow();
+          return localeDay.fromNow();
 
         case 'toNow':
           dayjs.extend(relativeTime);
-          return day.locale(locale).toNow();
+          return localeDay.toNow();
 
         default:
-          return day.locale(locale).format(template);
+          return localeDay.format(template);
       }
     }
 
@@ -95,7 +99,7 @@ const dateFormat = {
   /** 获取格式化模板 */
   getFormatTemplate(formatter: DATE_FORMAT_FORMATTER = 'default'): string {
     const _i18n = general.getDefault<IDateFormatI18n | null>(DEFAULT_I18N_KEY) || i18n;
-    return _i18n.t(`TuituiLib.DateFormat.formats.${formatter}`);
+    return _i18n.t(`AlmightyTool.DateFormat.formats.${formatter}`);
   },
 
   /** 设置默认的i18n对象 */

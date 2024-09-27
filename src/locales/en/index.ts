@@ -1,5 +1,5 @@
 export default {
-  TuituiLib: {
+  AlmightyTool: {
     DateFormat: {
       locale: 'en',
       am: 'AM',

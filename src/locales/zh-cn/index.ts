@@ -1,5 +1,5 @@
 export default {
-  TuituiLib: {
+  AlmightyTool: {
     DateFormat: {
       locale: 'zh-cn',
       am: '上午',
