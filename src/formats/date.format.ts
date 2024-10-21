@@ -1,20 +1,26 @@
 import dayjs from 'dayjs';
 import 'dayjs/locale/en';
+import 'dayjs/locale/vi';
 import 'dayjs/locale/zh-cn';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import _ from 'lodash';
 import en from '../locales/en';
+import vi from '../locales/vi';
 import zhCN from '../locales/zh-cn';
 import general from '../common/general';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type I18nValues = any[] | { [key: string]: any };
 
+// type SUPPORT_LOCALES = 'zh-cn' | 'en' | 'vi';
 const DEFAULT_I18N_KEY = 'almighty-tool/formats/date-format#i18n';
 
 const i18n = {
   t: (key: string, _values?: I18nValues, locale?: string): string => {
     switch (locale) {
+      case 'vi':
+        return _.get(vi, key);
+
       case 'en':
         return _.get(en, key);
 
@@ -66,7 +72,7 @@ const dateFormat = {
       try {
         const _i18n = general.getDefault<IDateFormatI18n | null>(DEFAULT_I18N_KEY) || i18n;
         const locale = (options.locale ?? _i18n.t('AlmightyTool.DateFormat.locale').toString()).toLowerCase();
-        const template = options.template ?? dateFormat.getFormatTemplate(options.formatter);
+        const template = options.template ?? dateFormat.getFormatTemplate(options);
         const day = dayjs(date);
         const now = dayjs();
         const localeDay = day.locale(locale);
@@ -114,7 +120,8 @@ const dateFormat = {
   },
 
   /** 获取格式化模板 */
-  getFormatTemplate(formatter: DATE_FORMAT_FORMATTER = 'default'): string {
+  getFormatTemplate(options: IDateFormatOptions = {}): string {
+    const formatter = options.formatter ?? 'default';
     const _i18n = general.getDefault<IDateFormatI18n | null>(DEFAULT_I18N_KEY) || i18n;
     return _i18n.t(`AlmightyTool.DateFormat.formats.${formatter}`);
   },
