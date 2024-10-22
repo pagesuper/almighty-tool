@@ -14,11 +14,11 @@ export default {
         shortTime: 'HH:mm',
       },
       step: {
-        today: 'h:mm SA/CH',
-        tomorrow: '[Ngày mai] h:mm SA/CH',
-        yesterday: '[Hôm qua] h:mm SA/CH',
-        thisYear: 'MMM D h:mm SA/CH',
-        longAgo: 'MMM D, YYYY h:mm SA/CH',
+        today: 'h:mm A',
+        tomorrow: '[Ngày mai] h:mm A',
+        yesterday: '[Hôm qua] h:mm A',
+        thisYear: 'MMM D h:mm A',
+        longAgo: 'MMM D, YYYY h:mm A',
       },
       shortStep: {
         today: 'HH:mm',
