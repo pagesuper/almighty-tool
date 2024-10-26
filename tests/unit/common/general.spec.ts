@@ -26,9 +26,9 @@ describe('general.compareVersion()', () => {
   });
 });
 
-describe('general.md5()', () => {
-  test('成功', async () => {
-    expect(general.md5('1.0.0')).toEqual('47cd76e43f74bbc2e1baaf194d07e1fa');
-    expect(general.md5(Buffer.from('1.0.0'))).toEqual('47cd76e43f74bbc2e1baaf194d07e1fa');
-  });
-});
+// describe('general.md5()', () => {
+//   test('成功', async () => {
+//     expect(general.md5('1.0.0')).toEqual('47cd76e43f74bbc2e1baaf194d07e1fa');
+//     expect(general.md5(Buffer.from('1.0.0'))).toEqual('47cd76e43f74bbc2e1baaf194d07e1fa');
+//   });
+// });

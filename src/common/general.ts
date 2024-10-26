@@ -1,9 +1,6 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 import _ from 'lodash';
-import { Stream } from 'stream';
 import { IGeneralOptionsWithT, IGeneralResult, IGenerateRandomStringParams } from '../interfaces/common/general';
-
-import cryptoUtil from '../utils/crypto.util';
 
 const DEFAULT_KEY = '__ALMIGHTY_TOOL_DEFAULT__';
 
@@ -67,16 +64,6 @@ export default {
     }
 
     return inputValue;
-  },
-
-  /** 获取md5 */
-  md5(value: string | Buffer | Stream): string {
-    return cryptoUtil.md5(value.toString());
-  },
-
-  /** 生成安全的随机字符串 */
-  generateSecureRandom(bytes = 16): string {
-    return cryptoUtil.generateRandomBytes(bytes).toString();
   },
 
   /** 获取时间的字符串 */
