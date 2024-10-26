@@ -65,6 +65,17 @@ describe('cryptoUtil.aes', () => {
       assert.equal(iv.length, 16);
     }
   });
+
+  test('成功: 加密，解密', async () => {
+    const data = 'hello world';
+
+    for (let index = 0; index < 1000; index++) {
+      const { key, iv } = cryptoUtil.generateAesKeyAndIV();
+      const encrypted = cryptoUtil.aesEncrypt(data, key, iv);
+      // console.log('encrypted: ...', encrypted);
+      assert.equal(cryptoUtil.aesDecrypt(encrypted, key, iv), data);
+    }
+  });
 });
 
 // describe('cryptoUtil.rsa', () => {
