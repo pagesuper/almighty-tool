@@ -1,4 +1,5 @@
 import NodeRSA from 'node-rsa';
+import cryptoUtil from './crypto.util';
 
 const rsaUtil = {
   // Base64 编码
@@ -39,6 +40,52 @@ const rsaUtil = {
   generateRsaKeyPair(bits = 2048) {
     const key = new NodeRSA({ b: bits });
     return { publicKey: key.exportKey('public'), privateKey: key.exportKey('private') };
+  },
+
+  /** 私钥加密: 对长文字进行 */
+  longPrivateEncrypt(privateKey: string | Buffer, buffer: string | Buffer) {
+    const { key: aesKey, iv: aesIv } = cryptoUtil.generateAesKeyAndIV();
+    const encryptedAesKey = rsaUtil.privateEncrypt(privateKey, aesKey);
+    const encryptedData = rsaUtil.joinStrings(aesIv, cryptoUtil.aesEncrypt(buffer.toString(), aesKey, aesIv));
+
+    return {
+      encryptedAesKey,
+      encryptedData,
+    };
+  },
+  /** 公钥解密: 对长文字进行 */
+  longPublicDecrypt(publicKey: string | Buffer, encryptedAesKey: string, encryptedData: string) {
+    const key = rsaUtil.publicDecrypt(publicKey, encryptedAesKey).toString();
+    const [iv, encrypted] = rsaUtil.splitJoinedStrings(encryptedData);
+    return cryptoUtil.aesDecrypt(encrypted, key, iv);
+  },
+  /** 公钥加密: 对长文字进行 */
+  longPublicEncrypt(publicKey: string | Buffer, buffer: string | Buffer) {
+    const { key: aesKey, iv: aesIv } = cryptoUtil.generateAesKeyAndIV();
+    const encryptedAesKey = rsaUtil.publicEncrypt(publicKey, aesKey);
+    const encryptedData = rsaUtil.joinStrings(aesIv, cryptoUtil.aesEncrypt(buffer.toString(), aesKey, aesIv));
+    return {
+      encryptedAesKey,
+      encryptedData,
+    };
+  },
+  /** 私钥解密: 对长文字进行 */
+  longPrivatgeDecrypt(privateKey: string | Buffer, encryptedAesKey: string, encryptedData: string) {
+    const key = rsaUtil.privateDecrypt(privateKey, encryptedAesKey).toString();
+    const [iv, encrypted] = rsaUtil.splitJoinedStrings(encryptedData);
+    return cryptoUtil.aesDecrypt(encrypted, key, iv);
+  },
+
+  joinStrings(txt1: string, txt2: string): string {
+    return [txt1, txt2].join('##');
+  },
+
+  splitJoinedStrings(joinedString: string): string[] {
+    const index = joinedString.indexOf('##');
+    if (index !== -1) {
+      return [joinedString.slice(0, index), joinedString.slice(index + 2)];
+    }
+    return [joinedString];
   },
 };
 
