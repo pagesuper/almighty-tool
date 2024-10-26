@@ -1,11 +1,38 @@
 import forge from 'node-forge';
+import { v4 as uuidv4 } from 'uuid';
 
 const cryptoUtil = {
+  uuid(): string {
+    return uuidv4();
+  },
+
   /** 获取md5摘要 */
   md5(value: string): string {
     const md5 = forge.md.md5.create();
     md5.update(value);
     return md5.digest().toHex();
+  },
+
+  /** 获取hmac摘要 */
+  hmac(key: string | forge.util.ByteBuffer | null, bytes: string, md: forge.md.Algorithm = 'sha1'): string {
+    const hmac = forge.hmac.create();
+    hmac.start(md, key);
+    hmac.update(bytes);
+    return hmac.digest().toHex();
+  },
+
+  /** 获取sha1摘要 */
+  sha1(value: string): string {
+    const sha1 = forge.md.sha1.create();
+    sha1.update(value);
+    return sha1.digest().toHex();
+  },
+
+  /** 获取sha384摘要 */
+  sha384(value: string): string {
+    const sha384 = forge.md.sha384.create();
+    sha384.update(value);
+    return sha384.digest().toHex();
   },
 
   /** 获取sha256摘要 */
@@ -33,50 +60,38 @@ const cryptoUtil = {
   },
 
   generateAesKeyAndIV(algorithm: forge.cipher.Algorithm = 'AES-CBC'): { key: string; iv: string } {
-    let key: forge.Bytes;
-    let iv: forge.Bytes | null;
+    let keyLength: number | null = null;
+    let ivLength: number | null = null;
 
-    if (
-      algorithm === 'AES-ECB' ||
-      algorithm === 'AES-CBC' ||
-      algorithm === 'AES-CFB' ||
-      algorithm === 'AES-OFB' ||
-      algorithm === 'AES-CTR' ||
-      algorithm === 'AES-GCM'
-    ) {
-      // 对于AES相关算法，通常密钥长度可以是128位、192位或256位等，这里以128位（16字节）为例
-      key = cryptoUtil.generateRandomString(16);
-      // 对于需要初始向量的模式（如CBC、CFB、OFB、GCM等），AES的IV通常也是16字节
-      if (algorithm !== 'AES-ECB') {
-        iv = cryptoUtil.generateRandomString(16);
-      } else {
-        iv = null;
-      }
-    } else if (algorithm === '3DES-ECB' || algorithm === '3DES-CBC') {
-      // 3DES的密钥长度通常基于其自身特性，这里以标准的192位（24字节）为例
-      key = cryptoUtil.generateRandomString(24);
-      // 对于需要初始向量的模式（如3DES-CBC），3DES的IV通常是8字节
-      if (algorithm === '3DES-CBC') {
-        iv = cryptoUtil.generateRandomString(8);
-      } else {
-        iv = null;
-      }
-    } else if (algorithm === 'DES-ECB' || algorithm === 'DES-CBC') {
-      // DES的密钥长度通常是64位（8字节）
-      key = cryptoUtil.generateRandomString(8);
-      // 对于需要初始向量的模式（如DES-CBC），DES的IV通常是8字节
-      if (algorithm === 'DES-CBC') {
-        iv = cryptoUtil.generateRandomString(8);
-      } else {
-        iv = null;
-      }
-    } else {
-      throw new Error('unsupport the algorithm：' + algorithm);
+    switch (algorithm) {
+      case 'AES-ECB':
+      case '3DES-ECB':
+      case 'DES-ECB':
+        ivLength = null;
+        break;
+      case 'AES-CBC':
+      case 'AES-CFB':
+      case 'AES-OFB':
+      case 'AES-CTR':
+      case 'AES-GCM':
+        keyLength = 16;
+        ivLength = 16;
+        break;
+      case '3DES-CBC':
+        keyLength = 24;
+        ivLength = 8;
+        break;
+      case 'DES-CBC':
+        keyLength = 8;
+        ivLength = 8;
+        break;
+      default:
+        throw new Error('unsupport the algorithm：' + algorithm);
     }
 
     return {
-      key,
-      iv: iv ?? '',
+      key: keyLength ? cryptoUtil.generateRandomString(keyLength) : '',
+      iv: ivLength ? cryptoUtil.generateRandomString(ivLength) : '',
     };
   },
 
