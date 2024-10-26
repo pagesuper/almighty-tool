@@ -1,9 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 import { isPlainObject } from 'is-what';
-import _ from 'lodash';
+import { each as _each } from 'lodash';
 import qs from 'qs';
-import cryptoUtil from './crypto.util';
 
 export interface AnyObject {
   [key: string]: any;
@@ -28,12 +27,12 @@ export interface ISetClipboardDataOptions {
   complete?: (result: any) => void;
 }
 
-export default {
+const basicUtil = {
   /** 将css样式对象转为字符串 */
   cssObjectToString(style: Record<string, string | boolean>): string {
     const styles: string[] = [];
 
-    _.each(style, (value: string | boolean, key: string) => {
+    _each(style, (value: string | boolean, key: string) => {
       if (value !== null && value !== false) {
         styles.push(`${key}: ${value}`);
       }
@@ -123,14 +122,24 @@ export default {
     return url;
   },
 
+  // Base64 编码
+  base64Encode(value: string): string {
+    return Buffer.from(value).toString('base64');
+  },
+
+  // Base64 解码
+  base64Decode(value: string): string {
+    return Buffer.from(value, 'base64').toString();
+  },
+
   /** 将一个对象转为查询参数 */
   encodeQuery(query: object): string {
-    return encodeURIComponent(cryptoUtil.base64Encode(JSON.stringify(query)));
+    return encodeURIComponent(basicUtil.base64Encode(JSON.stringify(query)));
   },
 
   /** 将编码后的查询参数解开 */
   decodeQuery(str: string): object {
-    return JSON.parse(cryptoUtil.base64Decode(decodeURIComponent(str)));
+    return JSON.parse(basicUtil.base64Decode(decodeURIComponent(str)));
   },
 
   /** 睡眠等待毫秒 */
@@ -345,3 +354,5 @@ export default {
     return _sortKeys(obj);
   },
 };
+
+export default basicUtil;
