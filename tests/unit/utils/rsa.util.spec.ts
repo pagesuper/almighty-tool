@@ -1,20 +1,20 @@
 import assert from 'power-assert';
-import shortRsaUtil from '../../../src/utils/short-rsa.util';
+import rsaUtil from '../../../src/utils/rsa.util';
 
 describe('cryptoUtil.rsa', () => {
   const testText = 'hello world';
 
   test('成功: 公钥加密，私钥解密', async () => {
-    const { publicKey, privateKey } = await shortRsaUtil.generateRsaKeyPair();
-    const publicEncrypted = await shortRsaUtil.publicEncrypt(publicKey, testText);
-    const privateDecrypted = await shortRsaUtil.privateDecrypt(privateKey, publicEncrypted);
+    const { publicKey, privateKey } = await rsaUtil.generateRsaKeyPair();
+    const publicEncrypted = await rsaUtil.publicEncrypt(publicKey, testText);
+    const privateDecrypted = await rsaUtil.privateDecrypt(privateKey, publicEncrypted);
     assert.equal(privateDecrypted, testText);
   });
 
   test('成功: 私钥加密，公钥解密', async () => {
-    const { publicKey, privateKey } = await shortRsaUtil.generateRsaKeyPair();
-    const privateEncrypted = await shortRsaUtil.privateEncrypt(privateKey, testText);
-    const publicDecrypted = await shortRsaUtil.publicDecrypt(publicKey, privateEncrypted);
+    const { publicKey, privateKey } = await rsaUtil.generateRsaKeyPair();
+    const privateEncrypted = await rsaUtil.privateEncrypt(privateKey, testText);
+    const publicDecrypted = await rsaUtil.publicDecrypt(publicKey, privateEncrypted);
     assert.equal(publicDecrypted, testText);
   });
 });
