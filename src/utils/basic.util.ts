@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 import { isPlainObject } from 'is-what';
-import { each as _each } from 'lodash';
+import _ from 'lodash';
 import qs from 'qs';
 
 export interface AnyObject {
@@ -32,7 +32,7 @@ const basicUtil = {
   cssObjectToString(style: Record<string, string | boolean>): string {
     const styles: string[] = [];
 
-    _each(style, (value: string | boolean, key: string) => {
+    _.each(style, (value: string | boolean, key: string) => {
       if (value !== null && value !== false) {
         styles.push(`${key}: ${value}`);
       }
