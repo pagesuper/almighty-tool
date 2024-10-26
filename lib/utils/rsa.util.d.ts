@@ -10,5 +10,21 @@ declare const rsaUtil: {
         publicKey: string;
         privateKey: string;
     };
+    /** 私钥加密: 对长文字进行 */
+    longPrivateEncrypt(privateKey: string | Buffer, buffer: string | Buffer): {
+        encryptedAesKey: string;
+        encryptedData: string;
+    };
+    /** 公钥解密: 对长文字进行 */
+    longPublicDecrypt(publicKey: string | Buffer, encryptedAesKey: string, encryptedData: string): string;
+    /** 公钥加密: 对长文字进行 */
+    longPublicEncrypt(publicKey: string | Buffer, buffer: string | Buffer): {
+        encryptedAesKey: string;
+        encryptedData: string;
+    };
+    /** 私钥解密: 对长文字进行 */
+    longPrivatgeDecrypt(privateKey: string | Buffer, encryptedAesKey: string, encryptedData: string): string;
+    joinStrings(txt1: string, txt2: string): string;
+    splitJoinedStrings(joinedString: string): string[];
 };
 export default rsaUtil;
