@@ -1,5 +1,6 @@
 import forge from 'node-forge';
 declare const cryptoUtil: {
+    /** 获取 uuid */
     uuid(): string;
     /** 获取md5摘要 */
     md5(value: string): string;
@@ -7,16 +8,17 @@ declare const cryptoUtil: {
     hmac(key: string | forge.util.ByteBuffer | null, bytes: string, md?: forge.md.Algorithm): string;
     /** 获取sha1摘要 */
     sha1(value: string): string;
-    /** 获取sha384摘要 */
-    sha384(value: string): string;
     /** 获取sha256摘要 */
     sha256(value: string): string;
+    /** 获取sha384摘要 */
+    sha384(value: string): string;
     /** 获取sha512摘要 */
     sha512(value: string): string;
     /** base64编码 */
     base64Encode(value: string): string;
     /** base64解码 */
     base64Decode(value: string): string;
+    /** 生成密钥对 */
     generateAesKeyAndIV(algorithm?: forge.cipher.Algorithm): {
         key: string;
         iv: string;

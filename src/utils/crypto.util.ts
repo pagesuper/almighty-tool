@@ -2,6 +2,7 @@ import forge from 'node-forge';
 import { v4 as uuidv4 } from 'uuid';
 
 const cryptoUtil = {
+  /** 获取 uuid */
   uuid(): string {
     return uuidv4();
   },
@@ -28,18 +29,18 @@ const cryptoUtil = {
     return sha1.digest().toHex();
   },
 
-  /** 获取sha384摘要 */
-  sha384(value: string): string {
-    const sha384 = forge.md.sha384.create();
-    sha384.update(value);
-    return sha384.digest().toHex();
-  },
-
   /** 获取sha256摘要 */
   sha256(value: string): string {
     const sha256 = forge.md.sha256.create();
     sha256.update(value);
     return sha256.digest().toHex();
+  },
+
+  /** 获取sha384摘要 */
+  sha384(value: string): string {
+    const sha384 = forge.md.sha384.create();
+    sha384.update(value);
+    return sha384.digest().toHex();
   },
 
   /** 获取sha512摘要 */
@@ -59,6 +60,7 @@ const cryptoUtil = {
     return forge.util.decode64(value);
   },
 
+  /** 生成密钥对 */
   generateAesKeyAndIV(algorithm: forge.cipher.Algorithm = 'AES-CBC'): { key: string; iv: string } {
     let keyLength: number | null = null;
     let ivLength: number | null = null;
