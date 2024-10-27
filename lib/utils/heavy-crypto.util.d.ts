@@ -1,5 +1,9 @@
 /// <reference types="node" />
 import crypto from 'crypto';
+/**
+ * 这个heavyCryptoUtil与cryptoUtil的区别是: heavyCryptoUtil 用到了node 里的crypto, 并且heavyCryptoUtil 有 rsa 非对称加密算法。
+ * 两个 util 不要同时引入，heavyCryptoUtil 的体积要比cryptoUtil 大很多。如果不需要 rsa 加密，就用cryptoUtil 就好了。
+ */
 declare const heavyCryptoUtil: {
     /** 获取 uuid */
     uuid(): string;
