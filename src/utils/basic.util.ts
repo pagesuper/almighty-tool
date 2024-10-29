@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
+import base64Js from 'base64-js';
 import { isPlainObject } from 'is-what';
 import _ from 'lodash';
 import qs from 'qs';
@@ -122,14 +123,13 @@ const basicUtil = {
     return url;
   },
 
-  // Base64 编码
   base64Encode(value: string): string {
-    return btoa(value);
+    return base64Js.fromByteArray(new TextEncoder().encode(value));
   },
 
-  // Base64 解码
   base64Decode(value: string): string {
-    return atob(value);
+    const decodedBytes = base64Js.toByteArray(value);
+    return new TextDecoder().decode(decodedBytes);
   },
 
   /** 将一个对象转为查询参数 */
