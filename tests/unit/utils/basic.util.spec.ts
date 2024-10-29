@@ -24,6 +24,13 @@ describe('basicUtil.buildUrl()', () => {
   });
 });
 
+describe('basicUtil.base64', () => {
+  test('成功', async () => {
+    assert.equal(basicUtil.base64Encode('hello world'), 'aGVsbG8gd29ybGQ=');
+    assert.equal(basicUtil.base64Decode('aGVsbG8gd29ybGQ='), 'hello world');
+  });
+});
+
 describe('basicUtil.sortKeys()', () => {
   test('成功', async () => {
     assert.equal(JSON.stringify({ b: 1, a: 2 }), '{"b":1,"a":2}');

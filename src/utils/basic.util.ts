@@ -124,12 +124,12 @@ const basicUtil = {
 
   // Base64 编码
   base64Encode(value: string): string {
-    return Buffer.from(value).toString('base64');
+    return btoa(value);
   },
 
   // Base64 解码
   base64Decode(value: string): string {
-    return Buffer.from(value, 'base64').toString();
+    return atob(value);
   },
 
   /** 将一个对象转为查询参数 */
