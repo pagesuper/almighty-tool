@@ -19,7 +19,12 @@ export interface ISetClipboardDataOptions {
      */
     complete?: (result: any) => void;
 }
+export interface LikeTreeObject<T> {
+    children?: T[] | null;
+}
 declare const basicUtil: {
+    /** 树遍历 */
+    treeErgodic<T extends LikeTreeObject<T>>(treeChildren: T[], ergodicFn?: ((linkTreeObject: T) => void) | undefined): void;
     /** 将css样式对象转为字符串 */
     cssObjectToString(style: Record<string, string | boolean>): string;
     /** 文本复制: 暂支持h5端网页版 */

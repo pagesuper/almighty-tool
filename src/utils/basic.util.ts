@@ -28,7 +28,24 @@ export interface ISetClipboardDataOptions {
   complete?: (result: any) => void;
 }
 
+export interface LikeTreeObject<T> {
+  children?: T[] | null;
+}
+
 const basicUtil = {
+  /** 树遍历 */
+  treeErgodic<T extends LikeTreeObject<T>>(treeChildren: T[], ergodicFn?: (linkTreeObject: T) => void) {
+    treeChildren.forEach((linkTreeObject) => {
+      if (typeof ergodicFn === 'function') {
+        ergodicFn(linkTreeObject);
+      }
+
+      if (linkTreeObject.children?.length) {
+        basicUtil.treeErgodic(linkTreeObject.children, ergodicFn);
+      }
+    });
+  },
+
   /** 将css样式对象转为字符串 */
   cssObjectToString(style: Record<string, string | boolean>): string {
     const styles: string[] = [];
