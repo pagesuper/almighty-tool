@@ -34,14 +34,14 @@ export interface LikeTreeObject<T> {
 
 const basicUtil = {
   /** 树遍历 */
-  treeErgodic<T extends LikeTreeObject<T>>(treeChildren: T[], ergodicFn?: (linkTreeObject: T) => void) {
+  treeErgodic<T extends LikeTreeObject<T>>(treeChildren: T[], callFn?: (linkTreeObject: T) => void) {
     treeChildren.forEach((linkTreeObject) => {
-      if (typeof ergodicFn === 'function') {
-        ergodicFn(linkTreeObject);
+      if (typeof callFn === 'function') {
+        callFn(linkTreeObject);
       }
 
       if (linkTreeObject.children?.length) {
-        basicUtil.treeErgodic(linkTreeObject.children, ergodicFn);
+        basicUtil.treeErgodic(linkTreeObject.children, callFn);
       }
     });
   },

@@ -24,7 +24,7 @@ export interface LikeTreeObject<T> {
 }
 declare const basicUtil: {
     /** 树遍历 */
-    treeErgodic<T extends LikeTreeObject<T>>(treeChildren: T[], ergodicFn?: ((linkTreeObject: T) => void) | undefined): void;
+    treeErgodic<T extends LikeTreeObject<T>>(treeChildren: T[], callFn?: ((linkTreeObject: T) => void) | undefined): void;
     /** 过滤html标签 */
     escapeHTML(str: string): string;
     /** 将css样式对象转为字符串 */
