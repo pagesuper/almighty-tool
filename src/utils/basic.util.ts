@@ -46,6 +46,19 @@ const basicUtil = {
     });
   },
 
+  /** 过滤html标签 */
+  escapeHTML(str: string): string {
+    const escapeChars: Record<string, string> = {
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#39;',
+    };
+
+    return str.replace(/[&<>"']/g, (char) => escapeChars[char]);
+  },
+
   /** 将css样式对象转为字符串 */
   cssObjectToString(style: Record<string, string | boolean>): string {
     const styles: string[] = [];

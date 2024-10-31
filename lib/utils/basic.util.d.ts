@@ -25,6 +25,8 @@ export interface LikeTreeObject<T> {
 declare const basicUtil: {
     /** 树遍历 */
     treeErgodic<T extends LikeTreeObject<T>>(treeChildren: T[], ergodicFn?: ((linkTreeObject: T) => void) | undefined): void;
+    /** 过滤html标签 */
+    escapeHTML(str: string): string;
     /** 将css样式对象转为字符串 */
     cssObjectToString(style: Record<string, string | boolean>): string;
     /** 文本复制: 暂支持h5端网页版 */
