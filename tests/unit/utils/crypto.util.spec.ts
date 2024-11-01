@@ -72,8 +72,17 @@ describe('cryptoUtil.aes', () => {
     for (let index = 0; index < 1000; index++) {
       const { key, iv } = cryptoUtil.generateAesKeyAndIV();
       const encrypted = cryptoUtil.aesEncrypt(data, key, iv);
-      // console.log('encrypted: ...', encrypted);
       assert.equal(cryptoUtil.aesDecrypt(encrypted, key, iv), data);
+    }
+  });
+
+  test('成功: 随机key', async () => {
+    const data = 'hello world';
+    const iv = '1234567890123456';
+
+    for (let index = 0; index < 1000; index++) {
+      const key = cryptoUtil.generateRandomString(32);
+      assert.equal(cryptoUtil.aesDecrypt(cryptoUtil.aesEncrypt(data, key, iv), key, iv), data);
     }
   });
 });
