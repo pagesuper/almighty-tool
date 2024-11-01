@@ -172,19 +172,6 @@ export interface IGeneralOptions {
   maxRedirects?: number;
 }
 
-export type RANDOM_CHARS_GROUP_KEY = 'full' | 'downcase' | 'lower' | 'simple' | 'number';
-
-export interface IGenerateRandomStringParams {
-  /** 默认32 */
-  length?: number;
-  /** 可用的字符串 */
-  characters?: string[];
-  /** 分组 */
-  group?: RANDOM_CHARS_GROUP_KEY;
-  /** time类型 */
-  timeType?: 'date' | 'number' | 'char' | 'none';
-}
-
 export class GeneralError implements IGeneralError {
   public constructor(error?: IGeneralError) {
     Object.assign(this, error);

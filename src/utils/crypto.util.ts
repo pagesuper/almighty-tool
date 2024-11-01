@@ -1,5 +1,6 @@
 import forge from 'node-forge';
 import { v4 as uuidv4 } from 'uuid';
+import randomUtil from './random.util';
 
 const cryptoUtil = {
   /** 获取 uuid */
@@ -99,15 +100,7 @@ const cryptoUtil = {
 
   /** 生成随机的字符串 */
   generateRandomString(length: number): string {
-    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    let randomString = '';
-
-    for (let i = 0; i < length; i++) {
-      const randomIndex = Math.floor(Math.random() * characters.length);
-      randomString += characters[randomIndex];
-    }
-
-    return randomString;
+    return randomUtil.generateRandomString({ length, ranges: ['lower', 'number', 'upper', 'symbol'] });
   },
 
   /**

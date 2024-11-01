@@ -72,6 +72,7 @@ describe('cryptoUtil.aes', () => {
     for (let index = 0; index < 1000; index++) {
       const { key, iv } = cryptoUtil.generateAesKeyAndIV();
       const encrypted = cryptoUtil.aesEncrypt(data, key, iv);
+      // console.log(key, iv);
       assert.equal(cryptoUtil.aesDecrypt(encrypted, key, iv), data);
     }
   });

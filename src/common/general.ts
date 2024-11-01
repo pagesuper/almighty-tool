@@ -1,21 +1,8 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
-import _ from 'lodash';
-import { IGeneralOptionsWithT, IGeneralResult, IGenerateRandomStringParams } from '../interfaces/common/general';
+import { IGeneralOptionsWithT, IGeneralResult } from '../interfaces/common/general';
+import randomUtil, { IGenerateRandomStringParams } from '../utils/random.util';
 
 const DEFAULT_KEY = '__ALMIGHTY_TOOL_DEFAULT__';
-
-const RANDOM_CHARS = {
-  /** 全字符 */
-  full: '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRST'.split(''),
-  /** 小写 + 数字 */
-  downcase: '0123456789abcdefghijklmnopqrstuvwxyz'.split(''),
-  /** 小写字母 */
-  lower: 'abcdefghijklmnopqrstuvwxyz'.split(''),
-  /** 简单没有0 */
-  simple: '13456789abcdefghijklmnopqrstuvwxy'.split(''),
-  /** 数值 */
-  number: '0123456789'.split(''),
-};
 
 export default {
   /** 获取全局 */
@@ -68,53 +55,12 @@ export default {
 
   /** 获取时间的字符串 */
   getUtcTimeString(dateTime: Date | null = null): string {
-    const time = dateTime || new Date();
-
-    return [
-      time.getUTCFullYear(),
-      _.padStart(String(time.getUTCMonth() + 1), 2, '0'),
-      _.padStart(String(time.getUTCDate()), 2, '0'),
-      _.padStart(String(time.getUTCHours()), 2, '0'),
-      _.padStart(String(time.getUTCMinutes()), 2, '0'),
-      _.padStart(String(time.getUTCSeconds()), 2, '0'),
-      _.padStart(String(time.getUTCMilliseconds()), 3, '0'),
-    ].join('');
+    return randomUtil.getUtcTimeString(dateTime);
   },
 
   /** 生成随机的字符串 */
   generateRandomString(options: IGenerateRandomStringParams = {}): string {
-    const length = options.length || 32;
-    const characters = options.characters || RANDOM_CHARS[options.group || 'downcase'];
-    const values: string[] = [];
-
-    switch (options.timeType) {
-      case 'date':
-        values.push(this.getUtcTimeString(new Date()));
-        break;
-
-      case 'number':
-        values.push(new Date().valueOf().toString(10));
-        break;
-
-      case 'char':
-        values.push(new Date().valueOf().toString(36));
-        break;
-
-      default:
-        break;
-    }
-
-    const randomLength = values[0] ? length - values[0].length : length;
-
-    for (let index = 0; index < randomLength; index++) {
-      const sample = _.sample(characters);
-
-      if (sample) {
-        values.push(sample);
-      }
-    }
-
-    return values.join('');
+    return randomUtil.generateRandomString(options);
   },
 
   /** 生成击穿缓存参数 */

@@ -1,4 +1,5 @@
-import { IGeneralOptionsWithT, IGeneralResult, IGenerateRandomStringParams } from '../interfaces/common/general';
+import { IGeneralOptionsWithT, IGeneralResult } from '../interfaces/common/general';
+import { IGenerateRandomStringParams } from '../utils/random.util';
 declare const _default: {
     /** 获取全局 */
     getGlobal(): Object;

@@ -151,17 +151,6 @@ export interface IGeneralOptions {
     /** 定义在 node.js 中 follow 的最大重定向数目；默认: 5 */
     maxRedirects?: number;
 }
-export declare type RANDOM_CHARS_GROUP_KEY = 'full' | 'downcase' | 'lower' | 'simple' | 'number';
-export interface IGenerateRandomStringParams {
-    /** 默认32 */
-    length?: number;
-    /** 可用的字符串 */
-    characters?: string[];
-    /** 分组 */
-    group?: RANDOM_CHARS_GROUP_KEY;
-    /** time类型 */
-    timeType?: 'date' | 'number' | 'char' | 'none';
-}
 export declare class GeneralError implements IGeneralError {
     constructor(error?: IGeneralError);
     /** 路径 */
