@@ -61,7 +61,7 @@ describe('cryptoUtil.aes', () => {
 
     for (let index = 0; index < 1000; index++) {
       const { key, iv } = cryptoUtil.generateAesKeyAndIV();
-      assert.equal(key.length, 16);
+      assert.equal(key.length, 32);
       assert.equal(iv.length, 16);
     }
   });

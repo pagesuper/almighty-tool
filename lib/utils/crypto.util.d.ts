@@ -19,14 +19,14 @@ declare const cryptoUtil: {
     /** base64解码 */
     base64Decode(value: string): string;
     /** 生成密钥对 */
-    generateAesKeyAndIV(algorithm?: forge.cipher.Algorithm): {
+    generateAesKeyAndIV(): {
         key: string;
         iv: string;
     };
     /** 生成密钥Key */
-    generateAesKey(algorithm?: forge.cipher.Algorithm): string;
+    generateAesKey(length?: number): string;
     /** 生成密钥IV */
-    generateAesIv(algorithm?: forge.cipher.Algorithm): string;
+    generateAesIv(length?: number): string;
     /** 生成随机的字符串 */
     generateRandomString(length: number): string;
     /**

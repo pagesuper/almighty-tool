@@ -62,59 +62,21 @@ const cryptoUtil = {
   },
 
   /** 生成密钥对 */
-  generateAesKeyAndIV(algorithm: forge.cipher.Algorithm = 'AES-CBC'): { key: string; iv: string } {
+  generateAesKeyAndIV(): { key: string; iv: string } {
     return {
-      key: this.generateAesKey(algorithm),
-      iv: this.generateAesIv(algorithm),
+      key: this.generateAesKey(),
+      iv: this.generateAesIv(),
     };
   },
 
   /** 生成密钥Key */
-  generateAesKey(algorithm: forge.cipher.Algorithm = 'AES-CBC'): string {
-    let keyLength: number | null = null;
-
-    switch (algorithm) {
-      case 'AES-CBC':
-      case 'AES-CFB':
-      case 'AES-OFB':
-      case 'AES-CTR':
-      case 'AES-GCM':
-        keyLength = 16;
-        break;
-      case '3DES-CBC':
-        keyLength = 24;
-        break;
-      case 'DES-CBC':
-        keyLength = 8;
-        break;
-      default:
-        throw new Error('unsupport the algorithm：' + algorithm);
-    }
-
-    return keyLength ? cryptoUtil.generateRandomString(keyLength) : '';
+  generateAesKey(length = 32): string {
+    return cryptoUtil.generateRandomString(length);
   },
 
   /** 生成密钥IV */
-  generateAesIv(algorithm: forge.cipher.Algorithm = 'AES-CBC'): string {
-    let ivLength: number | null = null;
-
-    switch (algorithm) {
-      case 'AES-CBC':
-      case 'AES-CFB':
-      case 'AES-OFB':
-      case 'AES-CTR':
-      case 'AES-GCM':
-        ivLength = 16;
-        break;
-      case '3DES-CBC':
-      case 'DES-CBC':
-        ivLength = 8;
-        break;
-      default:
-        throw new Error('unsupport the algorithm：' + algorithm);
-    }
-
-    return ivLength ? cryptoUtil.generateRandomString(ivLength) : '';
+  generateAesIv(length = 16): string {
+    return cryptoUtil.generateRandomString(length);
   },
 
   /** 生成随机的字符串 */
