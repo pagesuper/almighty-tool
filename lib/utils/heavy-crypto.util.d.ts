@@ -8,17 +8,17 @@ declare const heavyCryptoUtil: {
     /** 获取 uuid */
     uuid(): string;
     /** 获取md5摘要 */
-    md5(value: string, encoding?: crypto.BinaryToTextEncoding): string;
+    md5(value: crypto.BinaryLike, encoding?: crypto.BinaryToTextEncoding): string;
     /** 获取hmac摘要 */
-    hmac(key: string, bytes: string, algorithm?: string): string;
+    hmac(key: crypto.BinaryLike, bytes: string, algorithm?: string): string;
     /** 获取sha1摘要 */
-    sha1(value: string, encoding?: crypto.BinaryToTextEncoding): string;
+    sha1(value: crypto.BinaryLike, encoding?: crypto.BinaryToTextEncoding): string;
     /** 获取sha384摘要 */
-    sha384(value: string, encoding?: crypto.BinaryToTextEncoding): string;
+    sha384(value: crypto.BinaryLike, encoding?: crypto.BinaryToTextEncoding): string;
     /** 获取sha256摘要 */
-    sha256(value: string, encoding?: crypto.BinaryToTextEncoding): string;
+    sha256(value: crypto.BinaryLike, encoding?: crypto.BinaryToTextEncoding): string;
     /** 获取sha512摘要 */
-    sha512(value: string, encoding?: crypto.BinaryToTextEncoding): string;
+    sha512(value: crypto.BinaryLike, encoding?: crypto.BinaryToTextEncoding): string;
     /** 生成密钥对 */
     generateAesKeyAndIV(algorithm?: string): {
         key: string;
