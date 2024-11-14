@@ -27,6 +27,7 @@ export declare class EnumObject<T> {
     private __reverseSource;
     /** 源名称 */
     sourceName: string;
+    /** 源 */
     source: T;
     /** 选择的项目 */
     getSelectOptions(): ISelectOption[];

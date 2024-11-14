@@ -38,8 +38,10 @@ export class EnumObject<T> {
   private __source: Record<string, string | number> = {};
   /** 反向源 */
   private __reverseSource: Record<string, string> = {};
+
   /** 源名称 */
   public sourceName!: string;
+  /** 源 */
   public source!: T;
 
   /** 选择的项目 */
