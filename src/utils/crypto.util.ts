@@ -92,7 +92,7 @@ const cryptoUtil = {
   aesEncrypt(data: string, key: string, iv: string, algorithm: forge.cipher.Algorithm = 'AES-CBC'): string {
     const cipher = forge.cipher.createCipher(algorithm, key);
     cipher.start({ iv });
-    cipher.update(forge.util.createBuffer(data));
+    cipher.update(forge.util.createBuffer(forge.util.encodeUtf8(data)));
     cipher.finish();
     return forge.util.encode64(cipher.output.data);
   },
@@ -105,7 +105,7 @@ const cryptoUtil = {
     decipher.start({ iv });
     decipher.update(forge.util.createBuffer(forge.util.decode64(data)));
     decipher.finish();
-    return decipher.output.data;
+    return forge.util.decodeUtf8(decipher.output.data);
   },
 };
 

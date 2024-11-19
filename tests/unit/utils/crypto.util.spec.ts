@@ -67,7 +67,7 @@ describe('cryptoUtil.aes', () => {
   });
 
   test('成功: 加密，解密', async () => {
-    const data = 'hello world';
+    const data = 'hello world你好哈哈😄';
 
     for (let index = 0; index < 1000; index++) {
       const { key, iv } = cryptoUtil.generateAesKeyAndIV();
@@ -78,7 +78,7 @@ describe('cryptoUtil.aes', () => {
   });
 
   test('成功: 随机key', async () => {
-    const data = 'hello world';
+    const data = 'hello world你好哈哈😄';
     const iv = '1234567890123456';
 
     for (let index = 0; index < 1000; index++) {
