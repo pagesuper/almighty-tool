@@ -70,7 +70,7 @@ const cryptoUtil = {
   },
 
   /** 生成密钥Key */
-  generateAesKey(length = 32): string {
+  generateAesKey(length = 16): string {
     return cryptoUtil.generateRandomString(length);
   },
 

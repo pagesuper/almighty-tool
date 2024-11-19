@@ -9,27 +9,30 @@ describe('heavyCryptoUtil.md5', () => {
 
 describe('heavyCryptoUtil.hmac', () => {
   test('成功', async () => {
-    assert.equal(heavyCryptoUtil.hmac('hello', 'world'), '8a3a84bcd0d0065e97f175d370447c7d02e00973');
+    assert.equal(
+      heavyCryptoUtil.hmac('hello哈哈😄', 'world哈哈😄'),
+      '741174589ad790cf263b9f465078c2536070f824048e63167ff444f28aa2c02f',
+    );
   });
 });
 
 describe('heavyCryptoUtil.sha1', () => {
   test('成功', async () => {
-    assert.equal(heavyCryptoUtil.sha1('hello world'), '2aae6c35c94fcfb415dbe95f408b9ce91ee846ed');
+    assert.equal(heavyCryptoUtil.sha1('hello world哈哈😄'), 'b711bb537b46990070b6ae66ecfb3ecbb4a71c7d');
   });
 });
 
 describe('heavyCryptoUtil.sha256', () => {
   test('成功', async () => {
-    assert.equal(heavyCryptoUtil.sha256('hello world'), 'b94d27b9934d3e08a52e52d7da7dabfac484efe37a5380ee9088f7ace2efcde9');
+    assert.equal(heavyCryptoUtil.sha256('hello world哈哈😄'), '054bde7cfa7066fcc0082bf6ba03bee21145cb2c30b21f323cf6284446ef14bd');
   });
 });
 
 describe('heavyCryptoUtil.sha384', () => {
   test('成功', async () => {
     assert.equal(
-      heavyCryptoUtil.sha384('hello world'),
-      'fdbd8e75a67f29f701a4e040385e2e23986303ea10239211af907fcbb83578b3e417cb71ce646efd0819dd8c088de1bd',
+      heavyCryptoUtil.sha384('hello world哈哈😄'),
+      '4f51eeaec9b2339925fa275544b2ada20106c0a23f7be6fc4893622545e427f83518081af6279b570ef8926080f08b37',
     );
   });
 });
@@ -37,16 +40,16 @@ describe('heavyCryptoUtil.sha384', () => {
 describe('heavyCryptoUtil.sha512', () => {
   test('成功', async () => {
     assert.equal(
-      heavyCryptoUtil.sha512('hello world'),
-      '309ecc489c12d6eb4cc40f50c902f2b4d0ed77ee511a7c7a9bcd3ca86d4cd86f989dd35bc5ff499670da34255b45b0cfd830e81f605dcf7dc5542e93ae9cd76f',
+      heavyCryptoUtil.sha512('hello world哈哈😄'),
+      '1312655c8f8357cead40338e99ee4d8484b619e43f47943a0da74dc86aba05d40947838c78dff7e55556826cdc8eec8cd02e8f176c35f7be6417064e83ad580c',
     );
   });
 });
 
 describe('heavyCryptoUtil.base64', () => {
   test('成功', async () => {
-    assert.equal(heavyCryptoUtil.base64Encode('hello world'), 'aGVsbG8gd29ybGQ=');
-    assert.equal(heavyCryptoUtil.base64Decode('aGVsbG8gd29ybGQ='), 'hello world');
+    assert.equal(heavyCryptoUtil.base64Encode('hello world哈哈😄'), 'aGVsbG8gd29ybGTlk4jlk4jwn5iE');
+    assert.equal(heavyCryptoUtil.base64Decode('aGVsbG8gd29ybGTlk4jlk4jwn5iE'), 'hello world哈哈😄');
   });
 });
 
@@ -67,37 +70,30 @@ describe('heavyCryptoUtil.aes', () => {
   });
 
   test('成功: 加密，解密', async () => {
-    const data = 'hello world';
+    const data = 'hello world你好哈哈😄';
 
     for (let index = 0; index < 1000; index++) {
       const { key, iv } = heavyCryptoUtil.generateAesKeyAndIV();
       const encrypted = heavyCryptoUtil.aesEncrypt(data, key, iv);
-      // console.log('encrypted: ...', encrypted);
+      // console.log(key, iv);
       assert.equal(heavyCryptoUtil.aesDecrypt(encrypted, key, iv), data);
     }
   });
-});
 
-describe('heavyCryptoUtil.rsa', () => {
-  const testText = 'hello world';
+  test('成功: 随机key', async () => {
+    const data = 'hello world你好哈哈😄';
+    const iv = '1234567890123456';
 
-  test('成功: 公钥加密，私钥解密', async () => {
-    const { publicKey, privateKey } = await heavyCryptoUtil.generateRsaKeyPair();
-    const publicEncrypted = await heavyCryptoUtil.publicEncrypt(publicKey, testText);
-    const privateDecrypted = await heavyCryptoUtil.privateDecrypt(privateKey, publicEncrypted);
-    assert.equal(privateDecrypted, testText);
-  });
-
-  test('成功: 私钥加密，公钥解密', async () => {
-    const { publicKey, privateKey } = await heavyCryptoUtil.generateRsaKeyPair();
-    const privateEncrypted = await heavyCryptoUtil.privateEncrypt(privateKey, testText);
-    const publicDecrypted = await heavyCryptoUtil.publicDecrypt(publicKey, privateEncrypted);
-    assert.equal(publicDecrypted, testText);
+    for (let index = 0; index < 1000; index++) {
+      const key = heavyCryptoUtil.generateRandomString(16);
+      assert.equal(heavyCryptoUtil.aesDecrypt(heavyCryptoUtil.aesEncrypt(data, key, iv), key, iv), data);
+    }
   });
 });
 
 describe('heavyCryptoUtil.rsa for long text', () => {
   const longText = `
+    哈哈，😄
     TypeScript adds additional syntax to JavaScript to support
     a tighter integration with your editor. Catch errors early in your editor.
     TypeScript code converts to JavaScript, which runs anywhere JavaScript runs: In a browser, on Node.js or Deno and in your apps.

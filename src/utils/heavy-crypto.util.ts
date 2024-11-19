@@ -19,7 +19,7 @@ const heavyCryptoUtil = {
   },
 
   /** 获取hmac摘要 */
-  hmac(key: crypto.BinaryLike, bytes: string, algorithm = 'sha1'): string {
+  hmac(key: crypto.BinaryLike, bytes: string, algorithm = 'sha256'): string {
     const hmac = crypto.createHmac(algorithm, key);
     hmac.update(bytes);
     return hmac.digest('hex');
