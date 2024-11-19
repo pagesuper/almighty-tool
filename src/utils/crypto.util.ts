@@ -11,54 +11,54 @@ const cryptoUtil = {
   /** 获取md5摘要 */
   md5(value: string): string {
     const md5 = forge.md.md5.create();
-    md5.update(value);
+    md5.update(forge.util.encodeUtf8(value));
     return md5.digest().toHex();
   },
 
   /** 获取hmac摘要 */
-  hmac(key: string | forge.util.ByteBuffer | null, bytes: string, md: forge.md.Algorithm = 'sha1'): string {
+  hmac(key: string | forge.util.ByteBuffer | null, bytes: string, md: forge.md.Algorithm = 'sha256'): string {
     const hmac = forge.hmac.create();
-    hmac.start(md, key);
-    hmac.update(bytes);
+    hmac.start(md, typeof key === 'string' ? forge.util.encodeUtf8(key) : key);
+    hmac.update(forge.util.encodeUtf8(bytes));
     return hmac.digest().toHex();
   },
 
   /** 获取sha1摘要 */
   sha1(value: string): string {
     const sha1 = forge.md.sha1.create();
-    sha1.update(value);
+    sha1.update(forge.util.encodeUtf8(value));
     return sha1.digest().toHex();
   },
 
   /** 获取sha256摘要 */
   sha256(value: string): string {
     const sha256 = forge.md.sha256.create();
-    sha256.update(value);
+    sha256.update(forge.util.encodeUtf8(value));
     return sha256.digest().toHex();
   },
 
   /** 获取sha384摘要 */
   sha384(value: string): string {
     const sha384 = forge.md.sha384.create();
-    sha384.update(value);
+    sha384.update(forge.util.encodeUtf8(value));
     return sha384.digest().toHex();
   },
 
   /** 获取sha512摘要 */
   sha512(value: string): string {
     const sha512 = forge.md.sha512.create();
-    sha512.update(value);
+    sha512.update(forge.util.encodeUtf8(value));
     return sha512.digest().toHex();
   },
 
   /** base64编码 */
   base64Encode(value: string): string {
-    return forge.util.encode64(value);
+    return forge.util.encode64(forge.util.encodeUtf8(value));
   },
 
   /** base64解码 */
   base64Decode(value: string): string {
-    return forge.util.decode64(value);
+    return forge.util.decodeUtf8(forge.util.decode64(value));
   },
 
   /** 生成密钥对 */

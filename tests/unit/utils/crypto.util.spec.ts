@@ -3,33 +3,36 @@ import cryptoUtil from '../../../src/utils/crypto.util';
 
 describe('cryptoUtil.md5', () => {
   test('成功', async () => {
-    assert.equal(cryptoUtil.md5('hello world'), '5eb63bbbe01eeed093cb22bb8f5acdc3');
+    assert.equal(cryptoUtil.md5('helloworld哈哈😄'), '5e24b7dd11dd60898e7457572b902a3b');
   });
 });
 
 describe('cryptoUtil.hmac', () => {
   test('成功', async () => {
-    assert.equal(cryptoUtil.hmac('hello', 'world'), '8a3a84bcd0d0065e97f175d370447c7d02e00973');
+    assert.equal(
+      cryptoUtil.hmac('hello哈哈😄', 'world哈哈😄'),
+      '741174589ad790cf263b9f465078c2536070f824048e63167ff444f28aa2c02f',
+    );
   });
 });
 
 describe('cryptoUtil.sha1', () => {
   test('成功', async () => {
-    assert.equal(cryptoUtil.sha1('hello world'), '2aae6c35c94fcfb415dbe95f408b9ce91ee846ed');
+    assert.equal(cryptoUtil.sha1('hello world哈哈😄'), 'b711bb537b46990070b6ae66ecfb3ecbb4a71c7d');
   });
 });
 
 describe('cryptoUtil.sha256', () => {
   test('成功', async () => {
-    assert.equal(cryptoUtil.sha256('hello world'), 'b94d27b9934d3e08a52e52d7da7dabfac484efe37a5380ee9088f7ace2efcde9');
+    assert.equal(cryptoUtil.sha256('hello world哈哈😄'), '054bde7cfa7066fcc0082bf6ba03bee21145cb2c30b21f323cf6284446ef14bd');
   });
 });
 
 describe('cryptoUtil.sha384', () => {
   test('成功', async () => {
     assert.equal(
-      cryptoUtil.sha384('hello world'),
-      'fdbd8e75a67f29f701a4e040385e2e23986303ea10239211af907fcbb83578b3e417cb71ce646efd0819dd8c088de1bd',
+      cryptoUtil.sha384('hello world哈哈😄'),
+      '4f51eeaec9b2339925fa275544b2ada20106c0a23f7be6fc4893622545e427f83518081af6279b570ef8926080f08b37',
     );
   });
 });
@@ -37,16 +40,16 @@ describe('cryptoUtil.sha384', () => {
 describe('cryptoUtil.sha512', () => {
   test('成功', async () => {
     assert.equal(
-      cryptoUtil.sha512('hello world'),
-      '309ecc489c12d6eb4cc40f50c902f2b4d0ed77ee511a7c7a9bcd3ca86d4cd86f989dd35bc5ff499670da34255b45b0cfd830e81f605dcf7dc5542e93ae9cd76f',
+      cryptoUtil.sha512('hello world哈哈😄'),
+      '1312655c8f8357cead40338e99ee4d8484b619e43f47943a0da74dc86aba05d40947838c78dff7e55556826cdc8eec8cd02e8f176c35f7be6417064e83ad580c',
     );
   });
 });
 
 describe('cryptoUtil.base64', () => {
   test('成功', async () => {
-    assert.equal(cryptoUtil.base64Encode('hello world'), 'aGVsbG8gd29ybGQ=');
-    assert.equal(cryptoUtil.base64Decode('aGVsbG8gd29ybGQ='), 'hello world');
+    assert.equal(cryptoUtil.base64Encode('hello world哈哈😄'), 'aGVsbG8gd29ybGTlk4jlk4jwn5iE');
+    assert.equal(cryptoUtil.base64Decode('aGVsbG8gd29ybGTlk4jlk4jwn5iE'), 'hello world哈哈😄');
   });
 });
 
