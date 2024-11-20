@@ -1,0 +1,9 @@
+export class {{ClassName}} {
+  name: string;
+}
+
+{{#User}}
+{{#name}}
+// {{name}}
+{{/name}}
+{{/User}}

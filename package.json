@@ -1,12 +1,15 @@
 {
   "name": "almighty-tool",
-  "version": "0.0.19",
+  "version": "0.0.20",
   "description": "Almighty Tool",
   "author": "happy",
   "private": false,
   "license": "MIT",
   "_moduleAliases": {
     "@root": "."
+  },
+  "repository": {
+    "url": "https://github.com/pagesuper/almighty-tool"
   },
   "scripts": {
     "eslint": "eslint --ext .js,.ts,.vue --ignore-path .eslintignore .",

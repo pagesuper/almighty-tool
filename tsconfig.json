@@ -4,6 +4,6 @@
     "outDir": "./lib",
     "baseUrl": ".",
   },
-  "include": ["src"],
+  "include": ["src", "tests/unit/scripts/code-generate.ts"],
   "exclude": ["node_modules", "tests"]
 }
