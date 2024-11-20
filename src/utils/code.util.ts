@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import handlebars from 'handlebars';
+import mustache from 'mustache';
 
 export interface CodeUtilGenerateOptions {
   /** 模板变量 */
@@ -33,11 +33,8 @@ const codeUtil = {
     // 读取模板内容
     const template = fs.readFileSync(templatePath, 'utf-8');
 
-    // 编译模板
-    const compiled = handlebars.compile(template);
-
     // 使用变量渲染模板
-    const result = compiled(variables);
+    const result = mustache.render(template, variables);
 
     // 写入目标文件
     fs.writeFileSync(targetPath, result, 'utf-8');
