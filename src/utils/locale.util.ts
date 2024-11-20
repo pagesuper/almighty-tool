@@ -2,10 +2,11 @@
 import capitalize from 'lodash/capitalize';
 import forEach from 'lodash/forEach';
 import isArray from 'lodash/isArray';
-import debug from 'debug';
+// import debug from 'debug';
 import general from '../common/general';
 
-const log = debug('locale-id');
+// const log = debug('locale-id');
+const log = console.log;
 
 interface IReturnValue {
   keyword?: string;

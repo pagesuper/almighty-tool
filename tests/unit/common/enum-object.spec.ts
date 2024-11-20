@@ -1,4 +1,4 @@
-import { EnumObject, I18nValues } from '../../../src/common/enum-object';
+import { EnumObject, TranslateOptions } from '../../../src/common/enum-object';
 
 enum ENUM_HELLO {
   Age = 'age',
@@ -7,35 +7,53 @@ enum ENUM_HELLO {
 }
 
 const i18n = {
-  t: (key: string, _values?: I18nValues): string => {
-    return `Test:${key}`;
+  t: (key: string, _options?: TranslateOptions): string => {
+    return `${key}`;
   },
 };
 
-EnumObject.setDefaultI18n(i18n);
-
-const EnumHello = new EnumObject<ENUM_HELLO>({
+const EnumHello = new EnumObject({
   source: ENUM_HELLO,
-  sourceName: 'ENUM_HELLO',
+  name: 'ENUM_HELLO',
+  i18n,
 });
 
-/* eslint-disable @typescript-eslint/no-empty-function */
 describe('EnumObject', () => {
   test('成功', async () => {
-    expect(EnumHello.getText('Age')).toEqual('Test:enum.ENUM_HELLO.Age');
-    expect(EnumHello.getValueText('age')).toEqual('Test:enum.ENUM_HELLO.Age');
-    expect(EnumHello.getValue('Age')).toEqual('age');
-    expect(EnumHello.getKey('age')).toEqual('Age');
-
-    expect(EnumHello.getText('Number')).toEqual('Test:enum.ENUM_HELLO.Number');
-    expect(EnumHello.getValueText(1024)).toEqual('Test:enum.ENUM_HELLO.Number');
-    expect(EnumHello.getValue('Number')).toEqual(1024);
-    expect(EnumHello.getKey(1024)).toEqual('Number');
-
-    expect(EnumHello.getSelectOptions()).toEqual([
-      { key: 'Age', label: 'Test:enum.ENUM_HELLO.Age', value: 'age' },
-      { key: 'Name', label: 'Test:enum.ENUM_HELLO.Name', value: 'name' },
-      { key: 'Number', label: 'Test:enum.ENUM_HELLO.Number', value: 1024 },
+    expect(EnumHello.i18n.t('Age')).toEqual('Age');
+    expect(EnumHello.getOptions()).toEqual([
+      {
+        key: 'Age',
+        translate: {
+          en: 'enum.types.ENUM_HELLO.options.Age',
+          'zh-CN': 'enum.types.ENUM_HELLO.options.Age',
+        },
+        value: 'age',
+      },
+      {
+        key: 'Name',
+        translate: {
+          en: 'enum.types.ENUM_HELLO.options.Name',
+          'zh-CN': 'enum.types.ENUM_HELLO.options.Name',
+        },
+        value: 'name',
+      },
+      {
+        key: 'Number',
+        translate: {
+          en: 'enum.types.ENUM_HELLO.options.Number',
+          'zh-CN': 'enum.types.ENUM_HELLO.options.Number',
+        },
+        value: 1024,
+      },
     ]);
+
+    expect(EnumHello.getTranslate()).toEqual({
+      en: 'enum.types.ENUM_HELLO.name',
+      'zh-CN': 'enum.types.ENUM_HELLO.name',
+    });
+
+    expect(EnumHello.keyMap.get('age')).toEqual('Age');
+    expect(EnumHello.valueMap.get('Age')).toEqual('age');
   });
 });

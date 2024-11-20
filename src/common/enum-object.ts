@@ -1,116 +1,111 @@
-import general from './general';
+import _ from 'lodash';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type I18nValues = any[] | { [key: string]: any };
-
-const DEFAULT_I18N_KEY = 'almighty-tool/common/enum-object#i18n';
-
-const i18n = {
-  t: (key: string, _values?: I18nValues): string => {
-    return `${key}`;
-  },
+export type TranslateOptions = {
+  lang?: string;
+  args?:
+    | (
+        | {
+            [k: string]: any;
+          }
+        | string
+      )[]
+    | {
+        [k: string]: any;
+      };
+  defaultValue?: string;
+  debug?: boolean;
 };
 
-export interface IEnumObjectI18n {
-  t: (key: string, values?: I18nValues) => string;
+export interface I18n {
+  t: (key: string, options?: TranslateOptions) => string;
 }
 
-/** 选项 */
-export interface ISelectOption {
-  /** 显示文字 */
-  label: string;
-  /** 关联的Key */
-  key: string;
-  /** 关联的值 */
-  value: string | number;
+export interface IEnumObjectTranslate {
+  [key: string]: string;
+}
+
+export interface IEnumObject<T> {
+  source: T;
+  name: string;
+  i18n: I18n;
+  langs?: string[];
 }
 
 export interface IEnumObjectOptions {
-  i18n?: IEnumObjectI18n;
-  source: Object;
-  sourceName: string;
+  key: string;
+  value: string | number;
+  translate: IEnumObjectTranslate;
 }
 
-export class EnumObject<T> {
-  /** 国际化工具 */
-  private __i18n!: IEnumObjectI18n | null;
-  /** 源 */
-  private __source: Record<string, string | number> = {};
-  /** 反向源 */
-  private __reverseSource: Record<string, string> = {};
-
-  /** 源名称 */
-  public sourceName!: string;
-  /** 源 */
-  public source!: T;
-
-  /** 选择的项目 */
-  getSelectOptions(): ISelectOption[] {
-    const options: ISelectOption[] = [];
-
-    Object.entries(this.__source).forEach(([key, value]) => {
-      options.push({
-        label: this.getText(key),
-        key,
-        value,
-      });
-    });
-
-    return options;
-  }
-
-  /** 根据key获取对应的翻译 */
-  getText(key: string): string {
-    return this.i18n.t(`enum.${this.sourceName}.${key}`);
-  }
-
-  /** 根据value获取对应的翻译 */
-  getValueText(value: string | number): string {
-    return this.i18n.t(`enum.${this.sourceName}.${this.getKey(value)}`);
-  }
-
-  /** 根据key获取对应的值 */
-  getValue(key: string): string | number | undefined {
-    return Reflect.get(this.__source, key);
-  }
-
-  /** 根据value获取对应的key */
-  getKey(value: string | number): string | undefined {
-    return Reflect.get(this.__reverseSource, `${value}`);
-  }
-
-  toJSON(): object {
-    return Object.assign({}, this, {});
-  }
-
-  get i18n(): IEnumObjectI18n {
-    return this.__i18n || general.getDefault(DEFAULT_I18N_KEY) || i18n;
-  }
-
-  constructor(options: IEnumObjectOptions) {
-    if (options.i18n) {
-      this.__i18n = options.i18n;
-    }
-
-    this.sourceName = options.sourceName;
-    this.source = options.source as T;
+export class EnumObject<T extends Record<string, string | number>> {
+  constructor(options: IEnumObject<T>) {
+    this.source = options.source;
+    this.name = options.name;
+    this.langs = options.langs ?? this.langs;
+    this.i18n = options.i18n;
 
     Object.entries(options.source).forEach(([key, value]) => {
-      /** 如果是纯数字，则判断对应key的值是否一致 */
-      if (!/^[0-9]*$/.test(key) || `${Reflect.get(options.source, value)}` !== key) {
-        Reflect.set(this.__source, key, value);
-        Reflect.set(this.__reverseSource, value, key);
-      }
+      this.valueMap.set(key, value);
+      this.keyMap.set(value, key);
     });
   }
 
-  /** 设置默认的i18n对象 */
-  setI18n(i18n: IEnumObjectI18n | null): void {
-    this.__i18n = i18n;
+  public i18n: I18n;
+  /** 键到值的映射(键为枚举的键, 值为枚举的值) */
+  public valueMap: Map<string, string | number> = new Map();
+  /** 值到键的映射(键为枚举的值, 值为枚举的键) */
+  public keyMap: Map<string | number, string> = new Map();
+
+  public source: T;
+  public name: string;
+
+  private langs: string[] = ['zh-CN', 'en'];
+  private options: IEnumObjectOptions[] | null = null;
+  private translate: IEnumObjectTranslate | null = null;
+
+  public getOptions() {
+    if (this.options) {
+      return this.options;
+    }
+
+    const options: IEnumObjectOptions[] = [];
+
+    Object.entries(this.source).forEach(([key, value]) => {
+      if (isNaN(Number(key))) {
+        options.push({
+          key,
+          value,
+          translate: _.reduce(
+            this.langs,
+            (acc, lang) => {
+              Reflect.set(acc, lang, this.i18n.t(`enum.types.${this.name}.options.${key}`, { lang }));
+              return acc;
+            },
+            {},
+          ),
+        });
+      }
+    });
+
+    this.options = options;
+
+    return this.options;
   }
 
-  /** 设置默认的i18n对象 */
-  static setDefaultI18n(i18n: IEnumObjectI18n | null): void {
-    general.setDefault(DEFAULT_I18N_KEY, i18n);
+  public getTranslate() {
+    if (this.translate) {
+      return this.translate;
+    }
+
+    this.translate = _.reduce(
+      this.langs,
+      (acc, lang) => {
+        Reflect.set(acc, lang, this.i18n.t(`enum.types.${this.name}.name`, { lang }));
+        return acc;
+      },
+      {},
+    );
+
+    return this.translate;
   }
 }
