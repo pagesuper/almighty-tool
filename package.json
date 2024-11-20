@@ -1,6 +1,6 @@
 {
   "name": "almighty-tool",
-  "version": "0.0.17",
+  "version": "0.0.18",
   "description": "Almighty Tool",
   "author": "happy",
   "private": false,
@@ -35,6 +35,8 @@
     "base64-js": "^1.5.1",
     "dayjs": "^1.11.7",
     "deepmerge": "^4.3.0",
+    "esno": "^4.8.0",
+    "handlebars": "^4.7.8",
     "is-what": "^4.1.8",
     "lodash": "^4.17.21",
     "nock": "^13.3.0",
@@ -44,6 +46,7 @@
     "tslib": "^2.4.0",
     "typescript": "~4.5.5",
     "uuid": "^9.0.0",
+    "yargs": "^17.7.2",
     "yorkie": "^2.0.0"
   },
   "devDependencies": {
