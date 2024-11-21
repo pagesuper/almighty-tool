@@ -1,12 +1,11 @@
 // only for local test
 
 import path from 'path';
-import yargs from 'yargs';
 import codeUtil from '../../../src/utils/code.util';
 
-const argv = yargs(process.argv.slice(2)).argv as any;
+const argv = codeUtil.getArgv();
 
-// console.log('process.argv: ...', argv);
+console.log('process.argv: ...', argv);
 
 const templatePath = path.resolve(process.cwd(), argv.templatePath);
 const targetPath = path.resolve(process.cwd(), argv.targetPath);
@@ -22,4 +21,4 @@ codeUtil.generate({
   targetPath,
 });
 
-// bun esno tests/unit/scripts/code-generate.ts --template-path tests/unit/scripts/templates/input.ts.template --target-path tmp/input.ts --data.ClassName HappyUser --data.User.name Happy
+// bun tsx tests/unit/scripts/code-generate.ts --template-path tests/unit/scripts/templates/input.ts.template --target-path tmp/input.ts --data.ClassName HappyUser --data.User.name Happy

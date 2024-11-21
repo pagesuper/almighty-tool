@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import mustache from 'mustache';
 import inflection from 'inflection';
+import yargs from 'yargs';
 
 /** 生成代码选项 */
 export interface CodeUtilGenerateOptions {
@@ -114,6 +115,11 @@ const codeUtil = {
     };
 
     return data;
+  },
+
+  /** 获取命令行参数 */
+  getArgv: () => {
+    return yargs(process.argv).argv as Record<string, any>;
   },
 };
 
