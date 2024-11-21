@@ -14,6 +14,13 @@ describe('codeUtil.getGenerateData()', () => {
       UnderscoreModelsName: 'auth_collections',
     });
   });
+
+  test('a.name ??= "Hello"', async () => {
+    const a: { name?: string } = { name: 'Jack' };
+    a.name = undefined;
+    a.name ??= 'Hello';
+    expect(a.name).toBe('Hello');
+  });
 });
 
 describe('codeUtil.getBooleanValue()', () => {
