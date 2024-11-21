@@ -1,6 +1,6 @@
 {
   "name": "almighty-tool",
-  "version": "0.0.20",
+  "version": "0.0.21",
   "description": "Almighty Tool",
   "author": "happy",
   "private": false,
@@ -39,6 +39,7 @@
     "dayjs": "^1.11.7",
     "deepmerge": "^4.3.0",
     "esno": "^4.8.0",
+    "inflection": "^3.0.0",
     "is-what": "^4.1.8",
     "lodash": "^4.17.21",
     "mustache": "^4.2.0",
