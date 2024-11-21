@@ -1,4 +1,4 @@
-import codeUtil from '../../../src/utils/code.util';
+import codeUtil from '../../../scripts/code.util';
 
 describe('codeUtil.getGenerateData()', () => {
   test('成功', async () => {
