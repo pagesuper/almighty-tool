@@ -20,7 +20,7 @@ const EnumHello = new EnumObject({
 
 describe('EnumObject', () => {
   test('成功', async () => {
-    expect(EnumHello.i18n.t('Age')).toEqual('Age');
+    expect(EnumHello.getI18n().t('Age')).toEqual('Age');
     expect(EnumHello.getOptions()).toEqual([
       {
         key: 'Age',
