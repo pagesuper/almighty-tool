@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import mustache from 'mustache';
-import inflection from 'inflection';
+import * as inflection from 'inflection';
 import yargs from 'yargs';
 
 /** 生成代码选项 */

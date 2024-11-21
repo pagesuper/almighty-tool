@@ -1,10 +1,11 @@
 {
   "name": "almighty-tool",
-  "version": "0.0.22",
+  "version": "0.0.23",
   "description": "Almighty Tool",
   "author": "happy",
   "private": false,
   "license": "MIT",
+  "keywords": ["tool", "almighty", "library"],
   "_moduleAliases": {
     "@root": "."
   },
