@@ -60,6 +60,7 @@ export class EnumObject<T extends Record<string, string | number>> {
   public name: string;
 
   private langs: string[] = ['zh-CN', 'en'];
+  private translateOptionsMap: Map<string, IEnumObjectOptions> | null = null;
   private options: IEnumObjectOptions[] | null = null;
   private translate: IEnumObjectTranslate | null = null;
 
@@ -67,16 +68,31 @@ export class EnumObject<T extends Record<string, string | number>> {
     return typeof this.i18n === 'function' ? this.i18n() : this.i18n;
   }
 
-  public getOptions() {
-    if (this.options) {
-      return this.options;
+  /**
+   * 获取指定语言的选项
+   * @param lang - 语言
+   * @returns 指定语言的选项
+   */
+  public getDialectOptions(lang: string) {
+    return this.getOptions().map((option) => {
+      return {
+        key: option.key,
+        value: option.value,
+        dialect: option.translate[lang],
+      };
+    });
+  }
+
+  public getTranslateOptionsMap() {
+    if (this.translateOptionsMap) {
+      return this.translateOptionsMap;
     }
 
-    const options: IEnumObjectOptions[] = [];
+    const map = new Map();
 
     Object.entries(this.source).forEach(([key, value]) => {
       if (isNaN(Number(key))) {
-        options.push({
+        map.set(key, {
           key,
           value,
           translate: _.reduce(
@@ -88,6 +104,47 @@ export class EnumObject<T extends Record<string, string | number>> {
             {},
           ),
         });
+      }
+    });
+
+    this.translateOptionsMap = map;
+    return this.translateOptionsMap;
+  }
+
+  public getTranslateOptionWithKey(key: string) {
+    return this.getTranslateOptionsMap().get(key) ?? null;
+  }
+
+  public getTranslateOptionWithValue(value: string | number) {
+    const key = this.keyMap.get(value);
+
+    if (key) {
+      return this.getTranslateOptionWithKey(key) ?? null;
+    }
+
+    return null;
+  }
+
+  /**
+   * 获取指定语言的名称
+   * @param lang - 语言
+   * @returns 指定语言的名称
+   */
+  public getDialectName(lang: string) {
+    return this.getTranslate()[lang];
+  }
+
+  public getOptions() {
+    if (this.options) {
+      return this.options;
+    }
+
+    const options: IEnumObjectOptions[] = [];
+    const translateOptionsMap = this.getTranslateOptionsMap();
+
+    Object.entries(this.source).forEach(([key]) => {
+      if (isNaN(Number(key))) {
+        options.push(translateOptionsMap.get(key) as IEnumObjectOptions);
       }
     });
 

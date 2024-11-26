@@ -20,6 +20,24 @@ const EnumHello = new EnumObject({
 
 describe('EnumObject', () => {
   test('成功', async () => {
+    expect(EnumHello.getTranslateOptionWithKey('Age')).toEqual({
+      key: 'Age',
+      translate: {
+        en: 'enum.types.ENUM_HELLO.options.Age',
+        'zh-CN': 'enum.types.ENUM_HELLO.options.Age',
+      },
+      value: 'age',
+    });
+
+    expect(EnumHello.getTranslateOptionWithValue(1024)).toEqual({
+      key: 'Number',
+      translate: {
+        en: 'enum.types.ENUM_HELLO.options.Number',
+        'zh-CN': 'enum.types.ENUM_HELLO.options.Number',
+      },
+      value: 1024,
+    });
+
     expect(EnumHello.getI18n().t('Age')).toEqual('Age');
     expect(EnumHello.getOptions()).toEqual([
       {
@@ -52,6 +70,45 @@ describe('EnumObject', () => {
       en: 'enum.types.ENUM_HELLO.name',
       'zh-CN': 'enum.types.ENUM_HELLO.name',
     });
+
+    expect(EnumHello.getDialectName('en')).toEqual('enum.types.ENUM_HELLO.name');
+    expect(EnumHello.getDialectName('zh-CN')).toEqual('enum.types.ENUM_HELLO.name');
+
+    expect(EnumHello.getDialectOptions('en')).toEqual([
+      {
+        key: 'Age',
+        value: 'age',
+        dialect: 'enum.types.ENUM_HELLO.options.Age',
+      },
+      {
+        dialect: 'enum.types.ENUM_HELLO.options.Name',
+        key: 'Name',
+        value: 'name',
+      },
+      {
+        dialect: 'enum.types.ENUM_HELLO.options.Number',
+        key: 'Number',
+        value: 1024,
+      },
+    ]);
+
+    expect(EnumHello.getDialectOptions('zh-CN')).toEqual([
+      {
+        key: 'Age',
+        value: 'age',
+        dialect: 'enum.types.ENUM_HELLO.options.Age',
+      },
+      {
+        dialect: 'enum.types.ENUM_HELLO.options.Name',
+        key: 'Name',
+        value: 'name',
+      },
+      {
+        dialect: 'enum.types.ENUM_HELLO.options.Number',
+        key: 'Number',
+        value: 1024,
+      },
+    ]);
 
     expect(EnumHello.keyMap.get('age')).toEqual('Age');
     expect(EnumHello.valueMap.get('Age')).toEqual('age');
