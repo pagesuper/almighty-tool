@@ -68,7 +68,10 @@ const codeUtil = {
     const template = fs.readFileSync(templatePath, 'utf-8');
 
     // 使用变量渲染模板
-    const result = mustache.render(template, variables);
+    const result = mustache
+      .render(template, variables)
+      .replace(/&lbrace;/g, '{')
+      .replace(/&rbrace;/g, '}');
 
     // 写入目标文件
     fs.writeFileSync(targetPath, result, 'utf-8');
