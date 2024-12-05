@@ -1,11 +1,12 @@
+import _ from 'lodash';
 import * as inflection from 'inflection';
 
 import OriginalSchema, {
+  ValidateError as OriginalValidateError,
   ExecuteRule as ValidateExecuteRule,
   ExecuteValidator as ValidateExecuteValidator,
   InternalRuleItem as ValidateInternalRuleItem,
   InternalValidateMessages as ValidateInternalValidateMessages,
-  ValidateError as OriginalValidateError,
   Rule as ValidateRule,
   RuleItem as ValidateRuleItem,
   Rules as ValidateRules,
@@ -105,7 +106,7 @@ const validateUtil = {
         const code = `ValidateError.${parts.length ? parts.join('.') : 'Failed'}`;
 
         return {
-          ...err,
+          ..._.pick(err, ['message', 'field', 'fieldValue']),
           code,
         };
       });
