@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import * as inflection from 'inflection';
 
-import OriginalSchema, {
+import ValidateSchema, {
   ValidateError as OriginalValidateError,
   ExecuteRule as ValidateExecuteRule,
   ExecuteValidator as ValidateExecuteValidator,
@@ -21,7 +21,7 @@ import OriginalSchema, {
   Values as ValidateValues,
 } from 'async-validator';
 
-export class ValidateSchema extends OriginalSchema {}
+export { ValidateSchema };
 
 export type {
   ValidateExecuteRule,
