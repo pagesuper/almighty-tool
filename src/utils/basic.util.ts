@@ -9,7 +9,7 @@ export interface AnyObject {
   [key: string]: any;
 }
 
-export interface ISetClipboardDataOptions {
+export interface SetClipboardDataOptions {
   /**
    * 需要设置的内容
    */
@@ -73,7 +73,7 @@ const basicUtil = {
   },
 
   /** 文本复制: 暂支持h5端网页版 */
-  setClipboardData(options: ISetClipboardDataOptions): void {
+  setClipboardData(options: SetClipboardDataOptions): void {
     const data = (options || {}).data || '';
     let isOk = false;
 
