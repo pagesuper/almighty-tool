@@ -1,32 +1,32 @@
+// 定义常见颜色名称与十六进制颜色值的映射关系
+const colorMap: { [key: string]: string } = {
+  white: '#ffffff',
+  black: '#000000',
+  red: '#ff0000',
+  green: '#008000',
+  blue: '#0000ff',
+  yellow: '#ffff00',
+  cyan: '#00ffff',
+  magenta: '#ff00ff',
+  gray: '#808080',
+  silver: '#c0c0c0',
+  maroon: '#800000',
+  olive: '#808000',
+  navy: '#000080',
+  purple: '#800080',
+  teal: '#008080',
+  lime: '#00ff00',
+  aqua: '#00ffff',
+  fuchsia: '#ff00ff',
+  orange: '#ffa500',
+  brown: '#a52a2a',
+  pink: '#ffc0cb',
+};
+
 const colorUtil = {
   /** 16进制颜色转为rgba颜色 */
   hexToRgba(hex: string, opacity?: number): string {
     let hexDowncase = hex.toLocaleLowerCase();
-
-    // 定义常见颜色名称与十六进制颜色值的映射关系
-    const colorMap: { [key: string]: string } = {
-      white: '#ffffff',
-      black: '#000000',
-      red: '#ff0000',
-      green: '#008000',
-      blue: '#0000ff',
-      yellow: '#ffff00',
-      cyan: '#00ffff',
-      magenta: '#ff00ff',
-      gray: '#808080',
-      silver: '#c0c0c0',
-      maroon: '#800000',
-      olive: '#808000',
-      navy: '#000080',
-      purple: '#800080',
-      teal: '#008080',
-      lime: '#00ff00',
-      aqua: '#00ffff',
-      fuchsia: '#ff00ff',
-      orange: '#ffa500',
-      brown: '#a52a2a',
-      pink: '#ffc0cb',
-    };
 
     // 将颜色名称转换为对应的十六进制值
     if (colorMap[hexDowncase]) {
@@ -87,7 +87,7 @@ const colorUtil = {
   },
 
   toRgbaArray(rgba: string): number[] {
-    return (rgba.startsWith('#') ? this.hexToRgba(rgba) : rgba).slice(5, -1).split(',').map(Number);
+    return this.hexToRgba(rgba).slice(5, -1).split(',').map(Number);
   },
 
   mixColor(color1: string, color2: string, weight = 0.5): string {

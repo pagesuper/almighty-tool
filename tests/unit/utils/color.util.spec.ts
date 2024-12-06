@@ -30,6 +30,7 @@ describe('colorUtil.toRgbaArray()', () => {
 
 describe('colorUtil.mixColor()', () => {
   test('成功', async () => {
+    assert.equal(colorUtil.mixColor('red', 'green', 0.5), 'rgba(128,64,0,1)');
     assert.equal(colorUtil.mixColor('#ffffff', '#000000', 0.5), 'rgba(128,128,128,1)');
     assert.equal(colorUtil.mixColor('#ffffff', '#000000', 1.0), 'rgba(255,255,255,1)');
     assert.equal(colorUtil.mixColor('#ffffffff', '#00000066', 0.5), 'rgba(128,128,128,0.7)');
