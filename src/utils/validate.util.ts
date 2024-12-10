@@ -86,11 +86,25 @@ const validateUtil = {
   },
 
   /**
+   * 获取错误码
+   * @param error 错误信息
+   * @returns 错误码
+   */
+  getErrorCode: (error: unknown) => {
+    if (typeof error === 'object' && error !== null && 'name' in error && typeof Reflect.get(error, 'name') === 'string') {
+      return Reflect.get(error, 'name');
+    }
+
+    return 'ValidateError.Failed';
+  },
+
+  /**
    * 获取错误信息
    * @param error 错误信息
+   * @param options 选项
    * @returns 错误信息
    */
-  getErrors: (error: unknown) => {
+  getErrors: (error: unknown, options?: { field?: string; fieldValue?: any }) => {
     if (typeof error === 'object' && error !== null && 'errors' in error) {
       const messageToCode = (str: string): string => {
         const regex = /[a-zA-Z0-9]+/g;
@@ -115,9 +129,9 @@ const validateUtil = {
     return [
       {
         message: validateUtil.getErrorMessage(error),
-        code: 'Error',
-        fieldValue: '',
-        field: '',
+        code: validateUtil.getErrorCode(error),
+        fieldValue: options?.fieldValue ?? '',
+        field: options?.field ?? '',
       },
     ] as ValidateError[];
   },

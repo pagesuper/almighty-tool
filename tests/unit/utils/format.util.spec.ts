@@ -178,3 +178,17 @@ describe('general.cssStyleObjectToString()', () => {
     assert.equal(cssString, cssStringExcepted);
   });
 });
+
+describe('formatUtil.isContainChinese', () => {
+  test('成功', async () => {
+    assert.equal(formatUtil.isContainChinese('hello'), false);
+    assert.equal(formatUtil.isContainChinese('你好'), true);
+    assert.equal(formatUtil.isContainChinese('你好，世界'), true);
+    assert.equal(formatUtil.isContainChinese('你好，世界！'), true);
+    assert.equal(formatUtil.isContainChinese('你好，世界！123'), true);
+    assert.equal(formatUtil.isContainChinese('吙謃攵'), true);
+    assert.equal(formatUtil.isContainChinese('體'), true);
+    assert.equal(formatUtil.isContainChinese('體！123'), true);
+    assert.equal(formatUtil.isContainChinese('ф̶ф̶'), false);
+  });
+});
