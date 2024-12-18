@@ -9,7 +9,7 @@ describe('validateUtil.getSchema()', () => {
 describe('validateUtil.validate()', () => {
   test('成功: empty', async () => {
     const result = await validateUtil.validate({}, {});
-    expect(result).toEqual({ success: true });
+    expect(result).toEqual({ success: true, values: {} });
   });
 
   test('成功: 单个字段', async () => {
@@ -25,6 +25,21 @@ describe('validateUtil.validate()', () => {
           message: 'name is required',
         },
       ],
+    });
+  });
+
+  test('成功: 多个字段', async () => {
+    const result = await validateUtil.validate(
+      {
+        name: { type: 'string', required: true },
+        age: { type: 'number', required: true },
+      },
+      { name: 'jack', age: 18 },
+    );
+
+    expect(result).toEqual({
+      success: true,
+      values: { name: 'jack', age: 18 },
     });
   });
 

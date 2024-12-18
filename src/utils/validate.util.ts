@@ -46,12 +46,21 @@ export interface ValidateError extends OriginalValidateError {
   code?: string;
 }
 
-export interface ValidateResponse {
+export interface ValidateResponseSuccess {
   /** 是否成功 */
-  success: boolean;
+  success: true;
+  /** 数据 */
+  values: ValidateValues;
+}
+
+export interface ValidateResponseFailed {
+  /** 是否成功 */
+  success: false;
   /** 错误信息 */
   errors?: ValidateError[];
 }
+
+export type ValidateResponse = ValidateResponseSuccess | ValidateResponseFailed;
 
 /** 校验工具 */
 const validateUtil = {
@@ -143,10 +152,17 @@ const validateUtil = {
    * @returns 校验结果
    */
   validate: async (rules: ValidateRules | ValidateSchema, data: ValidateValues): Promise<ValidateResponse> => {
+    return validateUtil.collect(async () => {
+      return await validateUtil.getSchema(rules).validate(data);
+    });
+  },
+
+  collect: async (validateFn: () => Promise<ValidateValues>): Promise<ValidateResponse> => {
     try {
-      await validateUtil.getSchema(rules).validate(data);
+      const values = await validateFn();
       return {
         success: true,
+        values,
       };
     } catch (error) {
       return {
