@@ -1,49 +1,45 @@
-import _ from 'lodash';
 import * as inflection from 'inflection';
+import _ from 'lodash';
 
 import ValidateSchema, {
   ValidateError as OriginalValidateError,
+  ValidateOption as OriginalValidateOption,
+  ValidateCallback,
   ExecuteRule as ValidateExecuteRule,
   ExecuteValidator as ValidateExecuteValidator,
+  ValidateFieldsError,
   InternalRuleItem as ValidateInternalRuleItem,
   InternalValidateMessages as ValidateInternalValidateMessages,
+  ValidateMessages,
+  ValidateResult,
   Rule as ValidateRule,
   RuleItem as ValidateRuleItem,
   Rules as ValidateRules,
   RuleType as ValidateRuleType,
   RuleValuePackage as ValidateRuleValuePackage,
-  ValidateCallback as ValidateValidateCallback,
-  ValidateFieldsError as ValidateValidateFieldsError,
-  ValidateMessages as ValidateValidateMessages,
-  ValidateOption as ValidateValidateOption,
-  ValidateResult as ValidateValidateResult,
   Value as ValidateValue,
   Values as ValidateValues,
 } from 'async-validator';
 
-export { ValidateSchema };
+export interface ValidateOption extends OriginalValidateOption {
+  /** 模型 */
+  model?: string;
+}
 
-export type {
-  ValidateExecuteRule,
-  ValidateExecuteValidator,
-  ValidateInternalRuleItem,
-  ValidateInternalValidateMessages,
-  ValidateRule,
-  ValidateRuleItem,
-  ValidateRules,
-  ValidateRuleType,
-  ValidateRuleValuePackage,
-  ValidateValidateCallback,
-  ValidateValidateFieldsError,
-  ValidateValidateMessages,
-  ValidateValidateOption,
-  ValidateValidateResult,
-  ValidateValue,
-  ValidateValues,
-};
+export interface GetErrorsOptions {
+  /** 模型 */
+  model?: string;
+  /** 字段 */
+  field?: string;
+  /** 字段值 */
+  fieldValue?: ValidateValue;
+}
 
 export interface ValidateError extends OriginalValidateError {
+  /** 错误码 */
   code?: string;
+  /** 模型 */
+  model?: string;
 }
 
 export interface ValidateResponse {
@@ -52,6 +48,26 @@ export interface ValidateResponse {
   /** 错误信息 */
   errors?: ValidateError[];
 }
+
+export { ValidateSchema };
+
+export type {
+  ValidateCallback,
+  ValidateExecuteRule,
+  ValidateExecuteValidator,
+  ValidateFieldsError,
+  ValidateInternalRuleItem,
+  ValidateInternalValidateMessages,
+  ValidateMessages,
+  ValidateResult,
+  ValidateRule,
+  ValidateRuleItem,
+  ValidateRules,
+  ValidateRuleType,
+  ValidateRuleValuePackage,
+  ValidateValue,
+  ValidateValues,
+};
 
 /** 校验工具 */
 const validateUtil = {
@@ -104,7 +120,7 @@ const validateUtil = {
    * @param options 选项
    * @returns 错误信息
    */
-  getErrors: (error: unknown, options?: { field?: string; fieldValue?: any }) => {
+  getErrors: (error: unknown, options?: GetErrorsOptions) => {
     if (typeof error === 'object' && error !== null && 'errors' in error) {
       const messageToCode = (str: string): string => {
         const regex = /[a-zA-Z0-9]+/g;
@@ -122,6 +138,7 @@ const validateUtil = {
         return {
           ..._.pick(err, ['message', 'field', 'fieldValue']),
           code,
+          model: options?.model,
         };
       });
     }
@@ -132,6 +149,7 @@ const validateUtil = {
         code: validateUtil.getErrorCode(error),
         fieldValue: options?.fieldValue ?? '',
         field: options?.field ?? '',
+        model: options?.model ?? '',
       },
     ] as ValidateError[];
   },
@@ -142,16 +160,23 @@ const validateUtil = {
    * @param data 数据
    * @returns 校验结果
    */
-  validate: async (rules: ValidateRules | ValidateSchema, data: ValidateValues): Promise<ValidateResponse> => {
+  validate: async (
+    rules: ValidateRules | ValidateSchema,
+    data: ValidateValues,
+    options?: ValidateOption,
+    callback?: ValidateCallback,
+  ): Promise<ValidateResponse> => {
+    const model = options?.model ?? 'Base';
+
     try {
-      await validateUtil.getSchema(rules).validate(data);
+      await validateUtil.getSchema(rules).validate(data, options, callback);
       return {
         success: true,
       };
     } catch (error) {
       return {
         success: false,
-        errors: validateUtil.getErrors(error),
+        errors: validateUtil.getErrors(error, { model }),
       };
     }
   },

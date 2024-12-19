@@ -23,6 +23,7 @@ describe('validateUtil.validate()', () => {
           field: 'name',
           fieldValue: '',
           message: 'name is required',
+          model: 'Base',
         },
       ],
     });
@@ -50,6 +51,7 @@ describe('validateUtil.validate()', () => {
           message: 'user.name is required',
           fieldValue: '',
           field: 'user.name',
+          model: 'Base',
         },
       ],
     });
@@ -94,6 +96,7 @@ describe('validateUtil.validate()', () => {
           field: 'user.age',
           fieldValue: 17,
           message: 'too young',
+          model: 'Base',
         },
       ],
     });
@@ -108,6 +111,22 @@ describe('validateUtil.validate()', () => {
           field: 'user.age',
           fieldValue: undefined,
           message: 'user.age is required',
+          model: 'Base',
+        },
+      ],
+    });
+
+    const result3 = await validateUtil.validate(rules, { user: { name: 'Haha' } }, { model: 'User' });
+
+    expect(result3).toEqual({
+      success: false,
+      errors: [
+        {
+          code: 'ValidateError.User.AgeIsRequired',
+          field: 'user.age',
+          fieldValue: undefined,
+          message: 'user.age is required',
+          model: 'User',
         },
       ],
     });
