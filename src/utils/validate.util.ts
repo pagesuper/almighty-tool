@@ -131,7 +131,9 @@ const validateUtil = {
       };
 
       return (Reflect.get(error, 'errors') as ValidateError[]).map((err) => {
-        const parts = (Reflect.get(err, 'message') ?? '').split('.').map((part: string) => {
+        const errMessage = Reflect.get(err, 'message') ?? '';
+
+        const parts = (typeof errMessage === 'string' ? errMessage : '').split('.').map((part: string) => {
           return inflection.camelize(messageToCode(part));
         });
 
