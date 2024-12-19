@@ -45,6 +45,8 @@ export interface ValidateError extends OriginalValidateError {
 export interface ValidateResponse {
   /** 是否成功 */
   success: boolean;
+  /** 数据 */
+  values: ValidateValues;
   /** 错误信息 */
   errors?: ValidateError[];
 }
@@ -147,9 +149,9 @@ const validateUtil = {
       {
         message: validateUtil.getErrorMessage(error),
         code: validateUtil.getErrorCode(error),
-        fieldValue: options?.fieldValue ?? '',
-        field: options?.field ?? '',
-        model: options?.model ?? '',
+        fieldValue: options?.fieldValue,
+        field: options?.field,
+        model: options?.model,
       },
     ] as ValidateError[];
   },
@@ -169,13 +171,15 @@ const validateUtil = {
     const model = options?.model ?? 'Base';
 
     try {
-      await validateUtil.getSchema(rules).validate(data, options, callback);
+      const values = await validateUtil.getSchema(rules).validate(data, options, callback);
       return {
         success: true,
+        values,
       };
     } catch (error) {
       return {
         success: false,
+        values: data,
         errors: validateUtil.getErrors(error, { model }),
       };
     }

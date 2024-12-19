@@ -9,7 +9,7 @@ describe('validateUtil.getSchema()', () => {
 describe('validateUtil.validate()', () => {
   test('成功: empty', async () => {
     const result = await validateUtil.validate({}, {});
-    expect(result).toEqual({ success: true });
+    expect(result).toEqual({ success: true, values: {} });
   });
 
   test('成功: 单个字段', async () => {
@@ -17,6 +17,7 @@ describe('validateUtil.validate()', () => {
 
     expect(result).toEqual({
       success: false,
+      values: { name: '' },
       errors: [
         {
           code: 'ValidateError.NameIsRequired',
@@ -26,6 +27,21 @@ describe('validateUtil.validate()', () => {
           model: 'Base',
         },
       ],
+    });
+  });
+
+  test('成功: 多个字段', async () => {
+    const result = await validateUtil.validate(
+      {
+        name: { type: 'string', required: true },
+        age: { type: 'number', required: true },
+      },
+      { name: 'jack', age: 18 },
+    );
+
+    expect(result).toEqual({
+      success: true,
+      values: { name: 'jack', age: 18 },
     });
   });
 
@@ -45,6 +61,7 @@ describe('validateUtil.validate()', () => {
 
     expect(result).toEqual({
       success: false,
+      values: { user: { name: '' } },
       errors: [
         {
           code: 'ValidateError.User.NameIsRequired',
@@ -90,6 +107,7 @@ describe('validateUtil.validate()', () => {
 
     expect(result1).toEqual({
       success: false,
+      values: { user: { name: 'Haha', age: 17 } },
       errors: [
         {
           code: 'ValidateError.TooYoung',
@@ -105,6 +123,7 @@ describe('validateUtil.validate()', () => {
 
     expect(result2).toEqual({
       success: false,
+      values: { user: { name: 'Haha' } },
       errors: [
         {
           code: 'ValidateError.User.AgeIsRequired',
@@ -120,6 +139,7 @@ describe('validateUtil.validate()', () => {
 
     expect(result3).toEqual({
       success: false,
+      values: { user: { name: 'Haha' } },
       errors: [
         {
           code: 'ValidateError.User.AgeIsRequired',
