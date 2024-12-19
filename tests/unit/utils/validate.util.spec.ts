@@ -9,7 +9,7 @@ describe('validateUtil.getSchema()', () => {
 describe('validateUtil.validate()', () => {
   test('成功: empty', async () => {
     const result = await validateUtil.validate({}, {});
-    expect(result).toEqual({ success: true, values: {} });
+    expect(result).toEqual({ success: true });
   });
 
   test('成功: 单个字段', async () => {
@@ -17,10 +17,8 @@ describe('validateUtil.validate()', () => {
 
     expect(result).toEqual({
       success: false,
-      values: { name: '' },
       errors: [
         {
-          code: 'ValidateError.NameIsRequired',
           field: 'name',
           fieldValue: '',
           message: 'name is required',
@@ -41,7 +39,6 @@ describe('validateUtil.validate()', () => {
 
     expect(result).toEqual({
       success: true,
-      values: { name: 'jack', age: 18 },
     });
   });
 
@@ -61,10 +58,8 @@ describe('validateUtil.validate()', () => {
 
     expect(result).toEqual({
       success: false,
-      values: { user: { name: '' } },
       errors: [
         {
-          code: 'ValidateError.User.NameIsRequired',
           message: 'user.name is required',
           fieldValue: '',
           field: 'user.name',
@@ -107,10 +102,8 @@ describe('validateUtil.validate()', () => {
 
     expect(result1).toEqual({
       success: false,
-      values: { user: { name: 'Haha', age: 17 } },
       errors: [
         {
-          code: 'ValidateError.TooYoung',
           field: 'user.age',
           fieldValue: 17,
           message: 'too young',
@@ -123,10 +116,8 @@ describe('validateUtil.validate()', () => {
 
     expect(result2).toEqual({
       success: false,
-      values: { user: { name: 'Haha' } },
       errors: [
         {
-          code: 'ValidateError.User.AgeIsRequired',
           field: 'user.age',
           fieldValue: undefined,
           message: 'user.age is required',
@@ -139,14 +130,56 @@ describe('validateUtil.validate()', () => {
 
     expect(result3).toEqual({
       success: false,
-      values: { user: { name: 'Haha' } },
       errors: [
         {
-          code: 'ValidateError.User.AgeIsRequired',
           field: 'user.age',
           fieldValue: undefined,
           message: 'user.age is required',
           model: 'User',
+        },
+      ],
+    });
+  });
+
+  test('成功: 异步 other error', async () => {
+    const rules: ValidateRules = {
+      user: {
+        type: 'object',
+        required: true,
+        fields: {
+          name: { type: 'string', required: true },
+          age: [
+            {
+              type: 'number',
+              required: true,
+            },
+            {
+              type: 'number',
+              asyncValidator: (rule: ValidateInternalRuleItem, value) => {
+                return new Promise((resolve, reject) => {
+                  if (value < 18) {
+                    reject(new Error('too young'));
+                  } else {
+                    resolve();
+                  }
+                });
+              },
+            },
+          ],
+        },
+      },
+    };
+
+    const result1 = await validateUtil.validate(rules, { user: { name: 'Haha', age: 17 } });
+
+    expect(result1).toEqual({
+      success: false,
+      errors: [
+        {
+          field: 'user.age',
+          fieldValue: 17,
+          message: 'too young',
+          model: 'Base',
         },
       ],
     });

@@ -1,6 +1,3 @@
-import * as inflection from 'inflection';
-import _ from 'lodash';
-
 import ValidateSchema, {
   ValidateError as OriginalValidateError,
   ValidateOption as OriginalValidateOption,
@@ -20,6 +17,7 @@ import ValidateSchema, {
   Value as ValidateValue,
   Values as ValidateValues,
 } from 'async-validator';
+import _ from 'lodash';
 
 export interface ValidateOption extends OriginalValidateOption {
   /** 模型 */
@@ -36,8 +34,6 @@ export interface GetErrorsOptions {
 }
 
 export interface ValidateError extends OriginalValidateError {
-  /** 错误码 */
-  code?: string;
   /** 模型 */
   model?: string;
 }
@@ -45,8 +41,6 @@ export interface ValidateError extends OriginalValidateError {
 export interface ValidateResponse {
   /** 是否成功 */
   success: boolean;
-  /** 数据 */
-  values: ValidateValues;
   /** 错误信息 */
   errors?: ValidateError[];
 }
@@ -86,34 +80,20 @@ const validateUtil = {
     return new ValidateSchema(rules);
   },
 
-  /**
-   * 获取错误信息
-   * @param error 错误信息
-   * @returns 错误信息
-   */
   getErrorMessage: (error: unknown) => {
-    if (typeof error === 'object' && error !== null && 'message' in error) {
-      return Reflect.get(error, 'message');
+    if (typeof error === 'object' && error !== null && ('message' in error || 'msg' in error)) {
+      return Reflect.get(error, 'message') ?? Reflect.get(error, 'msg');
     }
 
     if (typeof error === 'string') {
       return error;
     }
 
-    return `${error}`;
-  },
-
-  /**
-   * 获取错误码
-   * @param error 错误信息
-   * @returns 错误码
-   */
-  getErrorCode: (error: unknown) => {
-    if (typeof error === 'object' && error !== null && 'name' in error && typeof Reflect.get(error, 'name') === 'string') {
-      return Reflect.get(error, 'name');
+    try {
+      return JSON.stringify(error);
+    } catch (err) {
+      return error;
     }
-
-    return 'ValidateError.Failed';
   },
 
   /**
@@ -123,26 +103,14 @@ const validateUtil = {
    * @returns 错误信息
    */
   getErrors: (error: unknown, options?: GetErrorsOptions) => {
+    const model = options?.model ?? 'Base';
+
     if (typeof error === 'object' && error !== null && 'errors' in error) {
-      const messageToCode = (str: string): string => {
-        const regex = /[a-zA-Z0-9]+/g;
-        const matches = str.match(regex) || [];
-        return matches.map((word) => word.toLowerCase()).join('_');
-      };
-
       return (Reflect.get(error, 'errors') as ValidateError[]).map((err) => {
-        const errMessage = Reflect.get(err, 'message') ?? '';
-
-        const parts = (typeof errMessage === 'string' ? errMessage : '').split('.').map((part: string) => {
-          return inflection.camelize(messageToCode(part));
-        });
-
-        const code = `ValidateError.${parts.length ? parts.join('.') : 'Failed'}`;
-
         return {
-          ..._.pick(err, ['message', 'field', 'fieldValue']),
-          code,
-          model: options?.model,
+          ..._.pick(err, ['field', 'fieldValue']),
+          message: validateUtil.getErrorMessage(err.message),
+          model,
         };
       });
     }
@@ -150,10 +118,9 @@ const validateUtil = {
     return [
       {
         message: validateUtil.getErrorMessage(error),
-        code: validateUtil.getErrorCode(error),
         fieldValue: options?.fieldValue,
         field: options?.field,
-        model: options?.model,
+        model,
       },
     ] as ValidateError[];
   },
@@ -173,15 +140,13 @@ const validateUtil = {
     const model = options?.model ?? 'Base';
 
     try {
-      const values = await validateUtil.getSchema(rules).validate(data, options, callback);
+      await validateUtil.getSchema(rules).validate(data, options, callback);
       return {
         success: true,
-        values,
       };
     } catch (error) {
       return {
         success: false,
-        values: data,
         errors: validateUtil.getErrors(error, { model }),
       };
     }
