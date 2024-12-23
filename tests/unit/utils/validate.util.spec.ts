@@ -192,7 +192,7 @@ describe('validateUtil.validate()', () => {
 });
 
 describe('Validator', () => {
-  test('成功: 不能为空', async () => {
+  test('失败: 不能为空', async () => {
     const validator = new Validator({
       action: 'create',
       rules: {
@@ -214,6 +214,31 @@ describe('Validator', () => {
       ],
     });
   });
+
+  test('失败: 不能为空(自定义message)', async () => {
+    const validator = new Validator({
+      action: 'create',
+      rules: {
+        name: { regexpKey: 'blank-string', regexpReversed: true, message: '${label} can not be blank' },
+      },
+    });
+
+    const result = await validator.validate({ name: ' 　' });
+
+    expect(result).toEqual({
+      success: false,
+      errors: [
+        {
+          field: 'name',
+          fieldValue: ' 　',
+          message: 'InvalidReversed:blank-string',
+          model: 'Base',
+        },
+      ],
+    });
+  });
+
+
 
   test('成功', async () => {
     const validator = new Validator({
