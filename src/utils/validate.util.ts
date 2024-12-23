@@ -9,8 +9,7 @@ import ValidateSchema, {
   InternalValidateMessages as ValidateInternalValidateMessages,
   ValidateMessages,
   ValidateResult,
-  Rule as ValidateRule,
-  RuleItem as ValidateRuleItem,
+  RuleItem as OriginalValidateRuleItem,
   Rules as ValidateRules,
   RuleType as ValidateRuleType,
   RuleValuePackage as ValidateRuleValuePackage,
@@ -24,6 +23,15 @@ export interface ValidateOption extends OriginalValidateOption {
   /** 模型 */
   model?: string;
 }
+
+export interface ValidateRuleItem extends Omit<OriginalValidateRuleItem, 'fields'> {
+  /** 过滤器 */
+  filter?: (item: ValidateRuleItem) => boolean;
+  /** 子规则 */
+  fields?: Record<string, ValidateRule>;
+}
+
+export type ValidateRule = ValidateRuleItem | ValidateRuleItem[];
 
 export interface GetRuleOptions extends ValidateRuleItem {
   /** 正则表达式 */
@@ -66,8 +74,6 @@ export type {
   ValidateInternalValidateMessages,
   ValidateMessages,
   ValidateResult,
-  ValidateRule,
-  ValidateRuleItem,
   ValidateRules,
   ValidateRuleType,
   ValidateRuleValuePackage,
