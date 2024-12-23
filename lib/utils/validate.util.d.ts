@@ -3,9 +3,12 @@ export interface ValidateOption extends OriginalValidateOption {
     /** 模型 */
     model?: string;
 }
+export interface ValidateRuleItemRequiredFilterOptions {
+    item: ValidateRuleItem;
+}
 export interface ValidateRuleItem extends Omit<OriginalValidateRuleItem, 'fields'> {
     /** 过滤器 */
-    filter?: (item: ValidateRuleItem) => boolean;
+    requiredFn?: (options: ValidateRuleItemRequiredFilterOptions) => boolean;
     /** 子规则 */
     fields?: Record<string, ValidateRule>;
 }

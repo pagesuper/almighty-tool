@@ -23,9 +23,13 @@ export interface ValidateOption extends OriginalValidateOption {
   model?: string;
 }
 
+export interface ValidateRuleItemRequiredFilterOptions {
+  item: ValidateRuleItem;
+}
+
 export interface ValidateRuleItem extends Omit<OriginalValidateRuleItem, 'fields'> {
   /** 过滤器 */
-  filter?: (item: ValidateRuleItem) => boolean;
+  requiredFn?: (options: ValidateRuleItemRequiredFilterOptions) => boolean;
   /** 子规则 */
   fields?: Record<string, ValidateRule>;
 }
@@ -203,12 +207,24 @@ const validateUtil = {
       return Promise.resolve();
     };
 
-    return {
+    const rule: ValidateRuleItem = {
       ...options,
       type,
       message,
       asyncValidator,
     };
+
+    if (typeof options.requiredFn === 'function') {
+      rule.requiredFn = (opts: ValidateRuleItemRequiredFilterOptions) => {
+        if (typeof options.requiredFn === 'function') {
+          return options?.requiredFn?.(opts) ?? false;
+        }
+
+        return rule.required ?? false;
+      };
+    }
+
+    return rule;
   },
 };
 
