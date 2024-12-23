@@ -177,7 +177,7 @@ const validateUtil = {
   /** 获取规则 */
   getRule(options: GetRuleOptions): ValidateRuleItem {
     const regexpKey = options?.regexpKey;
-    const regexp = options?.regexp ?? (regexpKey ? regExps[regexpKey] : undefined);
+    const regexp = options?.regexp ?? (regexpKey ? Reflect.get(regExps, regexpKey) : undefined);
     const type = options?.type ?? 'string';
     const regexpReversed = options?.regexpReversed ?? false;
 

@@ -4,7 +4,7 @@ export type DATETIME_TYPE = 'long' | 'date' | 'shortDate' | 'shortTime' | 'time'
 export type DATETIME_LANG = 'en-US' | 'zh-CN';
 
 /** 常用的正则表达式 */
-export const regExps: Record<string, RegExp> = {
+export const regExps = {
   /** 网址 */
   url: /^(?!mailto:)(?:(?:http|https|ftp):\/\/|\/\/)(?:\S+(?::\S*)?@)?(?:(?:(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[0-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]+-*)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]+-*)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,})))|localhost)(?::\d{2,5})?(?:(\/|\?|#)[^\s]*)?$/i,
   /** 空字符串 */
@@ -45,7 +45,7 @@ export default {
   /** 判断是否是手机号码 */
   isMobileNumber(mobileNumber: string, locale: string = DEFAULT_LOCALE): boolean {
     if (locale === 'zh-CN') {
-      return regExps.cnMobilePhone.test(mobileNumber);
+      return regExps['mobile-number-china'].test(mobileNumber);
     } else {
       /** 其他的暂不支持 */
       return false;
@@ -81,7 +81,7 @@ export default {
 
   /** 是否包含中文 */
   isContainChinese(str: string): boolean {
-    return regExps.cnWords.test(str);
+    return regExps['words-chinese'].test(str);
   },
 
   /** 是否是链接 */
