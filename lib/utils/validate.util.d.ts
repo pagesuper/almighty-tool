@@ -1,4 +1,4 @@
-import ValidateSchema, { ValidateError as OriginalValidateError, ValidateOption as OriginalValidateOption, ValidateCallback, ExecuteRule as ValidateExecuteRule, ExecuteValidator as ValidateExecuteValidator, ValidateFieldsError, InternalRuleItem as ValidateInternalRuleItem, InternalValidateMessages as ValidateInternalValidateMessages, ValidateMessages, ValidateResult, RuleItem as OriginalValidateRuleItem, Rules as ValidateRules, RuleType as ValidateRuleType, RuleValuePackage as ValidateRuleValuePackage, Value as ValidateValue, Values as ValidateValues } from 'async-validator';
+import ValidateSchema, { ValidateError as OriginalValidateError, ValidateOption as OriginalValidateOption, ValidateCallback, ExecuteRule as ValidateExecuteRule, ExecuteValidator as ValidateExecuteValidator, ValidateFieldsError, InternalRuleItem as ValidateInternalRuleItem, InternalValidateMessages as ValidateInternalValidateMessages, ValidateMessages, ValidateResult, RuleItem as OriginalValidateRuleItem, RuleType as ValidateRuleType, RuleValuePackage as ValidateRuleValuePackage, Value as ValidateValue, Values as ValidateValues } from 'async-validator';
 export interface ValidateOption extends OriginalValidateOption {
     /** 模型 */
     model?: string;
@@ -10,6 +10,7 @@ export interface ValidateRuleItem extends Omit<OriginalValidateRuleItem, 'fields
     fields?: Record<string, ValidateRule>;
 }
 export declare type ValidateRule = ValidateRuleItem | ValidateRuleItem[];
+export declare type ValidateRules = Record<string, ValidateRule>;
 export interface GetRuleOptions extends ValidateRuleItem {
     /** 正则表达式 */
     regexp?: RegExp;
@@ -37,7 +38,7 @@ export interface ValidateResponse {
     errors?: ValidateError[];
 }
 export { ValidateSchema };
-export type { ValidateCallback, ValidateExecuteRule, ValidateExecuteValidator, ValidateFieldsError, ValidateInternalRuleItem, ValidateInternalValidateMessages, ValidateMessages, ValidateResult, ValidateRules, ValidateRuleType, ValidateRuleValuePackage, ValidateValue, ValidateValues, };
+export type { ValidateCallback, ValidateExecuteRule, ValidateExecuteValidator, ValidateFieldsError, ValidateInternalRuleItem, ValidateInternalValidateMessages, ValidateMessages, ValidateResult, ValidateRuleType, ValidateRuleValuePackage, ValidateValue, ValidateValues, };
 /** 校验工具 */
 declare const validateUtil: {
     /**

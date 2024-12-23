@@ -10,7 +10,6 @@ import ValidateSchema, {
   ValidateMessages,
   ValidateResult,
   RuleItem as OriginalValidateRuleItem,
-  Rules as ValidateRules,
   RuleType as ValidateRuleType,
   RuleValuePackage as ValidateRuleValuePackage,
   Value as ValidateValue,
@@ -32,6 +31,7 @@ export interface ValidateRuleItem extends Omit<OriginalValidateRuleItem, 'fields
 }
 
 export type ValidateRule = ValidateRuleItem | ValidateRuleItem[];
+export type ValidateRules = Record<string, ValidateRule>;
 
 export interface GetRuleOptions extends ValidateRuleItem {
   /** 正则表达式 */
@@ -74,7 +74,6 @@ export type {
   ValidateInternalValidateMessages,
   ValidateMessages,
   ValidateResult,
-  ValidateRules,
   ValidateRuleType,
   ValidateRuleValuePackage,
   ValidateValue,
