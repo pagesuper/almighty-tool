@@ -166,7 +166,8 @@ const validateUtil = {
   getRule(options: GetRuleOptions): ValidateRuleItem {
     const regexpKey = options?.regexpKey;
     const type = options?.type ?? 'string';
-    const message = options?.message ?? `${options.regexpReversed ? 'InvalidReversed' : 'Invalid'}:${options.regexpKey}`;
+    const message =
+      options?.message ?? `${options.regexpReversed ? 'InvalidReversed' : 'Invalid'}:${options.regexpKey ?? 'format'}`;
     const regexpReversed = options?.regexpReversed ?? false;
 
     const asyncValidator = async (
