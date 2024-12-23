@@ -23,13 +23,13 @@ export interface ValidateOption extends OriginalValidateOption {
   model?: string;
 }
 
-export interface ValidateRuleItemRequiredFilterOptions {
+export interface ValidateRuleItemRequiredFnOptions {
   item: ValidateRuleItem;
 }
 
 export interface ValidateRuleItem extends Omit<OriginalValidateRuleItem, 'fields'> {
   /** 过滤器 */
-  requiredFn?: (options: ValidateRuleItemRequiredFilterOptions) => boolean;
+  requiredFn?: (options: ValidateRuleItemRequiredFnOptions) => boolean;
   /** 子规则 */
   fields?: Record<string, ValidateRule>;
 }
@@ -215,13 +215,15 @@ const validateUtil = {
     };
 
     if (typeof options.requiredFn === 'function') {
-      rule.requiredFn = (opts: ValidateRuleItemRequiredFilterOptions) => {
+      rule.requiredFn = (opts: ValidateRuleItemRequiredFnOptions) => {
         if (typeof options.requiredFn === 'function') {
           return options?.requiredFn?.(opts) ?? false;
         }
 
         return rule.required ?? false;
       };
+
+      rule.required = options.requiredFn({ item: rule });
     }
 
     return rule;
