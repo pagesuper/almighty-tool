@@ -1,6 +1,7 @@
 import ValidateSchema, {
   ValidateError as OriginalValidateError,
   ValidateOption as OriginalValidateOption,
+  RuleItem as OriginalValidateRuleItem,
   ValidateCallback,
   ExecuteRule as ValidateExecuteRule,
   ExecuteValidator as ValidateExecuteValidator,
@@ -9,7 +10,6 @@ import ValidateSchema, {
   InternalValidateMessages as ValidateInternalValidateMessages,
   ValidateMessages,
   ValidateResult,
-  RuleItem as OriginalValidateRuleItem,
   RuleType as ValidateRuleType,
   RuleValuePackage as ValidateRuleValuePackage,
   Value as ValidateValue,
@@ -28,8 +28,6 @@ export interface ValidateRuleItemRequiredFnOptions {
 }
 
 export interface ValidateRuleItem extends Omit<OriginalValidateRuleItem, 'fields'> {
-  /** 过滤器 */
-  requiredFn?: (options: ValidateRuleItemRequiredFnOptions) => boolean;
   /** 子规则 */
   fields?: Record<string, ValidateRule>;
 }
@@ -37,7 +35,9 @@ export interface ValidateRuleItem extends Omit<OriginalValidateRuleItem, 'fields
 export type ValidateRule = ValidateRuleItem | ValidateRuleItem[];
 export type ValidateRules = Record<string, ValidateRule>;
 
-export interface GetRuleOptions extends ValidateRuleItem {
+export interface GetRuleOptions extends Omit<ValidateRuleItem, 'fields'> {
+  /** 子规则 */
+  fields?: Record<string, GetRuleOptions | GetRuleOptions[]>;
   /** 正则表达式 */
   regexp?: RegExp;
   /** 正则表达式的key */
@@ -45,6 +45,8 @@ export interface GetRuleOptions extends ValidateRuleItem {
   /** 相反 */
   regexpReversed?: boolean;
 }
+
+export type GetRulesOptions = Record<string, GetRuleOptions | GetRuleOptions[]>;
 
 export interface GetErrorsOptions {
   /** 模型 */
@@ -159,7 +161,8 @@ const validateUtil = {
     const model = options?.model ?? 'Base';
 
     try {
-      await validateUtil.getSchema(rules).validate(data, options, callback);
+      const schema = validateUtil.getSchema(rules);
+      await schema.validate(data, options, callback);
       return {
         success: true,
       };
@@ -174,56 +177,76 @@ const validateUtil = {
   /** 获取规则 */
   getRule(options: GetRuleOptions): ValidateRuleItem {
     const regexpKey = options?.regexpKey;
+    const regexp = options?.regexp ?? (regexpKey ? regExps[regexpKey] : undefined);
     const type = options?.type ?? 'string';
-    const message =
-      options?.message ?? `${options.regexpReversed ? 'InvalidReversed' : 'Invalid'}:${options.regexpKey ?? 'format'}`;
     const regexpReversed = options?.regexpReversed ?? false;
 
-    const asyncValidator = async (
-      rule: ValidateInternalRuleItem,
-      value: ValidateValue,
-      callback: (error?: string | Error) => void,
-      source: ValidateValues,
-      option: ValidateOption,
-    ): Promise<void> => {
-      const regexp = options?.regexp ?? (regexpKey ? regExps[regexpKey] : undefined);
+    const message = (() => {
+      if (options.message) {
+        return options.message;
+      }
 
-      if (regexp) {
-        if (regexpReversed) {
-          if (regexp.test(value)) {
-            return Promise.reject(message);
-          }
-        } else {
-          if (!regexp.test(value)) {
-            return Promise.reject(message);
+      if (regexpKey) {
+        return `${options.regexpReversed ? 'InvalidReversed' : 'Invalid'}:${options.regexpKey ?? 'format'}`;
+      }
+
+      return undefined;
+    })();
+
+    const asyncValidator = (() => {
+      if (!regexp && options.asyncValidator === undefined) {
+        return undefined;
+      }
+
+      return async (
+        rule: ValidateInternalRuleItem,
+        value: ValidateValue,
+        callback: (error?: string | Error) => void,
+        source: ValidateValues,
+        option: ValidateOption,
+      ): Promise<void> => {
+        if (regexp) {
+          if (regexpReversed) {
+            if (regexp.test(value)) {
+              return Promise.reject(message);
+            }
+          } else {
+            if (!regexp.test(value)) {
+              return Promise.reject(message);
+            }
           }
         }
-      }
 
-      if (typeof options.asyncValidator === 'function') {
-        return await options.asyncValidator(rule, value, callback, source, option);
-      }
+        if (typeof options.asyncValidator === 'function') {
+          return await options.asyncValidator(rule, value, callback, source, option);
+        }
 
-      return Promise.resolve();
-    };
+        return Promise.resolve();
+      };
+    })();
 
     const rule: ValidateRuleItem = {
       ...options,
       type,
       message,
-      asyncValidator,
     };
 
-    if (typeof options.requiredFn === 'function') {
-      rule.requiredFn = (opts: ValidateRuleItemRequiredFnOptions) => {
-        if (typeof options.requiredFn === 'function') {
-          return options?.requiredFn?.(opts) ?? false;
-        }
+    if (asyncValidator) {
+      rule.asyncValidator = asyncValidator;
+    }
 
-        return rule.required ?? false;
-      };
-
-      rule.required = options.requiredFn({ item: rule });
+    if (options.fields) {
+      rule.fields = _.reduce(
+        options.fields,
+        (result: Record<string, ValidateRuleItem[]>, field, fieldKey) => {
+          const fields = (Array.isArray(field) ? field : [field]).map((field) => {
+            return validateUtil.getRule(field);
+          });
+          Reflect.set(result, fieldKey, fields);
+          return result;
+        },
+        {},
+      );
     }
 
     return rule;
@@ -231,3 +254,47 @@ const validateUtil = {
 };
 
 export default validateUtil;
+
+export interface ValidatorOptions {
+  action: string;
+  rules: Record<string, GetRuleOptions>;
+  model?: string;
+}
+
+export class Validator {
+  public action!: string;
+  public rules: Record<string, ValidateRules> = {};
+  public model: string = 'Base';
+
+  constructor(options: ValidatorOptions) {
+    this.action = options.action;
+    this.rules = this.loadRules(options.rules ?? {});
+    this.model = options.model ?? this.model;
+  }
+
+  public validate(data: ValidateValues, options?: ValidateOption, callback?: ValidateCallback) {
+    return validateUtil.validate(this.rules, data, { model: this.model, ...options }, callback);
+  }
+
+  private loadRules(rules: GetRulesOptions) {
+    return _.reduce(
+      rules,
+      (result, options, fieldKey) => {
+        const loadedRule = this.loadRule(options);
+        Reflect.set(result, fieldKey, loadedRule);
+        return result;
+      },
+      {},
+    );
+  }
+
+  private loadRule(options: GetRuleOptions | GetRuleOptions[] = {}) {
+    if (Array.isArray(options)) {
+      return options.map((option) => {
+        return validateUtil.getRule(option);
+      });
+    }
+
+    return validateUtil.getRule(options);
+  }
+}

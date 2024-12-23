@@ -1,4 +1,4 @@
-import ValidateSchema, { ValidateError as OriginalValidateError, ValidateOption as OriginalValidateOption, ValidateCallback, ExecuteRule as ValidateExecuteRule, ExecuteValidator as ValidateExecuteValidator, ValidateFieldsError, InternalRuleItem as ValidateInternalRuleItem, InternalValidateMessages as ValidateInternalValidateMessages, ValidateMessages, ValidateResult, RuleItem as OriginalValidateRuleItem, RuleType as ValidateRuleType, RuleValuePackage as ValidateRuleValuePackage, Value as ValidateValue, Values as ValidateValues } from 'async-validator';
+import ValidateSchema, { ValidateError as OriginalValidateError, ValidateOption as OriginalValidateOption, RuleItem as OriginalValidateRuleItem, ValidateCallback, ExecuteRule as ValidateExecuteRule, ExecuteValidator as ValidateExecuteValidator, ValidateFieldsError, InternalRuleItem as ValidateInternalRuleItem, InternalValidateMessages as ValidateInternalValidateMessages, ValidateMessages, ValidateResult, RuleType as ValidateRuleType, RuleValuePackage as ValidateRuleValuePackage, Value as ValidateValue, Values as ValidateValues } from 'async-validator';
 export interface ValidateOption extends OriginalValidateOption {
     /** 模型 */
     model?: string;
@@ -7,14 +7,14 @@ export interface ValidateRuleItemRequiredFnOptions {
     item: ValidateRuleItem;
 }
 export interface ValidateRuleItem extends Omit<OriginalValidateRuleItem, 'fields'> {
-    /** 过滤器 */
-    requiredFn?: (options: ValidateRuleItemRequiredFnOptions) => boolean;
     /** 子规则 */
     fields?: Record<string, ValidateRule>;
 }
 export declare type ValidateRule = ValidateRuleItem | ValidateRuleItem[];
 export declare type ValidateRules = Record<string, ValidateRule>;
-export interface GetRuleOptions extends ValidateRuleItem {
+export interface GetRuleOptions extends Omit<ValidateRuleItem, 'fields'> {
+    /** 子规则 */
+    fields?: Record<string, GetRuleOptions | GetRuleOptions[]>;
     /** 正则表达式 */
     regexp?: RegExp;
     /** 正则表达式的key */
@@ -22,6 +22,7 @@ export interface GetRuleOptions extends ValidateRuleItem {
     /** 相反 */
     regexpReversed?: boolean;
 }
+export declare type GetRulesOptions = Record<string, GetRuleOptions | GetRuleOptions[]>;
 export interface GetErrorsOptions {
     /** 模型 */
     model?: string;
@@ -74,3 +75,17 @@ declare const validateUtil: {
     getRule(options: GetRuleOptions): ValidateRuleItem;
 };
 export default validateUtil;
+export interface ValidatorOptions {
+    action: string;
+    rules: Record<string, GetRuleOptions>;
+    model?: string;
+}
+export declare class Validator {
+    action: string;
+    rules: Record<string, ValidateRules>;
+    model: string;
+    constructor(options: ValidatorOptions);
+    validate(data: ValidateValues, options?: ValidateOption, callback?: ValidateCallback): Promise<ValidateResponse>;
+    private loadRules;
+    private loadRule;
+}
