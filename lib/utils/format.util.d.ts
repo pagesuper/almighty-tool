@@ -7,6 +7,8 @@ export declare const regExps: {
     url: RegExp;
     /** 空字符串 */
     'blank-string': RegExp;
+    /** 含有空格 */
+    'contain-blank': RegExp;
     /** 邮箱 */
     email: RegExp;
     /** 手机号 */

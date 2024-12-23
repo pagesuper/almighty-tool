@@ -5,193 +5,216 @@ import validateUtil, {
   Validator,
 } from '../../../src/utils/validate.util';
 
-// describe('validateUtil.getSchema()', () => {
-//   test('成功', async () => {
-//     expect(validateUtil.getSchema({})).toBeInstanceOf(ValidateSchema);
-//   });
-// });
+describe('validateUtil.getSchema()', () => {
+  test('成功', async () => {
+    expect(validateUtil.getSchema({})).toBeInstanceOf(ValidateSchema);
+  });
+});
 
-// describe('validateUtil.validate()', () => {
-//   test('成功: empty', async () => {
-//     const result = await validateUtil.validate({}, {});
-//     expect(result).toEqual({ success: true });
-//   });
+describe('validateUtil.validate()', () => {
+  test('成功: empty', async () => {
+    const result = await validateUtil.validate({}, {});
+    expect(result).toEqual({ success: true });
+  });
 
-//   test('成功: 单个字段', async () => {
-//     const result = await validateUtil.validate({ name: { type: 'string', required: true } }, { name: '' });
+  test('成功: 单个字段', async () => {
+    const result = await validateUtil.validate({ name: { type: 'string', required: true } }, { name: '' });
 
-//     expect(result).toEqual({
-//       success: false,
-//       errors: [
-//         {
-//           field: 'name',
-//           fieldValue: '',
-//           message: 'name is required',
-//           model: 'Base',
-//         },
-//       ],
-//     });
-//   });
+    expect(result).toEqual({
+      success: false,
+      errors: [
+        {
+          field: 'name',
+          fieldValue: '',
+          message: 'name is required',
+          model: 'Base',
+        },
+      ],
+    });
+  });
 
-//   test('成功: 多个字段', async () => {
-//     const result = await validateUtil.validate(
-//       {
-//         name: { type: 'string', required: true },
-//         age: { type: 'number', required: true },
-//       },
-//       { name: 'jack', age: 18 },
-//     );
+  test('成功: 多个字段', async () => {
+    const result = await validateUtil.validate(
+      {
+        name: { type: 'string', required: true },
+        age: { type: 'number', required: true },
+      },
+      { name: 'jack', age: 18 },
+    );
 
-//     expect(result).toEqual({
-//       success: true,
-//     });
-//   });
+    expect(result).toEqual({
+      success: true,
+    });
+  });
 
-//   test('成功: 嵌套', async () => {
-//     const result = await validateUtil.validate(
-//       {
-//         user: {
-//           type: 'object',
-//           required: true,
-//           fields: {
-//             name: { type: 'string', required: true },
-//           },
-//         },
-//       },
-//       { user: { name: '' } },
-//     );
+  test('成功: 嵌套', async () => {
+    const result = await validateUtil.validate(
+      {
+        user: {
+          type: 'object',
+          required: true,
+          fields: {
+            name: { type: 'string', required: true },
+          },
+        },
+      },
+      { user: { name: '' } },
+    );
 
-//     expect(result).toEqual({
-//       success: false,
-//       errors: [
-//         {
-//           message: 'user.name is required',
-//           fieldValue: '',
-//           field: 'user.name',
-//           model: 'Base',
-//         },
-//       ],
-//     });
-//   });
+    expect(result).toEqual({
+      success: false,
+      errors: [
+        {
+          message: 'user.name is required',
+          fieldValue: '',
+          field: 'user.name',
+          model: 'Base',
+        },
+      ],
+    });
+  });
 
-//   test('成功: 异步', async () => {
-//     const rules: ValidateRules = {
-//       user: {
-//         type: 'object',
-//         required: true,
-//         fields: {
-//           name: { type: 'string', required: true },
-//           age: [
-//             {
-//               type: 'number',
-//               required: true,
-//             },
-//             {
-//               type: 'number',
-//               asyncValidator: (rule: ValidateInternalRuleItem, value) => {
-//                 return new Promise((resolve, reject) => {
-//                   if (value < 18) {
-//                     reject(new Error('too young'));
-//                   } else {
-//                     resolve();
-//                   }
-//                 });
-//               },
-//             },
-//           ],
-//         },
-//       },
-//     };
+  test('成功: 异步', async () => {
+    const rules: ValidateRules = {
+      user: {
+        type: 'object',
+        required: true,
+        fields: {
+          name: { type: 'string', required: true },
+          age: [
+            {
+              type: 'number',
+              required: true,
+            },
+            {
+              type: 'number',
+              asyncValidator: (rule: ValidateInternalRuleItem, value) => {
+                return new Promise((resolve, reject) => {
+                  if (value < 18) {
+                    reject(new Error('too young'));
+                  } else {
+                    resolve();
+                  }
+                });
+              },
+            },
+          ],
+        },
+      },
+    };
 
-//     const result1 = await validateUtil.validate(rules, { user: { name: 'Haha', age: 17 } });
+    const result1 = await validateUtil.validate(rules, { user: { name: 'Haha', age: 17 } });
 
-//     expect(result1).toEqual({
-//       success: false,
-//       errors: [
-//         {
-//           field: 'user.age',
-//           fieldValue: 17,
-//           message: 'too young',
-//           model: 'Base',
-//         },
-//       ],
-//     });
+    expect(result1).toEqual({
+      success: false,
+      errors: [
+        {
+          field: 'user.age',
+          fieldValue: 17,
+          message: 'too young',
+          model: 'Base',
+        },
+      ],
+    });
 
-//     const result2 = await validateUtil.validate(rules, { user: { name: 'Haha' } });
+    const result2 = await validateUtil.validate(rules, { user: { name: 'Haha' } });
 
-//     expect(result2).toEqual({
-//       success: false,
-//       errors: [
-//         {
-//           field: 'user.age',
-//           fieldValue: undefined,
-//           message: 'user.age is required',
-//           model: 'Base',
-//         },
-//       ],
-//     });
+    expect(result2).toEqual({
+      success: false,
+      errors: [
+        {
+          field: 'user.age',
+          fieldValue: undefined,
+          message: 'user.age is required',
+          model: 'Base',
+        },
+      ],
+    });
 
-//     const result3 = await validateUtil.validate(rules, { user: { name: 'Haha' } }, { model: 'User' });
+    const result3 = await validateUtil.validate(rules, { user: { name: 'Haha' } }, { model: 'User' });
 
-//     expect(result3).toEqual({
-//       success: false,
-//       errors: [
-//         {
-//           field: 'user.age',
-//           fieldValue: undefined,
-//           message: 'user.age is required',
-//           model: 'User',
-//         },
-//       ],
-//     });
-//   });
+    expect(result3).toEqual({
+      success: false,
+      errors: [
+        {
+          field: 'user.age',
+          fieldValue: undefined,
+          message: 'user.age is required',
+          model: 'User',
+        },
+      ],
+    });
+  });
 
-//   test('成功: 异步 other error', async () => {
-//     const rules: ValidateRules = {
-//       user: {
-//         type: 'object',
-//         required: true,
-//         fields: {
-//           name: { type: 'string', required: true },
-//           age: [
-//             {
-//               type: 'number',
-//               required: true,
-//             },
-//             {
-//               type: 'number',
-//               asyncValidator: (rule: ValidateInternalRuleItem, value) => {
-//                 return new Promise((resolve, reject) => {
-//                   if (value < 18) {
-//                     reject(new Error('too young'));
-//                   } else {
-//                     resolve();
-//                   }
-//                 });
-//               },
-//             },
-//           ],
-//         },
-//       },
-//     };
+  test('成功: 异步 other error', async () => {
+    const rules: ValidateRules = {
+      user: {
+        type: 'object',
+        required: true,
+        fields: {
+          name: { type: 'string', required: true },
+          age: [
+            {
+              type: 'number',
+              required: true,
+            },
+            {
+              type: 'number',
+              asyncValidator: (rule: ValidateInternalRuleItem, value) => {
+                return new Promise((resolve, reject) => {
+                  if (value < 18) {
+                    reject(new Error('too young'));
+                  } else {
+                    resolve();
+                  }
+                });
+              },
+            },
+          ],
+        },
+      },
+    };
 
-//     const result1 = await validateUtil.validate(rules, { user: { name: 'Haha', age: 17 } });
+    const result1 = await validateUtil.validate(rules, { user: { name: 'Haha', age: 17 } });
 
-//     expect(result1).toEqual({
-//       success: false,
-//       errors: [
-//         {
-//           field: 'user.age',
-//           fieldValue: 17,
-//           message: 'too young',
-//           model: 'Base',
-//         },
-//       ],
-//     });
-//   });
-// });
+    expect(result1).toEqual({
+      success: false,
+      errors: [
+        {
+          field: 'user.age',
+          fieldValue: 17,
+          message: 'too young',
+          model: 'Base',
+        },
+      ],
+    });
+  });
+});
 
 describe('Validator', () => {
+  test('成功: 不能为空', async () => {
+    const validator = new Validator({
+      action: 'create',
+      rules: {
+        name: { regexpKey: 'blank-string', regexpReversed: true },
+      },
+    });
+
+    const result = await validator.validate({ name: ' 　' });
+
+    expect(result).toEqual({
+      success: false,
+      errors: [
+        {
+          field: 'name',
+          fieldValue: ' 　',
+          message: 'InvalidReversed:blank-string',
+          model: 'Base',
+        },
+      ],
+    });
+  });
+
   test('成功', async () => {
     const validator = new Validator({
       action: 'create',
@@ -254,6 +277,4 @@ describe('Validator', () => {
       ],
     });
   });
-
 });
-
