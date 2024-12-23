@@ -257,7 +257,7 @@ export default validateUtil;
 
 export interface ValidatorOptions {
   action: string;
-  rules: Record<string, GetRuleOptions>;
+  rules: Record<string, GetRuleOptions | GetRuleOptions[]>;
   model?: string;
 }
 
