@@ -18,10 +18,20 @@ import ValidateSchema, {
   Values as ValidateValues,
 } from 'async-validator';
 import _ from 'lodash';
+import { regExps } from './format.util';
 
 export interface ValidateOption extends OriginalValidateOption {
   /** 模型 */
   model?: string;
+}
+
+export interface GetRuleOptions extends ValidateRuleItem {
+  /** 正则表达式 */
+  regexp?: RegExp;
+  /** 正则表达式的key */
+  regexpKey?: string;
+  /** 相反 */
+  regexpReversed?: boolean;
 }
 
 export interface GetErrorsOptions {
@@ -150,6 +160,49 @@ const validateUtil = {
         errors: validateUtil.getErrors(error, { model }),
       };
     }
+  },
+
+  /** 获取规则 */
+  getRule(options: GetRuleOptions): ValidateRuleItem {
+    const regexpKey = options?.regexpKey;
+    const type = options?.type ?? 'string';
+    const message = options?.message ?? `${options.regexpReversed ? 'InvalidReversed' : 'Invalid'}:${options.regexpKey}`;
+    const regexpReversed = options?.regexpReversed ?? false;
+
+    const asyncValidator = async (
+      rule: ValidateInternalRuleItem,
+      value: ValidateValue,
+      callback: (error?: string | Error) => void,
+      source: ValidateValues,
+      option: ValidateOption,
+    ): Promise<void> => {
+      const regexp = options?.regexp ?? (regexpKey ? regExps[regexpKey] : undefined);
+
+      if (regexp) {
+        if (regexpReversed) {
+          if (regexp.test(value)) {
+            return Promise.reject(message);
+          }
+        } else {
+          if (!regexp.test(value)) {
+            return Promise.reject(message);
+          }
+        }
+      }
+
+      if (typeof options.asyncValidator === 'function') {
+        return await options.asyncValidator(rule, value, callback, source, option);
+      }
+
+      return Promise.resolve();
+    };
+
+    return {
+      ...options,
+      type,
+      message,
+      asyncValidator,
+    };
   },
 };
 
