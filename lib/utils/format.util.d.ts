@@ -39,8 +39,8 @@ export declare const regExps: {
     'date-time-format': RegExp;
 };
 declare const _default: {
-    /** 判断是否是手机号码 */
-    isMobileNumber(mobileNumber: string, locale?: string): boolean;
+    isChinaMobileNumber(mobileNumber: string): boolean;
+    isMobileNumber(mobileNumber: string, region?: string): boolean;
     /** 是否是纯数字 */
     isPureNumber(str: string): boolean;
     /**

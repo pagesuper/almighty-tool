@@ -1,24 +1,5 @@
 import _ from 'lodash';
-
-export type TranslateOptions = {
-  lang?: string;
-  args?:
-    | (
-        | {
-            [k: string]: any;
-          }
-        | string
-      )[]
-    | {
-        [k: string]: any;
-      };
-  defaultValue?: string;
-  debug?: boolean;
-};
-
-export interface I18n {
-  t: (key: string, options?: TranslateOptions) => string;
-}
+import { I18n, i18nConfig } from './i18n';
 
 export interface IEnumObjectTranslate {
   [key: string]: string;
@@ -27,7 +8,7 @@ export interface IEnumObjectTranslate {
 export interface IEnumObject<T> {
   source: T;
   name: string;
-  i18n: I18n | (() => I18n);
+  i18n?: I18n | (() => I18n);
   langs?: string[];
 }
 
@@ -42,7 +23,7 @@ export class EnumObject<T extends Record<string, string | number>> {
     this.source = options.source;
     this.name = options.name;
     this.langs = options.langs ?? this.langs;
-    this.i18n = options.i18n;
+    this.i18n = options.i18n ?? i18nConfig.i18n;
 
     Object.entries(options.source).forEach(([key, value]) => {
       this.valueMap.set(key, value);
@@ -65,7 +46,7 @@ export class EnumObject<T extends Record<string, string | number>> {
   private translate: IEnumObjectTranslate | null = null;
 
   public getI18n() {
-    return typeof this.i18n === 'function' ? this.i18n() : this.i18n;
+    return (typeof this.i18n === 'function' ? this.i18n() : this.i18n) ?? i18nConfig.i18n;
   }
 
   /**

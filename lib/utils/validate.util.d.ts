@@ -1,4 +1,5 @@
 import ValidateSchema, { ValidateError as OriginalValidateError, ValidateOption as OriginalValidateOption, RuleItem as OriginalValidateRuleItem, ValidateCallback, ExecuteRule as ValidateExecuteRule, ExecuteValidator as ValidateExecuteValidator, ValidateFieldsError, InternalRuleItem as ValidateInternalRuleItem, InternalValidateMessages as ValidateInternalValidateMessages, ValidateMessages, ValidateResult, RuleType as ValidateRuleType, RuleValuePackage as ValidateRuleValuePackage, Value as ValidateValue, Values as ValidateValues } from 'async-validator';
+import { I18n } from '../common/i18n';
 export interface ValidateOption extends OriginalValidateOption {
     /** 模型 */
     model?: string;
@@ -13,6 +14,8 @@ export interface ValidateRuleItem extends Omit<OriginalValidateRuleItem, 'fields
 export declare type ValidateRule = ValidateRuleItem | ValidateRuleItem[];
 export declare type ValidateRules = Record<string, ValidateRule>;
 export interface GetRuleOptions extends Omit<ValidateRuleItem, 'fields'> {
+    /** 字段 */
+    label?: string;
     /** 子规则 */
     fields?: Record<string, GetRuleOptions | GetRuleOptions[]>;
     /** 正则表达式 */
@@ -79,12 +82,15 @@ export interface ValidatorOptions {
     action: string;
     rules: Record<string, GetRuleOptions | GetRuleOptions[]>;
     model?: string;
+    i18n?: I18n | (() => I18n);
 }
 export declare class Validator {
     action: string;
     rules: Record<string, ValidateRules>;
     model: string;
+    i18n: I18n | (() => I18n);
     constructor(options: ValidatorOptions);
+    getI18n(): I18n;
     validate(data: ValidateValues, options?: ValidateOption, callback?: ValidateCallback): Promise<ValidateResponse>;
     private loadRules;
     private loadRule;

@@ -12,7 +12,9 @@ export const regExps = {
   /** 含有空格 */
   'contain-blank': /[\s\u3000\n\t]/,
   /** 邮箱 */
-  email: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+  email:
+    // eslint-disable-next-line no-useless-escape
+    /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+\.)+[a-zA-Z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]{2,}))$/,
   /** 手机号 */
   'mobile-number-china': /^1[3456789]\d{9}$/,
   /** 身份证 */
@@ -44,14 +46,16 @@ export const regExps = {
 };
 
 export default {
-  /** 判断是否是手机号码 */
-  isMobileNumber(mobileNumber: string, locale: string = DEFAULT_LOCALE): boolean {
-    if (locale === 'zh-CN') {
-      return regExps['mobile-number-china'].test(mobileNumber);
-    } else {
-      /** 其他的暂不支持 */
-      return false;
+  isChinaMobileNumber(mobileNumber: string): boolean {
+    return regExps['mobile-number-china'].test(mobileNumber);
+  },
+
+  isMobileNumber(mobileNumber: string, region = '+86'): boolean {
+    if (region === '+86') {
+      return this.isChinaMobileNumber(mobileNumber);
     }
+
+    return false;
   },
 
   /** 是否是纯数字 */

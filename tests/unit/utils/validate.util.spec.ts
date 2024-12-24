@@ -219,7 +219,8 @@ describe('Validator', () => {
     const validator = new Validator({
       action: 'create',
       rules: {
-        name: { regexpKey: 'blank-string', regexpReversed: true, message: '${label} can not be blank' },
+        // eslint-disable-next-line no-template-curly-in-string
+        name: { regexpKey: 'blank-string', regexpReversed: true, message: '{label} can not be blank' },
       },
     });
 
@@ -231,14 +232,12 @@ describe('Validator', () => {
         {
           field: 'name',
           fieldValue: ' 　',
-          message: 'InvalidReversed:blank-string',
+          message: '{label} can not be blank',
           model: 'Base',
         },
       ],
     });
   });
-
-
 
   test('成功', async () => {
     const validator = new Validator({
@@ -297,6 +296,29 @@ describe('Validator', () => {
           field: 'name',
           fieldValue: 'rose',
           message: 'Invalid:email',
+          model: 'User',
+        },
+      ],
+    });
+  });
+
+  test('失败: 自定义正则, message 为函数', async () => {
+    const validator = new Validator({
+      action: 'create',
+      rules: {
+        name: { regexpKey: 'email', message: (label) => `${label} can not be email` },
+      },
+    });
+
+    const result = await validator.validate({ name: 'rose', age: 'jack' }, { model: 'User' });
+
+    expect(result).toEqual({
+      success: false,
+      errors: [
+        {
+          field: 'name',
+          fieldValue: 'rose',
+          message: 'name can not be email',
           model: 'User',
         },
       ],

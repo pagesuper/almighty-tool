@@ -1,23 +1,11 @@
-export declare type TranslateOptions = {
-    lang?: string;
-    args?: ({
-        [k: string]: any;
-    } | string)[] | {
-        [k: string]: any;
-    };
-    defaultValue?: string;
-    debug?: boolean;
-};
-export interface I18n {
-    t: (key: string, options?: TranslateOptions) => string;
-}
+import { I18n } from './i18n';
 export interface IEnumObjectTranslate {
     [key: string]: string;
 }
 export interface IEnumObject<T> {
     source: T;
     name: string;
-    i18n: I18n | (() => I18n);
+    i18n?: I18n | (() => I18n);
     langs?: string[];
 }
 export interface IEnumObjectOptions {

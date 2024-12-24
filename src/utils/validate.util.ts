@@ -17,6 +17,7 @@ import ValidateSchema, {
 } from 'async-validator';
 import _ from 'lodash';
 import { regExps } from './format.util';
+import { I18n, i18nConfig } from '../common/i18n';
 
 export interface ValidateOption extends OriginalValidateOption {
   /** 模型 */
@@ -36,6 +37,8 @@ export type ValidateRule = ValidateRuleItem | ValidateRuleItem[];
 export type ValidateRules = Record<string, ValidateRule>;
 
 export interface GetRuleOptions extends Omit<ValidateRuleItem, 'fields'> {
+  /** 字段 */
+  label?: string;
   /** 子规则 */
   fields?: Record<string, GetRuleOptions | GetRuleOptions[]>;
   /** 正则表达式 */
@@ -183,6 +186,10 @@ const validateUtil = {
 
     const message = (() => {
       if (options.message) {
+        if (typeof options.message === 'function') {
+          return options.message(options.label);
+        }
+
         return options.message;
       }
 
@@ -259,17 +266,24 @@ export interface ValidatorOptions {
   action: string;
   rules: Record<string, GetRuleOptions | GetRuleOptions[]>;
   model?: string;
+  i18n?: I18n | (() => I18n);
 }
 
 export class Validator {
   public action!: string;
   public rules: Record<string, ValidateRules> = {};
-  public model: string = 'Base';
+  public model = 'Base';
+  public i18n: I18n | (() => I18n);
 
   constructor(options: ValidatorOptions) {
     this.action = options.action;
     this.rules = this.loadRules(options.rules ?? {});
     this.model = options.model ?? this.model;
+    this.i18n = options.i18n ?? i18nConfig.i18n;
+  }
+
+  public getI18n() {
+    return (typeof this.i18n === 'function' ? this.i18n() : this.i18n) ?? i18nConfig.i18n;
   }
 
   public validate(data: ValidateValues, options?: ValidateOption, callback?: ValidateCallback) {
@@ -277,10 +291,13 @@ export class Validator {
   }
 
   private loadRules(rules: GetRulesOptions) {
+    const i18n = this.getI18n();
+
     return _.reduce(
       rules,
       (result, options, fieldKey) => {
-        const loadedRule = this.loadRule(options);
+        const label = i18n.t(fieldKey);
+        const loadedRule = this.loadRule({ label, ...options });
         Reflect.set(result, fieldKey, loadedRule);
         return result;
       },
