@@ -298,7 +298,9 @@ export class Validator {
       (result, options, fieldKey) => {
         const label = i18n.t(fieldKey);
         const loadedRule = this.loadRule({ label, ...options });
-        Reflect.set(result, fieldKey, loadedRule);
+        const storedRules = Reflect.get(result, fieldKey) ?? [];
+        storedRules.push(...loadedRule);
+        Reflect.set(result, fieldKey, storedRules);
         return result;
       },
       {},
@@ -312,6 +314,6 @@ export class Validator {
       });
     }
 
-    return validateUtil.getRule(options);
+    return [validateUtil.getRule(options)];
   }
 }
