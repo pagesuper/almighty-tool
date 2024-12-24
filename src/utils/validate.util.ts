@@ -291,13 +291,10 @@ export class Validator {
   }
 
   private loadRules(rules: GetRulesOptions) {
-    const i18n = this.getI18n();
-
     return _.reduce(
       rules,
       (result, options, fieldKey) => {
-        const label = i18n.t(fieldKey);
-        const loadedRule = this.loadRule({ label, ...options });
+        const loadedRule = this.loadRule(fieldKey, options);
         const storedRules = Reflect.get(result, fieldKey) ?? [];
         storedRules.push(...loadedRule);
         Reflect.set(result, fieldKey, storedRules);
@@ -307,13 +304,16 @@ export class Validator {
     );
   }
 
-  private loadRule(options: GetRuleOptions | GetRuleOptions[] = {}) {
+  private loadRule(fieldKey: string, options: GetRuleOptions | GetRuleOptions[] = {}) {
+    const i18n = this.getI18n();
+    const label = i18n.t(fieldKey);
+
     if (Array.isArray(options)) {
       return options.map((option) => {
-        return validateUtil.getRule(option);
+        return validateUtil.getRule({ label, ...option });
       });
     }
 
-    return [validateUtil.getRule(options)];
+    return [validateUtil.getRule({ label, ...options })];
   }
 }
