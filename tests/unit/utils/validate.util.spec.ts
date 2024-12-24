@@ -324,4 +324,50 @@ describe('Validator', () => {
       ],
     });
   });
+
+  test('失败: 是否必须的验证', async () => {
+    const validator = new Validator({
+      action: 'create',
+      rules: {
+        name: { required: true },
+      },
+    });
+
+    const result = await validator.validate({ name: undefined });
+
+    expect(result).toEqual({
+      success: false,
+      errors: [
+        {
+          field: 'name',
+          fieldValue: undefined,
+          message: 'name is required',
+          model: 'Base',
+        },
+      ],
+    });
+  });
+
+  test('失败: 嵌套', async () => {
+    const validator = new Validator({
+      action: 'create',
+      rules: {
+        name: [{ required: true }],
+        student: {
+          type: 'object',
+          fields: {
+            name: { required: true },
+          },
+        },
+      },
+    });
+
+    console.log('rules: ...', validator.rules);
+
+    const result = await validator.validate({ name: undefined }, { rules: { name: { required: false } } });
+
+    expect(result).toEqual({
+      success: true,
+    });
+  });
 });

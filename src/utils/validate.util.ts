@@ -22,6 +22,8 @@ import { I18n, i18nConfig } from '../common/i18n';
 export interface ValidateOption extends OriginalValidateOption {
   /** 模型 */
   model?: string;
+  /** 规则 */
+  rules?: GetRulesOptions;
 }
 
 export interface ValidateRuleItemRequiredFnOptions {
@@ -271,7 +273,7 @@ export interface ValidatorOptions {
 
 export class Validator {
   public action!: string;
-  public rules: Record<string, ValidateRules> = {};
+  public rules: ValidateRules = {};
   public model = 'Base';
   public i18n: I18n | (() => I18n);
 
@@ -287,21 +289,25 @@ export class Validator {
   }
 
   public validate(data: ValidateValues, options?: ValidateOption, callback?: ValidateCallback) {
-    return validateUtil.validate(this.rules, data, { model: this.model, ...options }, callback);
+    const rules = this.loadRules(options?.rules ?? {}, this.rules);
+    return validateUtil.validate(rules, data, { model: this.model, ...options }, callback);
   }
 
-  public loadRules(rules: GetRulesOptions) {
-    return _.reduce(
+  public loadRules(rules: GetRulesOptions, initialRules: ValidateRules = {}) {
+    const mergedRules = _.reduce(
       rules,
       (result, options, fieldKey) => {
         const loadedRule = this.loadRule(fieldKey, options);
-        const storedRules = Reflect.get(result, fieldKey) ?? [];
+        const previousRules = Reflect.get(result, fieldKey) ?? [];
+        const storedRules = Array.isArray(previousRules) ? previousRules : [previousRules];
         storedRules.push(...loadedRule);
         Reflect.set(result, fieldKey, storedRules);
         return result;
       },
-      {},
+      initialRules,
     );
+
+    return mergedRules;
   }
 
   public loadRule(fieldKey: string, options: GetRuleOptions | GetRuleOptions[] = {}) {
