@@ -31,8 +31,10 @@ export interface ValidateRuleItemRequiredFnOptions {
 }
 
 export interface ValidateRuleItem extends Omit<OriginalValidateRuleItem, 'fields'> {
+  /** 路径 */
+  path?: string;
   /** 子规则 */
-  fields?: Record<string, ValidateRule>;
+  fields?: ValidateRules;
 }
 
 export type ValidateRule = ValidateRuleItem | ValidateRuleItem[];
@@ -181,9 +183,10 @@ const validateUtil = {
 
   /** 获取规则 */
   getRule(options: GetRuleOptions): ValidateRuleItem {
+    const path = options?.path ?? '';
     const regexpKey = options?.regexpKey;
     const regexp = options?.regexp ?? (regexpKey ? Reflect.get(regExps, regexpKey) : undefined);
-    const type = options?.type ?? 'string';
+    const type = options?.type ?? (options.fields ? 'object' : 'string');
     const regexpReversed = options?.regexpReversed ?? false;
 
     const message = (() => {
@@ -238,6 +241,7 @@ const validateUtil = {
       ...options,
       type,
       message,
+      path,
     };
 
     if (asyncValidator) {
@@ -247,11 +251,11 @@ const validateUtil = {
     if (options.fields) {
       rule.fields = _.reduce(
         options.fields,
-        (result: Record<string, ValidateRuleItem[]>, field, fieldKey) => {
+        (result: ValidateRules, field, fieldKey) => {
           const fields = (Array.isArray(field) ? field : [field]).map((field) => {
-            return validateUtil.getRule(field);
+            return validateUtil.getRule({ path: `${path}.${fieldKey}`, ...field });
           });
-          Reflect.set(result, fieldKey, fields);
+          Reflect.set(result, fieldKey, validateUtil.normalizeRules(fields));
           return result;
         },
         {},
@@ -259,6 +263,30 @@ const validateUtil = {
     }
 
     return rule;
+  },
+
+  normalizeRules: (storedRules: ValidateRuleItem[]) => {
+    const required: boolean | undefined = _.reduce(
+      storedRules,
+      (result: boolean | undefined, rule) => {
+        console.log('rule: ...', rule);
+
+        if (typeof rule.required === 'boolean') {
+          return rule.required;
+        }
+
+        return result;
+      },
+      undefined,
+    );
+
+    for (const rule of storedRules) {
+      if (typeof required === 'boolean' && typeof rule.required === 'boolean') {
+        rule.required = required;
+      }
+    }
+
+    return storedRules;
   },
 };
 
@@ -290,6 +318,7 @@ export class Validator {
 
   public validate(data: ValidateValues, options?: ValidateOption, callback?: ValidateCallback) {
     const rules = this.loadRules(options?.rules ?? {}, this.rules);
+    console.log('rules: ...', rules);
     return validateUtil.validate(rules, data, { model: this.model, ...options }, callback);
   }
 
@@ -297,48 +326,21 @@ export class Validator {
     const mergedRules = _.reduce(
       rules,
       (result, options, fieldKey) => {
-        const loadedRules = this.loadRule(fieldKey, options);
+        const i18n = this.getI18n();
+        const label = i18n.t(fieldKey);
+        const loadedRules = Array.isArray(options)
+          ? options.map((option) => validateUtil.getRule({ label, path: fieldKey, ...option }))
+          : [validateUtil.getRule({ label, path: fieldKey, ...options })];
+
         const previousRules = Reflect.get(result, fieldKey) ?? [];
         const storedRules = Array.isArray(previousRules) ? previousRules : [previousRules];
         storedRules.push(...loadedRules);
-
-        const required: boolean | undefined = _.reduce(
-          storedRules,
-          (result: boolean | undefined, rule) => {
-            if (typeof rule.required === 'boolean') {
-              return rule.required;
-            }
-
-            return result;
-          },
-          undefined,
-        );
-
-        for (const rule of storedRules) {
-          if (typeof required === 'boolean' && typeof rule.required === 'boolean') {
-            rule.required = required;
-          }
-        }
-
-        Reflect.set(result, fieldKey, storedRules);
+        Reflect.set(result, fieldKey, validateUtil.normalizeRules(storedRules));
         return result;
       },
       initialRules,
     );
 
     return mergedRules;
-  }
-
-  public loadRule(fieldKey: string, options: GetRuleOptions | GetRuleOptions[] = {}) {
-    const i18n = this.getI18n();
-    const label = i18n.t(fieldKey);
-
-    if (Array.isArray(options)) {
-      return options.map((option) => {
-        return validateUtil.getRule({ label, ...option });
-      });
-    }
-
-    return [validateUtil.getRule({ label, ...options })];
   }
 }
