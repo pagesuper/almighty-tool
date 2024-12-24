@@ -92,6 +92,6 @@ export declare class Validator {
     constructor(options: ValidatorOptions);
     getI18n(): I18n;
     validate(data: ValidateValues, options?: ValidateOption, callback?: ValidateCallback): Promise<ValidateResponse>;
-    private loadRules;
-    private loadRule;
+    loadRules(rules: GetRulesOptions): {};
+    loadRule(fieldKey: string, options?: GetRuleOptions | GetRuleOptions[]): ValidateRuleItem[];
 }

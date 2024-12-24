@@ -290,7 +290,7 @@ export class Validator {
     return validateUtil.validate(this.rules, data, { model: this.model, ...options }, callback);
   }
 
-  private loadRules(rules: GetRulesOptions) {
+  public loadRules(rules: GetRulesOptions) {
     return _.reduce(
       rules,
       (result, options, fieldKey) => {
@@ -304,7 +304,7 @@ export class Validator {
     );
   }
 
-  private loadRule(fieldKey: string, options: GetRuleOptions | GetRuleOptions[] = {}) {
+  public loadRule(fieldKey: string, options: GetRuleOptions | GetRuleOptions[] = {}) {
     const i18n = this.getI18n();
     const label = i18n.t(fieldKey);
 
