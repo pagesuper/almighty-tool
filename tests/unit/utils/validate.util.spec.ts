@@ -362,9 +362,10 @@ describe('Validator', () => {
       },
     });
 
-    console.log('rules: ...', validator.rules);
-
-    const result = await validator.validate({ name: undefined }, { rules: { name: { required: false } } });
+    const result = await validator.validate(
+      { name: undefined, student: { name: undefined } },
+      { rules: { name: { required: false }, student: { fields: { name: { required: false } } } } },
+    );
 
     expect(result).toEqual({
       success: true,

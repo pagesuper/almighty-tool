@@ -297,10 +297,29 @@ export class Validator {
     const mergedRules = _.reduce(
       rules,
       (result, options, fieldKey) => {
-        const loadedRule = this.loadRule(fieldKey, options);
+        const loadedRules = this.loadRule(fieldKey, options);
         const previousRules = Reflect.get(result, fieldKey) ?? [];
         const storedRules = Array.isArray(previousRules) ? previousRules : [previousRules];
-        storedRules.push(...loadedRule);
+        storedRules.push(...loadedRules);
+
+        const required: boolean | undefined = _.reduce(
+          storedRules,
+          (result: boolean | undefined, rule) => {
+            if (typeof rule.required === 'boolean') {
+              return rule.required;
+            }
+
+            return result;
+          },
+          undefined,
+        );
+
+        for (const rule of storedRules) {
+          if (typeof required === 'boolean' && typeof rule.required === 'boolean') {
+            rule.required = required;
+          }
+        }
+
         Reflect.set(result, fieldKey, storedRules);
         return result;
       },
