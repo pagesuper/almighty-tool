@@ -16,8 +16,8 @@ import ValidateSchema, {
   Values as ValidateValues,
 } from 'async-validator';
 import _ from 'lodash';
-import { regExps } from './format.util';
 import { I18n, i18nConfig } from '../common/i18n';
+import { regExps } from './format.util';
 
 export interface ValidateOption extends OriginalValidateOption {
   /** 模型 */
@@ -160,7 +160,7 @@ const validateUtil = {
    * @returns 校验结果
    */
   validate: async (
-    rules: ValidateRules | ValidateSchema,
+    rules: ValidateRules,
     data: ValidateValues,
     options?: ValidateOption,
     callback?: ValidateCallback,
@@ -168,7 +168,8 @@ const validateUtil = {
     const model = options?.model ?? 'Base';
 
     try {
-      const schema = validateUtil.getSchema(rules);
+      const normalizedRules = validateUtil.normalizeRules(rules);
+      const schema = validateUtil.getSchema(normalizedRules);
       await schema.validate(data, options, callback);
       return {
         success: true,
@@ -255,7 +256,7 @@ const validateUtil = {
           const fields = (Array.isArray(field) ? field : [field]).map((field) => {
             return validateUtil.getRule({ path: `${path}.${fieldKey}`, ...field });
           });
-          Reflect.set(result, fieldKey, validateUtil.normalizeRules(fields));
+          Reflect.set(result, fieldKey, fields);
           return result;
         },
         {},
@@ -265,28 +266,48 @@ const validateUtil = {
     return rule;
   },
 
-  normalizeRules: (storedRules: ValidateRuleItem[]) => {
-    const required: boolean | undefined = _.reduce(
-      storedRules,
-      (result: boolean | undefined, rule) => {
-        console.log('rule: ...', rule);
+  collectRulesRequired: (requires: Record<string, boolean[]>, rules: ValidateRules) => {
+    Object.keys(rules).forEach((fieldKey) => {
+      const fieldRules = rules[fieldKey];
 
+      (Array.isArray(fieldRules) ? fieldRules : [fieldRules]).forEach((rule) => {
         if (typeof rule.required === 'boolean') {
-          return rule.required;
+          if (rule.path) {
+            requires[rule.path] ||= [];
+            requires[rule.path].push(rule.required);
+          }
         }
 
-        return result;
-      },
-      undefined,
-    );
+        if (rule.fields) {
+          validateUtil.collectRulesRequired(requires, rule.fields);
+        }
+      });
+    });
 
-    for (const rule of storedRules) {
-      if (typeof required === 'boolean' && typeof rule.required === 'boolean') {
-        rule.required = required;
-      }
-    }
+    return requires;
+  },
 
-    return storedRules;
+  collectRulesRequiredAssign: (requires: Record<string, boolean[]>, rules: ValidateRules) => {
+    Object.keys(rules).forEach((fieldKey) => {
+      const fieldRules = rules[fieldKey];
+
+      (Array.isArray(fieldRules) ? fieldRules : [fieldRules]).forEach((rule) => {
+        if (rule.path) {
+          rule.required = _.last(requires[rule.path] ?? []) ?? false;
+        }
+
+        if (rule.fields) {
+          validateUtil.collectRulesRequiredAssign(requires, rule.fields);
+        }
+      });
+    });
+  },
+
+  normalizeRules: (rules: ValidateRules) => {
+    const pureRules = _.cloneDeep(rules);
+    const requires = validateUtil.collectRulesRequired({}, pureRules);
+    validateUtil.collectRulesRequiredAssign(requires, pureRules);
+    return pureRules;
   },
 };
 
@@ -317,9 +338,12 @@ export class Validator {
   }
 
   public validate(data: ValidateValues, options?: ValidateOption, callback?: ValidateCallback) {
-    const rules = this.loadRules(options?.rules ?? {}, this.rules);
-    console.log('rules: ...', rules);
-    return validateUtil.validate(rules, data, { model: this.model, ...options }, callback);
+    return validateUtil.validate(
+      this.loadRules(options?.rules ?? {}, this.rules),
+      data,
+      { model: this.model, ...options },
+      callback,
+    );
   }
 
   public loadRules(rules: GetRulesOptions, initialRules: ValidateRules = {}) {
@@ -335,7 +359,7 @@ export class Validator {
         const previousRules = Reflect.get(result, fieldKey) ?? [];
         const storedRules = Array.isArray(previousRules) ? previousRules : [previousRules];
         storedRules.push(...loadedRules);
-        Reflect.set(result, fieldKey, validateUtil.normalizeRules(storedRules));
+        Reflect.set(result, fieldKey, storedRules);
         return result;
       },
       initialRules,

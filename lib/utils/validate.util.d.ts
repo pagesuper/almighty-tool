@@ -3,13 +3,17 @@ import { I18n } from '../common/i18n';
 export interface ValidateOption extends OriginalValidateOption {
     /** 模型 */
     model?: string;
+    /** 规则 */
+    rules?: GetRulesOptions;
 }
 export interface ValidateRuleItemRequiredFnOptions {
     item: ValidateRuleItem;
 }
 export interface ValidateRuleItem extends Omit<OriginalValidateRuleItem, 'fields'> {
+    /** 路径 */
+    path?: string;
     /** 子规则 */
-    fields?: Record<string, ValidateRule>;
+    fields?: ValidateRules;
 }
 export declare type ValidateRule = ValidateRuleItem | ValidateRuleItem[];
 export declare type ValidateRules = Record<string, ValidateRule>;
@@ -73,9 +77,12 @@ declare const validateUtil: {
      * @param data 数据
      * @returns 校验结果
      */
-    validate: (rules: ValidateRules | ValidateSchema, data: ValidateValues, options?: ValidateOption | undefined, callback?: ValidateCallback | undefined) => Promise<ValidateResponse>;
+    validate: (rules: ValidateRules, data: ValidateValues, options?: ValidateOption | undefined, callback?: ValidateCallback | undefined) => Promise<ValidateResponse>;
     /** 获取规则 */
     getRule(options: GetRuleOptions): ValidateRuleItem;
+    collectRulesRequired: (requires: Record<string, boolean[]>, rules: ValidateRules) => Record<string, boolean[]>;
+    collectRulesRequiredAssign: (requires: Record<string, boolean[]>, rules: ValidateRules) => void;
+    normalizeRules: (rules: ValidateRules) => ValidateRules;
 };
 export default validateUtil;
 export interface ValidatorOptions {
@@ -86,12 +93,11 @@ export interface ValidatorOptions {
 }
 export declare class Validator {
     action: string;
-    rules: Record<string, ValidateRules>;
+    rules: ValidateRules;
     model: string;
     i18n: I18n | (() => I18n);
     constructor(options: ValidatorOptions);
     getI18n(): I18n;
     validate(data: ValidateValues, options?: ValidateOption, callback?: ValidateCallback): Promise<ValidateResponse>;
-    loadRules(rules: GetRulesOptions): {};
-    loadRule(fieldKey: string, options?: GetRuleOptions | GetRuleOptions[]): ValidateRuleItem[];
+    loadRules(rules: GetRulesOptions, initialRules?: ValidateRules): ValidateRules;
 }
