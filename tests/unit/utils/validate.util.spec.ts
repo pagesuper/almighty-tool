@@ -26,7 +26,7 @@ describe('validateUtil.validate()', () => {
         {
           field: 'name',
           fieldValue: '',
-          message: 'name is required',
+          message: 'is required',
           model: 'Base',
         },
       ],
@@ -65,7 +65,7 @@ describe('validateUtil.validate()', () => {
       success: false,
       errors: [
         {
-          message: 'user.name is required',
+          message: 'is required',
           fieldValue: '',
           field: 'user.name',
           model: 'Base',
@@ -125,7 +125,7 @@ describe('validateUtil.validate()', () => {
         {
           field: 'user.age',
           fieldValue: undefined,
-          message: 'user.age is required',
+          message: 'is required',
           model: 'Base',
         },
       ],
@@ -139,7 +139,7 @@ describe('validateUtil.validate()', () => {
         {
           field: 'user.age',
           fieldValue: undefined,
-          message: 'user.age is required',
+          message: 'is required',
           model: 'User',
         },
       ],
@@ -215,6 +215,27 @@ describe('Validator', () => {
     });
   });
 
+  test('失败: min, max, len', async () => {
+    const result = await validateUtil.validate(
+      {
+        age: { type: 'number', min: 18, max: 100 },
+      },
+      { age: 17 },
+    );
+
+    expect(result).toEqual({
+      success: false,
+      errors: [
+        {
+          field: 'age',
+          fieldValue: 17,
+          message: 'must be greater than or equal to 18',
+          model: 'Base',
+        },
+      ],
+    });
+  });
+
   test('失败: 不能为空(自定义message)', async () => {
     const validator = new Validator({
       action: 'create',
@@ -272,7 +293,7 @@ describe('Validator', () => {
         {
           field: 'age',
           fieldValue: 'jack',
-          message: 'age is not a number',
+          message: 'is not a number',
           model: 'Base',
         },
       ],
@@ -341,7 +362,7 @@ describe('Validator', () => {
         {
           field: 'name',
           fieldValue: undefined,
-          message: 'name is required',
+          message: 'is required',
           model: 'Base',
         },
       ],
@@ -405,13 +426,13 @@ describe('Validator', () => {
         {
           field: 'name',
           fieldValue: undefined,
-          message: 'name is required',
+          message: 'is required',
           model: 'Base',
         },
         {
           field: 'student.name',
           fieldValue: undefined,
-          message: 'student.name is required',
+          message: 'is required',
           model: 'Base',
         },
       ],
@@ -446,13 +467,13 @@ describe('Validator', () => {
         {
           field: 'name',
           fieldValue: '',
-          message: 'name is required',
+          message: 'is required',
           model: 'Base',
         },
         {
           field: 'student.name',
           fieldValue: '',
-          message: 'student.name is required',
+          message: 'is required',
           model: 'Base',
         },
       ],

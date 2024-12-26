@@ -18,6 +18,7 @@ import ValidateSchema, {
 import _ from 'lodash';
 import { I18n, i18nConfig } from '../common/i18n';
 import { regExps } from './format.util';
+import deepmerge from 'deepmerge';
 
 export interface ValidateOption extends OriginalValidateOption {
   /** 模型 */
@@ -98,6 +99,54 @@ export type {
   ValidateValues,
 };
 
+const defaultMessages: ValidateMessages = {
+  default: 'validation error',
+  required: 'is required',
+  enum: 'must be one of enum',
+  whitespace: 'cannot be empty',
+  date: {
+    format: '%s date %s is invalid for format %s',
+    parse: '%s date could not be parsed, %s is invalid ',
+    invalid: '%s date %s is invalid',
+  },
+  types: {
+    string: 'is not a string',
+    method: 'is not a function',
+    array: 'is not an array',
+    object: 'is not an object',
+    number: 'is not a number',
+    date: 'is not a date',
+    boolean: 'is not a boolean',
+    integer: 'is not an integer',
+    float: 'is not a float',
+    regexp: 'is not a regexp',
+    email: 'is not an email',
+    url: 'is not a url',
+    hex: 'is not a hex',
+  },
+  string: {
+    len: '%s must be exactly %s characters',
+    min: '%s must be at least %s characters',
+    max: '%s cannot be longer than %s characters',
+    range: '%s must be between %s and %s characters',
+  },
+  number: {
+    len: '%s must equal %s',
+    min: '%s cannot be less than %s',
+    max: '%s cannot be greater than %s',
+    range: '%s must be between %s and %s',
+  },
+  array: {
+    len: '%s must be exactly %s in length',
+    min: '%s cannot be less than %s in length',
+    max: '%s cannot be greater than %s in length',
+    range: '%s must be between %s and %s in length',
+  },
+  pattern: {
+    mismatch: '%s value %s does not match pattern %s',
+  },
+};
+
 /** 校验工具 */
 const validateUtil = {
   /**
@@ -174,7 +223,7 @@ const validateUtil = {
 
     try {
       const schema = validateUtil.getSchema(rules);
-      await schema.validate(data, options, callback);
+      await schema.validate(data, deepmerge({ messages: defaultMessages }, options ?? {}), callback);
       return {
         success: true,
       };
