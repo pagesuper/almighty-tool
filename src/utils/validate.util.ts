@@ -18,12 +18,15 @@ import ValidateSchema, {
 import deepmerge from 'deepmerge';
 import _ from 'lodash';
 import { regExps } from './format.util';
+import { I18n, i18nConfig } from '../common/i18n';
 
 export interface ValidateOption extends OriginalValidateOption {
   /** 模型 */
   model?: string;
   /** 规则 */
   rules?: GetRulesOptions;
+  /** 国际化 */
+  i18n?: I18n;
 }
 
 export interface WrapRulesOptions extends ValidateOption {
@@ -65,6 +68,8 @@ export interface GetErrorsOptions {
   field?: string;
   /** 字段值 */
   fieldValue?: ValidateValue;
+  /** 国际化 */
+  i18n?: I18n;
 }
 
 export interface ValidateError extends OriginalValidateError {
@@ -163,12 +168,22 @@ const validateUtil = {
     );
   },
 
-  getErrorMessage: (error: unknown) => {
+  getErrorMessage: (error: unknown, options?: GetErrorsOptions) => {
+    const i18n = options?.i18n ?? i18nConfig.i18n;
+
     if (typeof error === 'object' && error !== null && ('message' in error || 'msg' in error)) {
       return Reflect.get(error, 'message') ?? Reflect.get(error, 'msg');
     }
 
     if (typeof error === 'string') {
+      if (i18n && typeof i18n.t === 'function') {
+        const messageJSON = validateUtil.parseMessageJSON(error);
+        return i18n.t(messageJSON.message, {
+          defaultValue: messageJSON.message,
+          args: messageJSON.rules,
+        });
+      }
+
       return error;
     }
 
@@ -192,7 +207,7 @@ const validateUtil = {
       return (Reflect.get(error, 'errors') as ValidateError[]).map((err) => {
         return {
           ..._.pick(err, ['field', 'fieldValue']),
-          message: validateUtil.getErrorMessage(err.message),
+          message: validateUtil.getErrorMessage(err.message, options),
           model,
         };
       });
@@ -200,7 +215,7 @@ const validateUtil = {
 
     return [
       {
-        message: validateUtil.getErrorMessage(error),
+        message: validateUtil.getErrorMessage(error, options),
         fieldValue: options?.fieldValue,
         field: options?.field,
         model,
@@ -231,7 +246,7 @@ const validateUtil = {
     } catch (error) {
       return {
         success: false,
-        errors: validateUtil.getErrors(error, { model }),
+        errors: validateUtil.getErrors(error, { model, i18n: options?.i18n ?? i18nConfig.i18n }),
       };
     }
   },
@@ -474,7 +489,7 @@ const validateUtil = {
 
   collectRulesRequiredAssign: (requires: Record<string, boolean[]>, rules: ValidateRules) => {
     Object.keys(rules).forEach((fieldKey) => {
-      const fieldRules = Array.isArray(rules[fieldKey]) ? rules[fieldKey] : [rules[fieldKey]];
+      const fieldRules = (Array.isArray(rules[fieldKey]) ? rules[fieldKey] : [rules[fieldKey]]) as ValidateRuleItem[];
 
       fieldRules.forEach((rule, ruleIndex) => {
         if (ruleIndex === 0 && rule.path && _.last(requires[rule.path] ?? [])) {

@@ -5,6 +5,8 @@ export interface ValidateOption extends OriginalValidateOption {
     model?: string;
     /** 规则 */
     rules?: GetRulesOptions;
+    /** 国际化 */
+    i18n?: I18n;
 }
 export interface WrapRulesOptions extends ValidateOption {
     /** 覆盖规则: 默认为false */
@@ -22,8 +24,6 @@ export interface ValidateRuleItem extends Omit<OriginalValidateRuleItem, 'fields
 export declare type ValidateRule = ValidateRuleItem | ValidateRuleItem[];
 export declare type ValidateRules = Record<string, ValidateRule>;
 export interface GetRuleOptions extends Omit<ValidateRuleItem, 'fields'> {
-    /** 字段 */
-    label?: string;
     /** 子规则 */
     fields?: Record<string, GetRuleOptions | GetRuleOptions[]>;
     /** 正则表达式 */
@@ -41,6 +41,8 @@ export interface GetErrorsOptions {
     field?: string;
     /** 字段值 */
     fieldValue?: ValidateValue;
+    /** 国际化 */
+    i18n?: I18n;
 }
 export interface ValidateError extends OriginalValidateError {
     /** 模型 */
@@ -52,6 +54,10 @@ export interface ValidateResponse {
     /** 错误信息 */
     errors?: ValidateError[];
 }
+export interface MessageJSON {
+    rules: Partial<GetRuleOptions>;
+    message: string;
+}
 export { ValidateSchema };
 export type { ValidateCallback, ValidateExecuteRule, ValidateExecuteValidator, ValidateFieldsError, ValidateInternalRuleItem, ValidateInternalValidateMessages, ValidateMessages, ValidateResult, ValidateRuleType, ValidateRuleValuePackage, ValidateValue, ValidateValues, };
 /** 校验工具 */
@@ -61,8 +67,8 @@ declare const validateUtil: {
      * @param rules 校验规则
      * @returns 校验器
      */
-    getSchema: (rules: ValidateRules | ValidateSchema) => ValidateSchema;
-    getErrorMessage: (error: unknown) => any;
+    getSchema: (rules: ValidateRules | ValidateSchema, options?: ValidateOption | undefined) => ValidateSchema;
+    getErrorMessage: (error: unknown, options?: GetErrorsOptions | undefined) => any;
     /**
      * 获取错误信息
      * @param error 错误信息
@@ -82,12 +88,12 @@ declare const validateUtil: {
      * @returns 校验结果
      */
     validate: (rules: ValidateRules, data: ValidateValues, options?: ValidateOption | undefined, callback?: ValidateCallback | undefined) => Promise<ValidateResponse>;
-    getRules: (rules: GetRulesOptions, initialRules?: ValidateRules, options?: {
-        i18n: I18n;
-    }) => ValidateRules;
+    getRules: (rules: GetRulesOptions, initialRules?: ValidateRules) => ValidateRules;
     /** 获取规则 */
     getRule(options: GetRuleOptions): ValidateRuleItem;
-    collectRulesRequired: (requires: Record<string, boolean[]>, rules: ValidateRules) => Record<string, boolean[]>;
+    getMessageJSON: (messageJSON: MessageJSON) => string;
+    parseMessageJSON: (message: string) => MessageJSON;
+    collectRulesRequired: (rules: ValidateRules, requires: Record<string, boolean[]>, path?: string) => Record<string, boolean[]>;
     collectRulesRequiredAssign: (requires: Record<string, boolean[]>, rules: ValidateRules) => void;
     normalizeRules: (rules: ValidateRules) => ValidateRules;
 };
@@ -96,15 +102,12 @@ export interface ValidatorOptions {
     action: string;
     rules: Record<string, GetRuleOptions | GetRuleOptions[]>;
     model?: string;
-    i18n?: I18n | (() => I18n);
 }
 export declare class Validator {
     action: string;
     rules: ValidateRules;
     model: string;
-    i18n: I18n | (() => I18n);
     constructor(options: ValidatorOptions);
-    getI18n(): I18n;
     validate(data: ValidateValues, options?: ValidateOption, callback?: ValidateCallback): Promise<ValidateResponse>;
     wrapRules(options: WrapRulesOptions): this;
 }
