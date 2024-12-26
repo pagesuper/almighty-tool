@@ -386,13 +386,77 @@ describe('Validator', () => {
       },
     });
 
-    const result = await validator.validate(
-      { name: undefined, student: { name: undefined } },
-      { rules: { name: { required: false }, student: { fields: { name: { required: false } } } } },
-    );
+    const result = await validator
+      .wrapRules({
+        rules: { name: { required: false }, student: { fields: { name: { required: false } } } },
+        override: false,
+      })
+      .validate({ name: undefined, student: { name: undefined } });
 
     expect(result).toEqual({
       success: true,
+    });
+
+    const result2 = await validator.validate({ name: undefined, student: { name: undefined } });
+
+    expect(result2).toEqual({
+      success: false,
+      errors: [
+        {
+          field: 'name',
+          fieldValue: undefined,
+          message: 'name is required',
+          model: 'Base',
+        },
+        {
+          field: 'student.name',
+          fieldValue: undefined,
+          message: 'student.name is required',
+          model: 'Base',
+        },
+      ],
+    });
+
+    const result3 = await validator
+      .wrapRules({
+        rules: { name: { required: false }, student: { fields: { name: { required: false } } } },
+        override: true,
+      })
+      .validate({ name: undefined, student: { name: undefined } });
+
+    expect(result3).toEqual({
+      success: true,
+    });
+
+    const result4 = await validator.validate({ name: undefined, student: { name: undefined } });
+
+    expect(result4).toEqual({
+      success: true,
+    });
+
+    const result5 = await validator.validate(
+      { name: '', student: { name: '' } },
+      {
+        rules: { name: { required: true }, student: { fields: { name: { required: true } } } },
+      },
+    );
+
+    expect(result5).toEqual({
+      errors: [
+        {
+          field: 'name',
+          fieldValue: '',
+          message: 'name is required',
+          model: 'Base',
+        },
+        {
+          field: 'student.name',
+          fieldValue: '',
+          message: 'student.name is required',
+          model: 'Base',
+        },
+      ],
+      success: false,
     });
   });
 });

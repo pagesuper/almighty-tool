@@ -6,6 +6,10 @@ export interface ValidateOption extends OriginalValidateOption {
     /** 规则 */
     rules?: GetRulesOptions;
 }
+export interface WrapRulesOptions extends ValidateOption {
+    /** 覆盖规则: 默认为false */
+    override?: boolean;
+}
 export interface ValidateRuleItemRequiredFnOptions {
     item: ValidateRuleItem;
 }
@@ -78,6 +82,9 @@ declare const validateUtil: {
      * @returns 校验结果
      */
     validate: (rules: ValidateRules, data: ValidateValues, options?: ValidateOption | undefined, callback?: ValidateCallback | undefined) => Promise<ValidateResponse>;
+    getRules: (rules: GetRulesOptions, initialRules?: ValidateRules, options?: {
+        i18n: I18n;
+    }) => ValidateRules;
     /** 获取规则 */
     getRule(options: GetRuleOptions): ValidateRuleItem;
     collectRulesRequired: (requires: Record<string, boolean[]>, rules: ValidateRules) => Record<string, boolean[]>;
@@ -99,5 +106,5 @@ export declare class Validator {
     constructor(options: ValidatorOptions);
     getI18n(): I18n;
     validate(data: ValidateValues, options?: ValidateOption, callback?: ValidateCallback): Promise<ValidateResponse>;
-    loadRules(rules: GetRulesOptions, initialRules?: ValidateRules): ValidateRules;
+    wrapRules(options: WrapRulesOptions): this;
 }

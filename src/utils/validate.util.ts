@@ -26,6 +26,11 @@ export interface ValidateOption extends OriginalValidateOption {
   rules?: GetRulesOptions;
 }
 
+export interface WrapRulesOptions extends ValidateOption {
+  /** 覆盖规则: 默认为false */
+  override?: boolean;
+}
+
 export interface ValidateRuleItemRequiredFnOptions {
   item: ValidateRuleItem;
 }
@@ -311,10 +316,14 @@ const validateUtil = {
   collectRulesRequiredAssign: (requires: Record<string, boolean[]>, rules: ValidateRules) => {
     Object.keys(rules).forEach((fieldKey) => {
       const fieldRules = rules[fieldKey];
+      const fieldRulesArray = Array.isArray(fieldRules) ? fieldRules : [fieldRules];
 
-      (Array.isArray(fieldRules) ? fieldRules : [fieldRules]).forEach((rule) => {
-        if (rule.path) {
-          rule.required = _.last(requires[rule.path] ?? []) ?? false;
+      fieldRulesArray.forEach((rule, ruleIndex) => {
+        if (ruleIndex === 0 && rule.path && _.last(requires[rule.path] ?? [])) {
+          rule.required = true;
+          delete requires[rule.path];
+        } else {
+          delete rule.required;
         }
 
         if (rule.fields) {
@@ -367,7 +376,10 @@ export class Validator {
     );
   }
 
-  public wrapRules(rules: GetRulesOptions) {
-    return validateUtil.getRules(rules, this.rules, { i18n: this.getI18n() });
+  public wrapRules(options: WrapRulesOptions) {
+    const override = options.override ?? false;
+    const validator = override ? this : _.cloneDeep(this);
+    validator.rules = validateUtil.getRules(options.rules ?? {}, validator.rules, { i18n: validator.getI18n() });
+    return validator;
   }
 }
