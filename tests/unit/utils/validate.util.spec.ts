@@ -371,4 +371,28 @@ describe('Validator', () => {
       success: true,
     });
   });
+
+  test('失败: 包装', async () => {
+    const validator = new Validator({
+      action: 'create',
+      rules: {
+        name: [{ required: true }],
+        student: {
+          type: 'object',
+          fields: {
+            name: [{ required: true }],
+          },
+        },
+      },
+    });
+
+    const result = await validator.validate(
+      { name: undefined, student: { name: undefined } },
+      { rules: { name: { required: false }, student: { fields: { name: { required: false } } } } },
+    );
+
+    expect(result).toEqual({
+      success: true,
+    });
+  });
 });

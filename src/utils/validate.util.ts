@@ -168,8 +168,7 @@ const validateUtil = {
     const model = options?.model ?? 'Base';
 
     try {
-      const normalizedRules = validateUtil.normalizeRules(rules);
-      const schema = validateUtil.getSchema(normalizedRules);
+      const schema = validateUtil.getSchema(rules);
       await schema.validate(data, options, callback);
       return {
         success: true,
@@ -180,6 +179,28 @@ const validateUtil = {
         errors: validateUtil.getErrors(error, { model }),
       };
     }
+  },
+
+  getRules: (rules: GetRulesOptions, initialRules: ValidateRules = {}, options: { i18n: I18n } = { i18n: i18nConfig.i18n }) => {
+    const mergedRules = _.reduce(
+      rules,
+      (result, rule, fieldKey) => {
+        const i18n = options.i18n ?? i18nConfig.i18n;
+        const label = i18n.t(fieldKey);
+        const loadedRules = Array.isArray(rule)
+          ? rule.map((option) => validateUtil.getRule({ label, path: fieldKey, ...option }))
+          : [validateUtil.getRule({ label, path: fieldKey, ...rule })];
+
+        const previousRules = Reflect.get(result, fieldKey) ?? [];
+        const storedRules = Array.isArray(previousRules) ? previousRules : [previousRules];
+        storedRules.push(...loadedRules);
+        Reflect.set(result, fieldKey, storedRules);
+        return result;
+      },
+      initialRules,
+    );
+
+    return validateUtil.normalizeRules(mergedRules);
   },
 
   /** 获取规则 */
@@ -328,7 +349,7 @@ export class Validator {
 
   constructor(options: ValidatorOptions) {
     this.action = options.action;
-    this.rules = this.loadRules(options.rules ?? {});
+    this.rules = validateUtil.getRules(options.rules ?? {}, this.rules, { i18n: this.getI18n() });
     this.model = options.model ?? this.model;
     this.i18n = options.i18n ?? i18nConfig.i18n;
   }
@@ -339,32 +360,14 @@ export class Validator {
 
   public validate(data: ValidateValues, options?: ValidateOption, callback?: ValidateCallback) {
     return validateUtil.validate(
-      this.loadRules(options?.rules ?? {}, this.rules),
+      validateUtil.getRules(options?.rules ?? {}, this.rules, { i18n: this.getI18n() }),
       data,
       { model: this.model, ...options },
       callback,
     );
   }
 
-  public loadRules(rules: GetRulesOptions, initialRules: ValidateRules = {}) {
-    const mergedRules = _.reduce(
-      rules,
-      (result, options, fieldKey) => {
-        const i18n = this.getI18n();
-        const label = i18n.t(fieldKey);
-        const loadedRules = Array.isArray(options)
-          ? options.map((option) => validateUtil.getRule({ label, path: fieldKey, ...option }))
-          : [validateUtil.getRule({ label, path: fieldKey, ...options })];
-
-        const previousRules = Reflect.get(result, fieldKey) ?? [];
-        const storedRules = Array.isArray(previousRules) ? previousRules : [previousRules];
-        storedRules.push(...loadedRules);
-        Reflect.set(result, fieldKey, storedRules);
-        return result;
-      },
-      initialRules,
-    );
-
-    return mergedRules;
+  public wrapRules(rules: GetRulesOptions) {
+    return validateUtil.getRules(rules, this.rules, { i18n: this.getI18n() });
   }
 }
