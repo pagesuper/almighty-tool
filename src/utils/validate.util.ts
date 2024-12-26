@@ -15,10 +15,9 @@ import ValidateSchema, {
   Value as ValidateValue,
   Values as ValidateValues,
 } from 'async-validator';
-import _ from 'lodash';
-import { I18n, i18nConfig } from '../common/i18n';
-import { regExps } from './format.util';
 import deepmerge from 'deepmerge';
+import _ from 'lodash';
+import { regExps } from './format.util';
 
 export interface ValidateOption extends OriginalValidateOption {
   /** 模型 */
@@ -47,8 +46,6 @@ export type ValidateRule = ValidateRuleItem | ValidateRuleItem[];
 export type ValidateRules = Record<string, ValidateRule>;
 
 export interface GetRuleOptions extends Omit<ValidateRuleItem, 'fields'> {
-  /** 字段 */
-  label?: string;
   /** 子规则 */
   fields?: Record<string, GetRuleOptions | GetRuleOptions[]>;
   /** 正则表达式 */
@@ -80,6 +77,11 @@ export interface ValidateResponse {
   success: boolean;
   /** 错误信息 */
   errors?: ValidateError[];
+}
+
+export interface MessageJSON {
+  rules: Partial<GetRuleOptions>;
+  message: string;
 }
 
 export { ValidateSchema };
@@ -154,12 +156,11 @@ const validateUtil = {
    * @param rules 校验规则
    * @returns 校验器
    */
-  getSchema: (rules: ValidateRules | ValidateSchema) => {
-    if (rules instanceof ValidateSchema) {
-      return rules;
-    }
-
-    return new ValidateSchema(rules);
+  getSchema: (rules: ValidateRules | ValidateSchema, options?: ValidateOption) => {
+    const pureRules = rules instanceof ValidateSchema ? rules.rules : rules;
+    return new ValidateSchema(
+      validateUtil.normalizeRules(validateUtil.getRules(options?.rules ?? {}, validateUtil.getRules(pureRules, {}))),
+    );
   },
 
   getErrorMessage: (error: unknown) => {
@@ -222,7 +223,7 @@ const validateUtil = {
     const model = options?.model ?? 'Base';
 
     try {
-      const schema = validateUtil.getSchema(rules);
+      const schema = validateUtil.getSchema(rules, options);
       await schema.validate(data, deepmerge({ messages: defaultMessages }, options ?? {}), callback);
       return {
         success: true,
@@ -235,15 +236,13 @@ const validateUtil = {
     }
   },
 
-  getRules: (rules: GetRulesOptions, initialRules: ValidateRules = {}, options: { i18n: I18n } = { i18n: i18nConfig.i18n }) => {
+  getRules: (rules: GetRulesOptions, initialRules: ValidateRules = {}) => {
     const mergedRules = _.reduce(
       rules,
       (result, rule, fieldKey) => {
-        const i18n = options.i18n ?? i18nConfig.i18n;
-        const label = i18n.t(fieldKey);
         const loadedRules = Array.isArray(rule)
-          ? rule.map((option) => validateUtil.getRule({ label, path: fieldKey, ...option }))
-          : [validateUtil.getRule({ label, path: fieldKey, ...rule })];
+          ? rule.map((option) => validateUtil.getRule({ path: fieldKey, ...option }))
+          : [validateUtil.getRule({ path: fieldKey, ...rule })];
 
         const previousRules = Reflect.get(result, fieldKey) ?? [];
         const storedRules = Array.isArray(previousRules) ? previousRules : [previousRules];
@@ -254,7 +253,7 @@ const validateUtil = {
       initialRules,
     );
 
-    return validateUtil.normalizeRules(mergedRules);
+    return mergedRules;
   },
 
   /** 获取规则 */
@@ -266,9 +265,11 @@ const validateUtil = {
     const regexpReversed = options?.regexpReversed ?? false;
 
     const message = (() => {
+      const pickedRules = _.pick(options, ['min', 'max', 'len', 'range']);
+
       if (options.message) {
         if (typeof options.message === 'function') {
-          return options.message(options.label);
+          return options.message();
         }
 
         return options.message;
@@ -276,6 +277,101 @@ const validateUtil = {
 
       if (regexpKey) {
         return `${options.regexpReversed ? 'InvalidReversed' : 'Invalid'}:${options.regexpKey ?? 'format'}`;
+      }
+
+      switch (type) {
+        case 'string':
+          if (typeof options.min !== 'undefined' && typeof options.max !== 'undefined') {
+            return validateUtil.getMessageJSON({
+              rules: pickedRules,
+              message: 'must be between the range of characters',
+            });
+          }
+
+          if (typeof options.min !== 'undefined') {
+            return validateUtil.getMessageJSON({
+              rules: pickedRules,
+              message: 'must be at least characters',
+            });
+          }
+
+          if (typeof options.max !== 'undefined') {
+            return validateUtil.getMessageJSON({
+              rules: pickedRules,
+              message: 'cannot be longer than characters',
+            });
+          }
+
+          if (typeof options.len !== 'undefined') {
+            return validateUtil.getMessageJSON({
+              rules: pickedRules,
+              message: 'must be exactly characters',
+            });
+          }
+
+          break;
+
+        case 'number':
+          if (typeof options.min !== 'undefined' && typeof options.max !== 'undefined') {
+            return validateUtil.getMessageJSON({
+              rules: pickedRules,
+              message: 'must be between the range of numbers',
+            });
+          }
+
+          if (typeof options.min !== 'undefined') {
+            return validateUtil.getMessageJSON({
+              rules: pickedRules,
+              message: 'cannot be less than',
+            });
+          }
+
+          if (typeof options.max !== 'undefined') {
+            return validateUtil.getMessageJSON({
+              rules: pickedRules,
+              message: 'cannot be greater than',
+            });
+          }
+
+          if (typeof options.len !== 'undefined') {
+            return validateUtil.getMessageJSON({
+              rules: pickedRules,
+              message: 'must equal',
+            });
+          }
+
+          break;
+
+        case 'array':
+          if (typeof options.min !== 'undefined' && typeof options.max !== 'undefined') {
+            return validateUtil.getMessageJSON({
+              rules: pickedRules,
+              message: 'must be between the range of array length',
+            });
+          }
+
+          if (typeof options.min !== 'undefined') {
+            return validateUtil.getMessageJSON({
+              rules: pickedRules,
+              message: 'cannot be less than array length',
+            });
+          }
+
+          if (typeof options.max !== 'undefined') {
+            return validateUtil.getMessageJSON({
+              rules: pickedRules,
+              message: 'cannot be greater than array length',
+            });
+          }
+
+          if (typeof options.len !== 'undefined') {
+            return validateUtil.getMessageJSON({
+              rules: pickedRules,
+              message: 'must be exactly array length',
+            });
+          }
+
+          break;
       }
 
       return undefined;
@@ -341,11 +437,25 @@ const validateUtil = {
     return rule;
   },
 
-  collectRulesRequired: (requires: Record<string, boolean[]>, rules: ValidateRules) => {
+  getMessageJSON: (messageJSON: MessageJSON) => {
+    return `json:${JSON.stringify(messageJSON)}`;
+  },
+
+  parseMessageJSON: (message: string): MessageJSON => {
+    try {
+      return JSON.parse(message.replace(/^json:/, ''));
+    } catch (error) {
+      return { rules: {}, message };
+    }
+  },
+
+  collectRulesRequired: (rules: ValidateRules, requires: Record<string, boolean[]>, path = '') => {
     Object.keys(rules).forEach((fieldKey) => {
       const fieldRules = rules[fieldKey];
 
       (Array.isArray(fieldRules) ? fieldRules : [fieldRules]).forEach((rule) => {
+        rule.path = rule.path ?? `${path ? `${path}.` : ''}${fieldKey}`;
+
         if (typeof rule.required === 'boolean') {
           if (rule.path) {
             requires[rule.path] ||= [];
@@ -354,7 +464,7 @@ const validateUtil = {
         }
 
         if (rule.fields) {
-          validateUtil.collectRulesRequired(requires, rule.fields);
+          validateUtil.collectRulesRequired(rule.fields, requires, rule.path);
         }
       });
     });
@@ -364,10 +474,9 @@ const validateUtil = {
 
   collectRulesRequiredAssign: (requires: Record<string, boolean[]>, rules: ValidateRules) => {
     Object.keys(rules).forEach((fieldKey) => {
-      const fieldRules = rules[fieldKey];
-      const fieldRulesArray = Array.isArray(fieldRules) ? fieldRules : [fieldRules];
+      const fieldRules = Array.isArray(rules[fieldKey]) ? rules[fieldKey] : [rules[fieldKey]];
 
-      fieldRulesArray.forEach((rule, ruleIndex) => {
+      fieldRules.forEach((rule, ruleIndex) => {
         if (ruleIndex === 0 && rule.path && _.last(requires[rule.path] ?? [])) {
           rule.required = true;
           delete requires[rule.path];
@@ -384,7 +493,7 @@ const validateUtil = {
 
   normalizeRules: (rules: ValidateRules) => {
     const pureRules = _.cloneDeep(rules);
-    const requires = validateUtil.collectRulesRequired({}, pureRules);
+    const requires = validateUtil.collectRulesRequired(pureRules, {}, '');
     validateUtil.collectRulesRequiredAssign(requires, pureRules);
     return pureRules;
   },
@@ -396,39 +505,27 @@ export interface ValidatorOptions {
   action: string;
   rules: Record<string, GetRuleOptions | GetRuleOptions[]>;
   model?: string;
-  i18n?: I18n | (() => I18n);
 }
 
 export class Validator {
   public action!: string;
   public rules: ValidateRules = {};
   public model = 'Base';
-  public i18n: I18n | (() => I18n);
 
   constructor(options: ValidatorOptions) {
     this.action = options.action;
-    this.rules = validateUtil.getRules(options.rules ?? {}, this.rules, { i18n: this.getI18n() });
+    this.rules = validateUtil.getRules(options.rules ?? {}, this.rules);
     this.model = options.model ?? this.model;
-    this.i18n = options.i18n ?? i18nConfig.i18n;
-  }
-
-  public getI18n() {
-    return (typeof this.i18n === 'function' ? this.i18n() : this.i18n) ?? i18nConfig.i18n;
   }
 
   public validate(data: ValidateValues, options?: ValidateOption, callback?: ValidateCallback) {
-    return validateUtil.validate(
-      validateUtil.getRules(options?.rules ?? {}, this.rules, { i18n: this.getI18n() }),
-      data,
-      { model: this.model, ...options },
-      callback,
-    );
+    return validateUtil.validate(this.rules, data, { model: this.model, ...options }, callback);
   }
 
   public wrapRules(options: WrapRulesOptions) {
     const override = options.override ?? false;
     const validator = override ? this : _.cloneDeep(this);
-    validator.rules = validateUtil.getRules(options.rules ?? {}, validator.rules, { i18n: validator.getI18n() });
+    validator.rules = validateUtil.getRules(options.rules ?? {}, validator.rules);
     return validator;
   }
 }
