@@ -49,6 +49,8 @@ export interface ValidateRuleItem extends Omit<OriginalValidateRuleItem, 'fields
   path?: string;
   /** 子规则 */
   fields?: ValidateRules;
+  /** 消息数据 */
+  messageData?: MessageJSON;
 }
 
 export type ValidateRule = ValidateRuleItem | ValidateRuleItem[];
@@ -84,6 +86,8 @@ export interface GetErrorsOptions extends GetLocaleRulesOptions {
 export interface ValidateError extends OriginalValidateError {
   /** 模型 */
   model?: string;
+  /** 消息数据 */
+  messageData?: MessageJSON;
 }
 
 export interface ValidateResponse {
@@ -95,7 +99,7 @@ export interface ValidateResponse {
 
 export interface MessageJSON {
   rules: Partial<GetRuleOptions>;
-  message: string;
+  message: any;
 }
 
 export { ValidateSchema };
@@ -199,6 +203,7 @@ const validateUtil = {
       return (Reflect.get(error, 'errors') as ValidateError[]).map((err) => {
         return {
           ..._.pick(err, ['field', 'fieldValue']),
+          messageData: validateUtil.parseMessageJSON(err.message),
           message: validateUtil.getErrorMessage(err.message, options),
           model,
         };
@@ -207,6 +212,7 @@ const validateUtil = {
 
     return [
       {
+        messageData: validateUtil.parseMessageJSON(error),
         message: validateUtil.getErrorMessage(error, options),
         fieldValue: options?.fieldValue,
         field: options?.field,
@@ -253,6 +259,7 @@ const validateUtil = {
       (Array.isArray(fieldRules) ? fieldRules : [fieldRules]).forEach((rule) => {
         if (i18n && typeof i18n.t === 'function' && typeof rule.message === 'string') {
           const messageJSON = validateUtil.parseMessageJSON(rule.message);
+          rule.messageData = messageJSON;
           rule.message = i18n.t(messageJSON.message, {
             defaultValue: messageJSON.message,
             args: messageJSON.rules,
@@ -494,11 +501,11 @@ const validateUtil = {
 
   getMessageJSON,
 
-  parseMessageJSON: (message: string): MessageJSON => {
+  parseMessageJSON: (message?: string | unknown): MessageJSON => {
     try {
-      return JSON.parse(message.replace(/^json:/, ''));
+      return JSON.parse(`${message ?? ''}`.replace(/^json:/, ''));
     } catch (error) {
-      return { rules: {}, message };
+      return { rules: {}, message: message ?? '' };
     }
   },
 

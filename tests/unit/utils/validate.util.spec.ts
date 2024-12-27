@@ -143,6 +143,13 @@ describe('validateUtil.validate()', () => {
           fieldValue: 17,
           message: '大小必须在 18 和 81 之间',
           model: 'Base',
+          messageData: {
+            rules: {
+              min: 18,
+              max: 81,
+            },
+            message: 'validate.number.must-be-between-the-range-of-numbers',
+          },
         },
       ],
     });
@@ -167,6 +174,13 @@ describe('validateUtil.validate() 英文', () => {
           fieldValue: 17,
           message: 'Must be between 18 and 81',
           model: 'Base',
+          messageData: {
+            rules: {
+              min: 18,
+              max: 81,
+            },
+            message: 'validate.number.must-be-between-the-range-of-numbers',
+          },
         },
       ],
     });
@@ -192,12 +206,24 @@ describe('validator', () => {
           fieldValue: 'ABC123',
           message: '长度至少为 12 个字符',
           model: 'Base',
+          messageData: {
+            rules: {
+              min: 12,
+            },
+            message: 'validate.string.must-be-at-least-characters',
+          },
         },
         {
           field: 'name',
           fieldValue: 'ABC123',
           message: '格式不正确，不符合要求的正则表达式',
           model: 'Base',
+          messageData: {
+            rules: {
+              pattern: '/^\\d+$/',
+            },
+            message: 'validate.string.pattern-mismatch',
+          },
         },
       ],
     });
@@ -221,12 +247,24 @@ describe('validator', () => {
           fieldValue: 'ABC123',
           message: '长度至少为 12 个字符',
           model: 'Base',
+          messageData: {
+            rules: {
+              min: 12,
+            },
+            message: 'validate.string.must-be-at-least-characters',
+          },
         },
         {
           field: 'name',
           fieldValue: 'ABC123',
           message: '格式不正确，不符合要求的正则表达式',
           model: 'Base',
+          messageData: {
+            rules: {
+              pattern: '/^\\d+$/',
+            },
+            message: 'validate.string.pattern-mismatch',
+          },
         },
       ],
     });
@@ -241,6 +279,12 @@ describe('validator', () => {
           fieldValue: 'ABC123',
           message: '格式不正确，不符合要求的正则表达式',
           model: 'Base',
+          messageData: {
+            rules: {
+              pattern: '/^\\d+$/',
+            },
+            message: 'validate.string.pattern-mismatch',
+          },
         },
       ],
     });
@@ -264,12 +308,24 @@ describe('validator', () => {
           fieldValue: 'ABC123',
           message: '长度至少为 12 个字符',
           model: 'Base',
+          messageData: {
+            rules: {
+              min: 12,
+            },
+            message: 'validate.string.must-be-at-least-characters',
+          },
         },
         {
           field: 'name',
           fieldValue: 'ABC123',
           message: '格式不正确，不符合要求的正则表达式',
           model: 'Base',
+          messageData: {
+            rules: {
+              pattern: '/^\\d+$/',
+            },
+            message: 'validate.string.pattern-mismatch',
+          },
         },
       ],
     });
@@ -284,12 +340,24 @@ describe('validator', () => {
           fieldValue: 'ABC123',
           message: '长度至少为 12 个字符',
           model: 'Base',
+          messageData: {
+            rules: {
+              min: 12,
+            },
+            message: 'validate.string.must-be-at-least-characters',
+          },
         },
         {
           field: 'name',
           fieldValue: 'ABC123',
           message: '格式不正确，不符合要求的正则表达式',
           model: 'Base',
+          messageData: {
+            rules: {
+              pattern: '/^\\d+$/',
+            },
+            message: 'validate.string.pattern-mismatch',
+          },
         },
       ],
     });
@@ -324,6 +392,12 @@ describe('validator', () => {
           fieldValue: 'ABC123',
           message: '格式不正确，不符合要求的正则表达式',
           model: 'Base',
+          messageData: {
+            rules: {
+              pattern: '/^\\d+$/',
+            },
+            message: 'validate.string.pattern-mismatch',
+          },
         },
       ],
     });
