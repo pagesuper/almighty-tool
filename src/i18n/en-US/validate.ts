@@ -4,7 +4,7 @@ const validate = {
     'must-be-at-least-characters': 'Length must be at least {min} characters',
     'cannot-be-longer-than-characters': 'Length cannot be longer than {max} characters',
     'must-be-exactly-characters': 'Must be exactly {len} characters',
-    'pattern-mismatch': 'Invalid format, does not match regular expression',
+    'pattern-mismatch': 'Invalid format, does not match the required regular expression',
   },
   number: {
     'must-be-between-the-range-of-numbers': 'Must be between {min} and {max}',

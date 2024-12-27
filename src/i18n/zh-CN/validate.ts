@@ -4,7 +4,7 @@ const validate = {
     'must-be-at-least-characters': '长度至少为 {min} 个字符',
     'cannot-be-longer-than-characters': '长度不能超过 {max} 个字符',
     'must-be-exactly-characters': '必须为 {len} 个字符',
-    'pattern-mismatch': '格式不正确，不符合正则表达式',
+    'pattern-mismatch': '格式不正确，不符合要求的正则表达式',
   },
   number: {
     'must-be-between-the-range-of-numbers': '大小必须在 {min} 和 {max} 之间',
