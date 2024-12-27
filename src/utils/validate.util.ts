@@ -63,19 +63,22 @@ export interface GetRuleOptions extends Omit<ValidateRuleItem, 'fields'> {
   regexpReversed?: boolean;
 }
 
+export interface GetLocaleRulesOptions {
+  /** 国际化 */
+  i18n?: I18n;
+  /** 语言 */
+  lang?: string;
+}
+
 export type GetRulesOptions = Record<string, GetRuleOptions | GetRuleOptions[]>;
 
-export interface GetErrorsOptions {
+export interface GetErrorsOptions extends GetLocaleRulesOptions {
   /** 模型 */
   model?: string;
   /** 字段 */
   field?: string;
   /** 字段值 */
   fieldValue?: ValidateValue;
-  /** 国际化 */
-  i18n?: I18n;
-  /** 语言 */
-  lang?: string;
 }
 
 export interface ValidateError extends OriginalValidateError {
@@ -112,53 +115,7 @@ export type {
   ValidateValues,
 };
 
-const defaultMessages: ValidateMessages = {
-  default: 'validation error',
-  required: 'is required',
-  enum: 'must be one of enum',
-  whitespace: 'cannot be empty',
-  date: {
-    format: '%s date %s is invalid for format %s',
-    parse: '%s date could not be parsed, %s is invalid ',
-    invalid: '%s date %s is invalid',
-  },
-  types: {
-    string: 'is not a string',
-    method: 'is not a function',
-    array: 'is not an array',
-    object: 'is not an object',
-    number: 'is not a number',
-    date: 'is not a date',
-    boolean: 'is not a boolean',
-    integer: 'is not an integer',
-    float: 'is not a float',
-    regexp: 'is not a regexp',
-    email: 'is not an email',
-    url: 'is not a url',
-    hex: 'is not a hex',
-  },
-  string: {
-    len: '%s must be exactly %s characters',
-    min: '%s must be at least %s characters',
-    max: '%s cannot be longer than %s characters',
-    range: '%s must be between %s and %s characters',
-  },
-  number: {
-    len: '%s must equal %s',
-    min: '%s cannot be less than %s',
-    max: '%s cannot be greater than %s',
-    range: '%s must be between %s and %s',
-  },
-  array: {
-    len: '%s must be exactly %s in length',
-    min: '%s cannot be less than %s in length',
-    max: '%s cannot be greater than %s in length',
-    range: '%s must be between %s and %s in length',
-  },
-  pattern: {
-    mismatch: '%s value %s does not match pattern %s',
-  },
-};
+const defaultMessages: ValidateMessages = {};
 
 /** 校验工具 */
 const validateUtil = {
@@ -257,7 +214,39 @@ const validateUtil = {
     }
   },
 
-  getRules: (rules: GetRulesOptions, initialRules: ValidateRules = {}) => {
+  recursiveGetLocaleRules: (rules: ValidateRules, options: GetLocaleRulesOptions = {}) => {
+    const i18n = options?.i18n ?? i18nConfig.i18n;
+    const lang = options?.lang ?? i18nConfig.defaultLang;
+
+    Object.keys(rules).forEach((fieldKey) => {
+      const fieldRules = rules[fieldKey];
+
+      (Array.isArray(fieldRules) ? fieldRules : [fieldRules]).forEach((rule) => {
+        if (i18n && typeof i18n.t === 'function' && typeof rule.message === 'string') {
+          const messageJSON = validateUtil.parseMessageJSON(rule.message);
+          rule.message = i18n.t(messageJSON.message, {
+            defaultValue: messageJSON.message,
+            args: messageJSON.rules,
+            lang,
+          });
+        }
+
+        if (rule.fields) {
+          validateUtil.recursiveGetLocaleRules(rule.fields, { i18n, lang });
+        }
+      });
+    });
+
+    return rules;
+  },
+
+  getLocaleRules: (rules: ValidateRules, options: GetLocaleRulesOptions = {}) => {
+    const i18n = options?.i18n ?? i18nConfig.i18n;
+    const lang = options?.lang ?? i18nConfig.defaultLang;
+    return validateUtil.recursiveGetLocaleRules(_.cloneDeep(validateUtil.getRules(rules)), { i18n, lang });
+  },
+
+  getRules: (rules: GetRulesOptions, initialRules: ValidateRules = {}): ValidateRules => {
     const mergedRules = _.reduce(
       rules,
       (result, rule, fieldKey) => {
@@ -301,7 +290,12 @@ const validateUtil = {
       }
 
       if (regexpKey) {
-        return `validate.regexp-key.${options.regexpReversed ? 'invalid-reversed' : 'invalid'}:${options.regexpKey ?? 'format'}`;
+        return validateUtil.getMessageJSON({
+          rules: pickedRules,
+          message: `validate.regexp-key.${options.regexpReversed ? 'invalid-reversed' : 'invalid'}:${
+            options.regexpKey ?? 'format'
+          }`,
+        });
       }
 
       switch (type) {
@@ -552,6 +546,10 @@ export class Validator {
 
   public validate(data: ValidateValues, options?: ValidateOption, callback?: ValidateCallback) {
     return validateUtil.validate(this.rules, data, { model: this.model, ...options }, callback);
+  }
+
+  public getLocaleRules(options?: GetLocaleRulesOptions) {
+    return validateUtil.getLocaleRules(this.rules, options);
   }
 
   public wrapRules(options: WrapRulesOptions) {

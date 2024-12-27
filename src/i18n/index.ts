@@ -29,6 +29,7 @@ export type TranslateOptions = {
 
 export interface I18nConfig {
   i18n: I18n;
+  defaultLang: string;
 }
 
 export const defaultLang = 'zh-CN';
@@ -80,6 +81,7 @@ export const i18nConfig: I18nConfig = {
     fallbackLang: defaultLang,
     messages,
   }),
+  defaultLang,
 };
 
 export default messages;

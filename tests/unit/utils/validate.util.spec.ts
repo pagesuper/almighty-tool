@@ -1,4 +1,4 @@
-import validateUtil, { ValidateSchema, Validator } from '../../../src/utils/validate.util';
+import validateUtil, { ValidateRules, ValidateSchema, Validator } from '../../../src/utils/validate.util';
 
 describe('validateUtil.getSchema()', () => {
   test('成功', async () => {
@@ -8,12 +8,24 @@ describe('validateUtil.getSchema()', () => {
 
 describe('validateUtil.validate()', () => {
   test('失败: 一层/number', async () => {
-    const result = await validateUtil.validate(
-      {
-        age: { type: 'number', required: true, min: 18, max: 81 },
-      },
-      { age: 17 },
-    );
+    const rules: ValidateRules = {
+      age: { type: 'number', required: true, min: 18, max: 81 },
+    };
+
+    const result = await validateUtil.validate(rules, { age: 17 });
+
+    expect(validateUtil.getLocaleRules(rules)).toEqual({
+      age: [
+        {
+          type: 'number',
+          required: true,
+          path: 'age',
+          min: 18,
+          max: 81,
+          message: '大小必须在 18 和 81 之间',
+        },
+      ],
+    });
 
     expect(result).toEqual({
       success: false,
@@ -264,11 +276,22 @@ describe('validator', () => {
   });
 
   test('失败: 一层/正则', async () => {
-    const validator = new Validator({
-      rules: {
-        name: { type: 'string', required: true, pattern: /^\d+$/ },
-      },
-      action: 'validate',
+    const rules: ValidateRules = {
+      name: { type: 'string', required: true, pattern: /^\d+$/ },
+    };
+
+    const validator = new Validator({ rules, action: 'validate' });
+
+    expect(validator.getLocaleRules()).toMatchObject({
+      name: [
+        {
+          type: 'string',
+          required: true,
+          path: 'name',
+          pattern: /^\d+$/,
+          message: '格式不正确，不符合正则表达式',
+        },
+      ],
     });
 
     const result = await validator.validate({ name: 'ABC123' });
