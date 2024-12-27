@@ -1,5 +1,5 @@
 import ValidateSchema, { ValidateError as OriginalValidateError, ValidateOption as OriginalValidateOption, RuleItem as OriginalValidateRuleItem, ValidateCallback, ExecuteRule as ValidateExecuteRule, ExecuteValidator as ValidateExecuteValidator, ValidateFieldsError, InternalRuleItem as ValidateInternalRuleItem, InternalValidateMessages as ValidateInternalValidateMessages, ValidateMessages, ValidateResult, RuleType as ValidateRuleType, RuleValuePackage as ValidateRuleValuePackage, Value as ValidateValue, Values as ValidateValues } from 'async-validator';
-import { I18n } from '../common/i18n';
+import { I18n } from '../i18n/index';
 export interface ValidateOption extends OriginalValidateOption {
     /** 模型 */
     model?: string;
@@ -7,6 +7,12 @@ export interface ValidateOption extends OriginalValidateOption {
     rules?: GetRulesOptions;
     /** 国际化 */
     i18n?: I18n;
+    /**
+     * 语言
+     * - zh-CN
+     * - en-US
+     */
+    lang?: string;
 }
 export interface WrapRulesOptions extends ValidateOption {
     /** 覆盖规则: 默认为false */
@@ -41,6 +47,8 @@ export interface GetErrorsOptions {
     fieldValue?: ValidateValue;
     /** 国际化 */
     i18n?: I18n;
+    /** 语言 */
+    lang?: string;
 }
 export interface ValidateError extends OriginalValidateError {
     /** 模型 */

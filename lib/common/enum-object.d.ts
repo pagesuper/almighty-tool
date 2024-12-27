@@ -1,4 +1,4 @@
-import { I18n } from './i18n';
+import { I18n } from '../i18n/index';
 export interface IEnumObjectTranslate {
     [key: string]: string;
 }

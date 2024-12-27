@@ -1,4 +1,5 @@
-import { EnumObject, TranslateOptions } from '../../../src/common/enum-object';
+import { EnumObject } from '../../../src/common/enum-object';
+import { i18nConfig } from '../../../src/i18n/index';
 
 enum ENUM_HELLO {
   Age = 'age',
@@ -6,16 +7,10 @@ enum ENUM_HELLO {
   Number = 1024,
 }
 
-const i18n = {
-  t: (key: string, _options?: TranslateOptions): string => {
-    return `${key}`;
-  },
-};
-
 const EnumHello = new EnumObject({
   source: ENUM_HELLO,
   name: 'ENUM_HELLO',
-  i18n,
+  i18n: i18nConfig.i18n,
 });
 
 describe('EnumObject', () => {

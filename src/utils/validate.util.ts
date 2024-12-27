@@ -17,7 +17,7 @@ import ValidateSchema, {
 } from 'async-validator';
 import deepmerge from 'deepmerge';
 import _ from 'lodash';
-import { I18n, i18nConfig } from '../common/i18n';
+import { I18n, i18nConfig } from '../i18n/index';
 import { regExps } from './format.util';
 
 export interface ValidateOption extends OriginalValidateOption {
@@ -27,6 +27,12 @@ export interface ValidateOption extends OriginalValidateOption {
   rules?: GetRulesOptions;
   /** 国际化 */
   i18n?: I18n;
+  /**
+   * 语言
+   * - zh-CN
+   * - en-US
+   */
+  lang?: string;
 }
 
 export interface WrapRulesOptions extends ValidateOption {
@@ -68,6 +74,8 @@ export interface GetErrorsOptions {
   fieldValue?: ValidateValue;
   /** 国际化 */
   i18n?: I18n;
+  /** 语言 */
+  lang?: string;
 }
 
 export interface ValidateError extends OriginalValidateError {
@@ -178,6 +186,7 @@ const validateUtil = {
         return i18n.t(messageJSON.message, {
           defaultValue: messageJSON.message,
           args: messageJSON.rules,
+          lang: options?.lang,
         });
       }
 
@@ -243,7 +252,7 @@ const validateUtil = {
     } catch (error) {
       return {
         success: false,
-        errors: validateUtil.getErrors(error, { model, i18n: options?.i18n ?? i18nConfig.i18n }),
+        errors: validateUtil.getErrors(error, { model, i18n: options?.i18n ?? i18nConfig.i18n, lang: options?.lang }),
       };
     }
   },
@@ -278,6 +287,10 @@ const validateUtil = {
 
     const message = (() => {
       const pickedRules = _.pick(options, ['min', 'max', 'len', 'range', 'pattern']);
+
+      if (pickedRules.pattern) {
+        pickedRules.pattern = pickedRules.pattern.toString();
+      }
 
       if (options.message) {
         if (typeof options.message === 'function') {

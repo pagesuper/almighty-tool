@@ -21,7 +21,7 @@ describe('validateUtil.validate()', () => {
         {
           field: 'age',
           fieldValue: 17,
-          message: 'validate.number.must-be-between-the-range-of-numbers',
+          message: '大小必须在 18 和 81 之间',
           model: 'Base',
         },
       ],
@@ -42,7 +42,7 @@ describe('validateUtil.validate()', () => {
         {
           field: 'name',
           fieldValue: 'ABC123',
-          message: 'validate.string.pattern-mismatch',
+          message: '格式不正确，不符合正则表达式',
           model: 'Base',
         },
       ],
@@ -63,7 +63,7 @@ describe('validateUtil.validate()', () => {
         {
           field: 'idText',
           fieldValue: '11010519491231893',
-          message: 'validate.regexp-key.invalid:id-card-china',
+          message: '身份证号码格式错误',
           model: 'Base',
         },
       ],
@@ -84,7 +84,56 @@ describe('validateUtil.validate()', () => {
         {
           field: 'idText',
           fieldValue: '11010519491231893X',
-          message: 'validate.regexp-key.invalid-reversed:id-card-china',
+          message: '不能为身份证号码格式',
+          model: 'Base',
+        },
+      ],
+    });
+  });
+
+  test('失败: 2层/number', async () => {
+    const result = await validateUtil.validate(
+      {
+        user: {
+          fields: {
+            age: { type: 'number', required: true, min: 18, max: 81 },
+          },
+        },
+      },
+      { user: { age: 17 } },
+    );
+
+    expect(result).toEqual({
+      success: false,
+      errors: [
+        {
+          field: 'user.age',
+          fieldValue: 17,
+          message: '大小必须在 18 和 81 之间',
+          model: 'Base',
+        },
+      ],
+    });
+  });
+});
+
+describe('validateUtil.validate() 英文', () => {
+  test('失败: 一层/number', async () => {
+    const result = await validateUtil.validate(
+      {
+        age: { type: 'number', required: true, min: 18, max: 81 },
+      },
+      { age: 17 },
+      { lang: 'en-US' },
+    );
+
+    expect(result).toEqual({
+      success: false,
+      errors: [
+        {
+          field: 'age',
+          fieldValue: 17,
+          message: 'Must be between 18 and 81',
           model: 'Base',
         },
       ],
@@ -109,13 +158,13 @@ describe('validator', () => {
         {
           field: 'name',
           fieldValue: 'ABC123',
-          message: 'validate.string.must-be-at-least-characters',
+          message: '长度至少为 12 个字符',
           model: 'Base',
         },
         {
           field: 'name',
           fieldValue: 'ABC123',
-          message: 'validate.string.pattern-mismatch',
+          message: '格式不正确，不符合正则表达式',
           model: 'Base',
         },
       ],
@@ -138,13 +187,13 @@ describe('validator', () => {
         {
           field: 'name',
           fieldValue: 'ABC123',
-          message: 'validate.string.must-be-at-least-characters',
+          message: '长度至少为 12 个字符',
           model: 'Base',
         },
         {
           field: 'name',
           fieldValue: 'ABC123',
-          message: 'validate.string.pattern-mismatch',
+          message: '格式不正确，不符合正则表达式',
           model: 'Base',
         },
       ],
@@ -158,7 +207,7 @@ describe('validator', () => {
         {
           field: 'name',
           fieldValue: 'ABC123',
-          message: 'validate.string.pattern-mismatch',
+          message: '格式不正确，不符合正则表达式',
           model: 'Base',
         },
       ],
@@ -181,13 +230,13 @@ describe('validator', () => {
         {
           field: 'name',
           fieldValue: 'ABC123',
-          message: 'validate.string.must-be-at-least-characters',
+          message: '长度至少为 12 个字符',
           model: 'Base',
         },
         {
           field: 'name',
           fieldValue: 'ABC123',
-          message: 'validate.string.pattern-mismatch',
+          message: '格式不正确，不符合正则表达式',
           model: 'Base',
         },
       ],
@@ -201,13 +250,13 @@ describe('validator', () => {
         {
           field: 'name',
           fieldValue: 'ABC123',
-          message: 'validate.string.must-be-at-least-characters',
+          message: '长度至少为 12 个字符',
           model: 'Base',
         },
         {
           field: 'name',
           fieldValue: 'ABC123',
-          message: 'validate.string.pattern-mismatch',
+          message: '格式不正确，不符合正则表达式',
           model: 'Base',
         },
       ],
@@ -230,7 +279,7 @@ describe('validator', () => {
         {
           field: 'name',
           fieldValue: 'ABC123',
-          message: 'validate.string.pattern-mismatch',
+          message: '格式不正确，不符合正则表达式',
           model: 'Base',
         },
       ],
