@@ -1,4 +1,4 @@
-import validateUtil, { ValidateSchema } from '../../../src/utils/validate.util';
+import validateUtil, { ValidateSchema, Validator } from '../../../src/utils/validate.util';
 
 describe('validateUtil.getSchema()', () => {
   test('成功', async () => {
@@ -85,6 +85,152 @@ describe('validateUtil.validate()', () => {
           field: 'idText',
           fieldValue: '11010519491231893X',
           message: 'validate.regexp-key.invalid-reversed:id-card-china',
+          model: 'Base',
+        },
+      ],
+    });
+  });
+});
+
+describe('validator', () => {
+  test('失败: 一层/正则 选项', async () => {
+    const validator = new Validator({
+      rules: {
+        name: { type: 'string', required: true, pattern: /^\d+$/ },
+      },
+      action: 'validate',
+    });
+
+    const result = await validator.validate({ name: 'ABC123' }, { rules: { name: { min: 12 } } });
+
+    expect(result).toEqual({
+      success: false,
+      errors: [
+        {
+          field: 'name',
+          fieldValue: 'ABC123',
+          message: 'validate.string.must-be-at-least-characters',
+          model: 'Base',
+        },
+        {
+          field: 'name',
+          fieldValue: 'ABC123',
+          message: 'validate.string.pattern-mismatch',
+          model: 'Base',
+        },
+      ],
+    });
+  });
+
+  test('失败: 一层/正则 wrapRules不覆盖', async () => {
+    const validator = new Validator({
+      rules: {
+        name: { type: 'string', required: true, pattern: /^\d+$/ },
+      },
+      action: 'validate',
+    });
+
+    const result = await validator.wrapRules({ rules: { name: { min: 12 } } }).validate({ name: 'ABC123' });
+
+    expect(result).toEqual({
+      success: false,
+      errors: [
+        {
+          field: 'name',
+          fieldValue: 'ABC123',
+          message: 'validate.string.must-be-at-least-characters',
+          model: 'Base',
+        },
+        {
+          field: 'name',
+          fieldValue: 'ABC123',
+          message: 'validate.string.pattern-mismatch',
+          model: 'Base',
+        },
+      ],
+    });
+
+    const result2 = await validator.validate({ name: 'ABC123' });
+
+    expect(result2).toEqual({
+      success: false,
+      errors: [
+        {
+          field: 'name',
+          fieldValue: 'ABC123',
+          message: 'validate.string.pattern-mismatch',
+          model: 'Base',
+        },
+      ],
+    });
+  });
+
+  test('失败: 一层/正则 wrapRules覆盖', async () => {
+    const validator = new Validator({
+      rules: {
+        name: { type: 'string', required: true, pattern: /^\d+$/ },
+      },
+      action: 'validate',
+    });
+
+    const result = await validator.wrapRules({ rules: { name: { min: 12 } }, override: true }).validate({ name: 'ABC123' });
+
+    expect(result).toEqual({
+      success: false,
+      errors: [
+        {
+          field: 'name',
+          fieldValue: 'ABC123',
+          message: 'validate.string.must-be-at-least-characters',
+          model: 'Base',
+        },
+        {
+          field: 'name',
+          fieldValue: 'ABC123',
+          message: 'validate.string.pattern-mismatch',
+          model: 'Base',
+        },
+      ],
+    });
+
+    const result2 = await validator.validate({ name: 'ABC123' });
+
+    expect(result2).toEqual({
+      success: false,
+      errors: [
+        {
+          field: 'name',
+          fieldValue: 'ABC123',
+          message: 'validate.string.must-be-at-least-characters',
+          model: 'Base',
+        },
+        {
+          field: 'name',
+          fieldValue: 'ABC123',
+          message: 'validate.string.pattern-mismatch',
+          model: 'Base',
+        },
+      ],
+    });
+  });
+
+  test('失败: 一层/正则', async () => {
+    const validator = new Validator({
+      rules: {
+        name: { type: 'string', required: true, pattern: /^\d+$/ },
+      },
+      action: 'validate',
+    });
+
+    const result = await validator.validate({ name: 'ABC123' });
+
+    expect(result).toEqual({
+      success: false,
+      errors: [
+        {
+          field: 'name',
+          fieldValue: 'ABC123',
+          message: 'validate.string.pattern-mismatch',
           model: 'Base',
         },
       ],
