@@ -7,6 +7,26 @@ describe('validateUtil.getSchema()', () => {
 });
 
 describe('validateUtil.validate()', () => {
+  test('成功: 一层/必须', async () => {
+    const rules = {
+      name: { required: true },
+    };
+
+    const result = await validateUtil.validate(rules, { name: '' });
+
+    expect(result).toEqual({
+      errors: [
+        {
+          field: 'name',
+          fieldValue: '',
+          message: '字段不能为空',
+          model: 'Base',
+        },
+      ],
+      success: false,
+    });
+  });
+
   test('失败: 一层/number', async () => {
     const rules: ValidateRules = {
       age: { type: 'number', required: true, min: 18, max: 81 },
@@ -54,7 +74,7 @@ describe('validateUtil.validate()', () => {
         {
           field: 'name',
           fieldValue: 'ABC123',
-          message: '格式不正确，不符合正则表达式',
+          message: '格式不正确，不符合要求的正则表达式',
           model: 'Base',
         },
       ],
@@ -176,7 +196,7 @@ describe('validator', () => {
         {
           field: 'name',
           fieldValue: 'ABC123',
-          message: '格式不正确，不符合正则表达式',
+          message: '格式不正确，不符合要求的正则表达式',
           model: 'Base',
         },
       ],
@@ -205,7 +225,7 @@ describe('validator', () => {
         {
           field: 'name',
           fieldValue: 'ABC123',
-          message: '格式不正确，不符合正则表达式',
+          message: '格式不正确，不符合要求的正则表达式',
           model: 'Base',
         },
       ],
@@ -219,7 +239,7 @@ describe('validator', () => {
         {
           field: 'name',
           fieldValue: 'ABC123',
-          message: '格式不正确，不符合正则表达式',
+          message: '格式不正确，不符合要求的正则表达式',
           model: 'Base',
         },
       ],
@@ -248,7 +268,7 @@ describe('validator', () => {
         {
           field: 'name',
           fieldValue: 'ABC123',
-          message: '格式不正确，不符合正则表达式',
+          message: '格式不正确，不符合要求的正则表达式',
           model: 'Base',
         },
       ],
@@ -268,7 +288,7 @@ describe('validator', () => {
         {
           field: 'name',
           fieldValue: 'ABC123',
-          message: '格式不正确，不符合正则表达式',
+          message: '格式不正确，不符合要求的正则表达式',
           model: 'Base',
         },
       ],
@@ -289,7 +309,7 @@ describe('validator', () => {
           required: true,
           path: 'name',
           pattern: /^\d+$/,
-          message: '格式不正确，不符合正则表达式',
+          message: '格式不正确，不符合要求的正则表达式',
         },
       ],
     });
@@ -302,7 +322,7 @@ describe('validator', () => {
         {
           field: 'name',
           fieldValue: 'ABC123',
-          message: '格式不正确，不符合正则表达式',
+          message: '格式不正确，不符合要求的正则表达式',
           model: 'Base',
         },
       ],

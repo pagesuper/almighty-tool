@@ -115,7 +115,36 @@ export type {
   ValidateValues,
 };
 
-const defaultMessages: ValidateMessages = {};
+function getMessageJSON(messageJSON: MessageJSON) {
+  return `json:${JSON.stringify(messageJSON)}`;
+}
+
+const defaultMessages: ValidateMessages = {
+  default: getMessageJSON({ rules: {}, message: 'validate.default.field-is-invalid' }),
+  required: getMessageJSON({ rules: {}, message: 'validate.default.field-is-required' }),
+  enum: getMessageJSON({ rules: {}, message: 'validate.default.field-must-be-enum' }),
+  whitespace: getMessageJSON({ rules: {}, message: 'validate.default.cannot-be-empty' }),
+  date: {
+    format: getMessageJSON({ rules: {}, message: 'validate.date.format-is-invalid' }),
+    parse: getMessageJSON({ rules: {}, message: 'validate.date.could-not-be-parsed' }),
+    invalid: getMessageJSON({ rules: {}, message: 'validate.date.is-invalid' }),
+  },
+  types: {
+    string: getMessageJSON({ rules: {}, message: 'validate.types.must-be-string' }),
+    method: getMessageJSON({ rules: {}, message: 'validate.types.must-be-method' }),
+    array: getMessageJSON({ rules: {}, message: 'validate.types.must-be-array' }),
+    object: getMessageJSON({ rules: {}, message: 'validate.types.must-be-object' }),
+    number: getMessageJSON({ rules: {}, message: 'validate.types.must-be-number' }),
+    date: getMessageJSON({ rules: {}, message: 'validate.types.must-be-date' }),
+    boolean: getMessageJSON({ rules: {}, message: 'validate.types.must-be-boolean' }),
+    integer: getMessageJSON({ rules: {}, message: 'validate.types.must-be-integer' }),
+    float: getMessageJSON({ rules: {}, message: 'validate.types.must-be-float' }),
+    regexp: getMessageJSON({ rules: {}, message: 'validate.types.must-be-regexp' }),
+    email: getMessageJSON({ rules: {}, message: 'validate.types.must-be-email' }),
+    url: getMessageJSON({ rules: {}, message: 'validate.types.must-be-url' }),
+    hex: getMessageJSON({ rules: {}, message: 'validate.types.must-be-hex' }),
+  },
+};
 
 /** 校验工具 */
 const validateUtil = {
@@ -463,9 +492,7 @@ const validateUtil = {
     return rule;
   },
 
-  getMessageJSON: (messageJSON: MessageJSON) => {
-    return `json:${JSON.stringify(messageJSON)}`;
-  },
+  getMessageJSON,
 
   parseMessageJSON: (message: string): MessageJSON => {
     try {

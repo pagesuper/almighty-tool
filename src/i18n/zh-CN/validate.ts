@@ -1,4 +1,30 @@
 const validate = {
+  default: {
+    'field-is-invalid': '字段校验失败',
+    'field-is-required': '字段不能为空',
+    'field-must-be-enum': '字段必须为列表中的值',
+    'cannot-be-empty': '字段不能为空白',
+  },
+  date: {
+    format: '日期格式错误',
+    parse: '日期解析错误',
+    invalid: '日期无效',
+  },
+  types: {
+    string: '类型必须是字符串',
+    method: '类型必须是方法',
+    array: '类型必须是数组',
+    object: '类型必须是对象',
+    number: '类型必须是数字',
+    date: '类型必须是日期',
+    boolean: '类型必须是布尔值',
+    integer: '类型必须是整数',
+    float: '类型必须是浮点数',
+    regexp: '类型必须是正则表达式',
+    email: '类型必须是邮箱',
+    url: '类型必须是URL',
+    hex: '类型必须是十六进制',
+  },
   string: {
     'must-be-between-the-range-of-characters': '长度必须在 {min} 和 {max} 之间',
     'must-be-at-least-characters': '长度至少为 {min} 个字符',
