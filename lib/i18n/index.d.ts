@@ -133,6 +133,7 @@ export declare type TranslateOptions = {
 };
 export interface I18nConfig {
     i18n: I18n;
+    defaultLang: string;
 }
 export declare const defaultLang = "zh-CN";
 export interface I18nOptions {

@@ -37,18 +37,20 @@ export interface GetRuleOptions extends Omit<ValidateRuleItem, 'fields'> {
     /** 相反 */
     regexpReversed?: boolean;
 }
+export interface GetLocaleRulesOptions {
+    /** 国际化 */
+    i18n?: I18n;
+    /** 语言 */
+    lang?: string;
+}
 export declare type GetRulesOptions = Record<string, GetRuleOptions | GetRuleOptions[]>;
-export interface GetErrorsOptions {
+export interface GetErrorsOptions extends GetLocaleRulesOptions {
     /** 模型 */
     model?: string;
     /** 字段 */
     field?: string;
     /** 字段值 */
     fieldValue?: ValidateValue;
-    /** 国际化 */
-    i18n?: I18n;
-    /** 语言 */
-    lang?: string;
 }
 export interface ValidateError extends OriginalValidateError {
     /** 模型 */
@@ -94,6 +96,8 @@ declare const validateUtil: {
      * @returns 校验结果
      */
     validate: (rules: GetRulesOptions, data: ValidateValues, options?: ValidateOption | undefined, callback?: ValidateCallback | undefined) => Promise<ValidateResponse>;
+    recursiveGetLocaleRules: (rules: ValidateRules, options?: GetLocaleRulesOptions) => ValidateRules;
+    getLocaleRules: (rules: ValidateRules, options?: GetLocaleRulesOptions) => ValidateRules;
     getRules: (rules: GetRulesOptions, initialRules?: ValidateRules) => ValidateRules;
     /** 获取规则 */
     getRule(options: GetRuleOptions): ValidateRuleItem;
@@ -115,5 +119,6 @@ export declare class Validator {
     model: string;
     constructor(options: ValidatorOptions);
     validate(data: ValidateValues, options?: ValidateOption, callback?: ValidateCallback): Promise<ValidateResponse>;
+    getLocaleRules(options?: GetLocaleRulesOptions): ValidateRules;
     wrapRules(options: WrapRulesOptions): this;
 }
