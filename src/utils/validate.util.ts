@@ -17,8 +17,8 @@ import ValidateSchema, {
 } from 'async-validator';
 import deepmerge from 'deepmerge';
 import _ from 'lodash';
-import { regExps } from './format.util';
 import { I18n, i18nConfig } from '../common/i18n';
+import { regExps } from './format.util';
 
 export interface ValidateOption extends OriginalValidateOption {
   /** 模型 */
@@ -51,8 +51,6 @@ export type ValidateRules = Record<string, ValidateRule>;
 export interface GetRuleOptions extends Omit<ValidateRuleItem, 'fields'> {
   /** 子规则 */
   fields?: Record<string, GetRuleOptions | GetRuleOptions[]>;
-  /** 正则表达式 */
-  regexp?: RegExp;
   /** 正则表达式的key */
   regexpKey?: string;
   /** 相反 */
@@ -161,10 +159,9 @@ const validateUtil = {
    * @param rules 校验规则
    * @returns 校验器
    */
-  getSchema: (rules: ValidateRules | ValidateSchema, options?: ValidateOption) => {
-    const pureRules = rules instanceof ValidateSchema ? rules.rules : rules;
+  getSchema: (rules: GetRulesOptions, options?: ValidateOption) => {
     return new ValidateSchema(
-      validateUtil.normalizeRules(validateUtil.getRules(options?.rules ?? {}, validateUtil.getRules(pureRules, {}))),
+      validateUtil.normalizeRules(validateUtil.getRules(options?.rules ?? {}, validateUtil.getRules(rules, {}))),
     );
   },
 
@@ -230,7 +227,7 @@ const validateUtil = {
    * @returns 校验结果
    */
   validate: async (
-    rules: ValidateRules,
+    rules: GetRulesOptions,
     data: ValidateValues,
     options?: ValidateOption,
     callback?: ValidateCallback,
@@ -275,12 +272,12 @@ const validateUtil = {
   getRule(options: GetRuleOptions): ValidateRuleItem {
     const path = options?.path ?? '';
     const regexpKey = options?.regexpKey;
-    const regexp = options?.regexp ?? (regexpKey ? Reflect.get(regExps, regexpKey) : undefined);
+    const regexp = options?.pattern ?? (regexpKey ? Reflect.get(regExps, regexpKey) : undefined);
     const type = options?.type ?? (options.fields ? 'object' : 'string');
     const regexpReversed = options?.regexpReversed ?? false;
 
     const message = (() => {
-      const pickedRules = _.pick(options, ['min', 'max', 'len', 'range']);
+      const pickedRules = _.pick(options, ['min', 'max', 'len', 'range', 'pattern']);
 
       if (options.message) {
         if (typeof options.message === 'function') {
@@ -291,7 +288,7 @@ const validateUtil = {
       }
 
       if (regexpKey) {
-        return `${options.regexpReversed ? 'InvalidReversed' : 'Invalid'}:${options.regexpKey ?? 'format'}`;
+        return `validate.regexp-key.${options.regexpReversed ? 'invalid-reversed' : 'invalid'}:${options.regexpKey ?? 'format'}`;
       }
 
       switch (type) {
@@ -299,28 +296,35 @@ const validateUtil = {
           if (typeof options.min !== 'undefined' && typeof options.max !== 'undefined') {
             return validateUtil.getMessageJSON({
               rules: pickedRules,
-              message: 'must be between the range of characters',
+              message: 'validate.string.must-be-between-the-range-of-characters',
             });
           }
 
           if (typeof options.min !== 'undefined') {
             return validateUtil.getMessageJSON({
               rules: pickedRules,
-              message: 'must be at least characters',
+              message: 'validate.string.must-be-at-least-characters',
             });
           }
 
           if (typeof options.max !== 'undefined') {
             return validateUtil.getMessageJSON({
               rules: pickedRules,
-              message: 'cannot be longer than characters',
+              message: 'validate.string.cannot-be-longer-than-characters',
             });
           }
 
           if (typeof options.len !== 'undefined') {
             return validateUtil.getMessageJSON({
               rules: pickedRules,
-              message: 'must be exactly characters',
+              message: 'validate.string.must-be-exactly-characters',
+            });
+          }
+
+          if (typeof options.pattern !== 'undefined') {
+            return validateUtil.getMessageJSON({
+              rules: pickedRules,
+              message: 'validate.string.pattern-mismatch',
             });
           }
 
@@ -330,28 +334,28 @@ const validateUtil = {
           if (typeof options.min !== 'undefined' && typeof options.max !== 'undefined') {
             return validateUtil.getMessageJSON({
               rules: pickedRules,
-              message: 'must be between the range of numbers',
+              message: 'validate.number.must-be-between-the-range-of-numbers',
             });
           }
 
           if (typeof options.min !== 'undefined') {
             return validateUtil.getMessageJSON({
               rules: pickedRules,
-              message: 'cannot be less than',
+              message: 'validate.number.cannot-be-less-than',
             });
           }
 
           if (typeof options.max !== 'undefined') {
             return validateUtil.getMessageJSON({
               rules: pickedRules,
-              message: 'cannot be greater than',
+              message: 'validate.number.cannot-be-greater-than',
             });
           }
 
           if (typeof options.len !== 'undefined') {
             return validateUtil.getMessageJSON({
               rules: pickedRules,
-              message: 'must equal',
+              message: 'validate.number.must-equal',
             });
           }
 
@@ -361,28 +365,28 @@ const validateUtil = {
           if (typeof options.min !== 'undefined' && typeof options.max !== 'undefined') {
             return validateUtil.getMessageJSON({
               rules: pickedRules,
-              message: 'must be between the range of array length',
+              message: 'validate.array.must-be-between-the-range-of-array-length',
             });
           }
 
           if (typeof options.min !== 'undefined') {
             return validateUtil.getMessageJSON({
               rules: pickedRules,
-              message: 'cannot be less than array length',
+              message: 'validate.array.cannot-be-less-than-array-length',
             });
           }
 
           if (typeof options.max !== 'undefined') {
             return validateUtil.getMessageJSON({
               rules: pickedRules,
-              message: 'cannot be greater than array length',
+              message: 'validate.array.cannot-be-greater-than-array-length',
             });
           }
 
           if (typeof options.len !== 'undefined') {
             return validateUtil.getMessageJSON({
               rules: pickedRules,
-              message: 'must be exactly array length',
+              message: 'validate.array.must-be-exactly-array-length',
             });
           }
 

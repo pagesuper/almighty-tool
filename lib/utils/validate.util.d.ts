@@ -26,8 +26,6 @@ export declare type ValidateRules = Record<string, ValidateRule>;
 export interface GetRuleOptions extends Omit<ValidateRuleItem, 'fields'> {
     /** 子规则 */
     fields?: Record<string, GetRuleOptions | GetRuleOptions[]>;
-    /** 正则表达式 */
-    regexp?: RegExp;
     /** 正则表达式的key */
     regexpKey?: string;
     /** 相反 */
@@ -67,7 +65,7 @@ declare const validateUtil: {
      * @param rules 校验规则
      * @returns 校验器
      */
-    getSchema: (rules: ValidateRules | ValidateSchema, options?: ValidateOption | undefined) => ValidateSchema;
+    getSchema: (rules: GetRulesOptions, options?: ValidateOption | undefined) => ValidateSchema;
     getErrorMessage: (error: unknown, options?: GetErrorsOptions | undefined) => any;
     /**
      * 获取错误信息
@@ -87,7 +85,7 @@ declare const validateUtil: {
      * @param data 数据
      * @returns 校验结果
      */
-    validate: (rules: ValidateRules, data: ValidateValues, options?: ValidateOption | undefined, callback?: ValidateCallback | undefined) => Promise<ValidateResponse>;
+    validate: (rules: GetRulesOptions, data: ValidateValues, options?: ValidateOption | undefined, callback?: ValidateCallback | undefined) => Promise<ValidateResponse>;
     getRules: (rules: GetRulesOptions, initialRules?: ValidateRules) => ValidateRules;
     /** 获取规则 */
     getRule(options: GetRuleOptions): ValidateRuleItem;
