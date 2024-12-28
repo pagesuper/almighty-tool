@@ -21,6 +21,10 @@ describe('validateUtil.validate()', () => {
           fieldValue: '',
           message: '字段不能为空',
           model: 'Base',
+          messageData: {
+            message: 'validate.default.field-is-required',
+            rules: {},
+          },
         },
       ],
       success: false,
@@ -43,6 +47,13 @@ describe('validateUtil.validate()', () => {
           min: 18,
           max: 81,
           message: '大小必须在 18 和 81 之间',
+          messageData: {
+            message: 'validate.number.must-be-between-the-range-of-numbers',
+            rules: {
+              max: 81,
+              min: 18,
+            },
+          },
         },
       ],
     });
@@ -55,6 +66,13 @@ describe('validateUtil.validate()', () => {
           fieldValue: 17,
           message: '大小必须在 18 和 81 之间',
           model: 'Base',
+          messageData: {
+            message: 'validate.number.must-be-between-the-range-of-numbers',
+            rules: {
+              max: 81,
+              min: 18,
+            },
+          },
         },
       ],
     });
@@ -76,6 +94,12 @@ describe('validateUtil.validate()', () => {
           fieldValue: 'ABC123',
           message: '格式不正确，不符合要求的正则表达式',
           model: 'Base',
+          messageData: {
+            message: 'validate.string.pattern-mismatch',
+            rules: {
+              pattern: '/^\\d+$/',
+            },
+          },
         },
       ],
     });
@@ -97,6 +121,10 @@ describe('validateUtil.validate()', () => {
           fieldValue: '11010519491231893',
           message: '身份证号码格式错误',
           model: 'Base',
+          messageData: {
+            message: 'validate.regexp-key.invalid:id-card-china',
+            rules: {},
+          },
         },
       ],
     });
@@ -118,6 +146,10 @@ describe('validateUtil.validate()', () => {
           fieldValue: '11010519491231893X',
           message: '不能为身份证号码格式',
           model: 'Base',
+          messageData: {
+            message: 'validate.regexp-key.invalid-reversed:id-card-china',
+            rules: {},
+          },
         },
       ],
     });
