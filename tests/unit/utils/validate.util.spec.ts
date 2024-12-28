@@ -52,6 +52,8 @@ describe('validateUtil.validate()', () => {
             rules: {
               max: 81,
               min: 18,
+              required: true,
+              type: 'number',
             },
           },
         },
@@ -71,6 +73,8 @@ describe('validateUtil.validate()', () => {
             rules: {
               max: 81,
               min: 18,
+              required: true,
+              type: 'number',
             },
           },
         },
@@ -98,6 +102,8 @@ describe('validateUtil.validate()', () => {
             message: 'validate.string.pattern-mismatch',
             rules: {
               pattern: '/^\\d+$/',
+              required: true,
+              type: 'string',
             },
           },
         },
@@ -123,7 +129,11 @@ describe('validateUtil.validate()', () => {
           model: 'Base',
           messageData: {
             message: 'validate.regexp-key.invalid:id-card-china',
-            rules: {},
+            rules: {
+              regexpKey: 'id-card-china',
+              required: true,
+              type: 'string',
+            },
           },
         },
       ],
@@ -148,7 +158,12 @@ describe('validateUtil.validate()', () => {
           model: 'Base',
           messageData: {
             message: 'validate.regexp-key.invalid-reversed:id-card-china',
-            rules: {},
+            rules: {
+              regexpKey: 'id-card-china',
+              regexpReversed: true,
+              required: true,
+              type: 'string',
+            },
           },
         },
       ],
@@ -179,6 +194,8 @@ describe('validateUtil.validate()', () => {
             rules: {
               min: 18,
               max: 81,
+              required: true,
+              type: 'number',
             },
             message: 'validate.number.must-be-between-the-range-of-numbers',
           },
@@ -210,6 +227,8 @@ describe('validateUtil.validate() 英文', () => {
             rules: {
               min: 18,
               max: 81,
+              required: true,
+              type: 'number',
             },
             message: 'validate.number.must-be-between-the-range-of-numbers',
           },
@@ -253,6 +272,8 @@ describe('validator', () => {
           messageData: {
             rules: {
               pattern: '/^\\d+$/',
+              required: true,
+              type: 'string',
             },
             message: 'validate.string.pattern-mismatch',
           },
@@ -294,6 +315,8 @@ describe('validator', () => {
           messageData: {
             rules: {
               pattern: '/^\\d+$/',
+              required: true,
+              type: 'string',
             },
             message: 'validate.string.pattern-mismatch',
           },
@@ -314,6 +337,8 @@ describe('validator', () => {
           messageData: {
             rules: {
               pattern: '/^\\d+$/',
+              required: true,
+              type: 'string',
             },
             message: 'validate.string.pattern-mismatch',
           },
@@ -355,6 +380,8 @@ describe('validator', () => {
           messageData: {
             rules: {
               pattern: '/^\\d+$/',
+              required: true,
+              type: 'string',
             },
             message: 'validate.string.pattern-mismatch',
           },
@@ -387,6 +414,8 @@ describe('validator', () => {
           messageData: {
             rules: {
               pattern: '/^\\d+$/',
+              required: true,
+              type: 'string',
             },
             message: 'validate.string.pattern-mismatch',
           },
@@ -427,6 +456,8 @@ describe('validator', () => {
           messageData: {
             rules: {
               pattern: '/^\\d+$/',
+              required: true,
+              type: 'string',
             },
             message: 'validate.string.pattern-mismatch',
           },

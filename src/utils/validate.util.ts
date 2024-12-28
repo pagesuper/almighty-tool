@@ -311,7 +311,19 @@ const validateUtil = {
     const regexpReversed = options?.regexpReversed ?? false;
 
     const message = (() => {
-      const pickedRules = _.pick(options, ['min', 'max', 'len', 'range', 'pattern']);
+      const pickedRules = _.pick(options, [
+        'min',
+        'max',
+        'len',
+        'range',
+        'pattern',
+        'regexpKey',
+        'regexpReversed',
+        'type',
+        'required',
+        'enum',
+        'whitespace',
+      ]);
 
       if (pickedRules.pattern) {
         pickedRules.pattern = pickedRules.pattern.toString();
