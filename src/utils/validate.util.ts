@@ -40,6 +40,13 @@ export interface WrapRulesOptions extends ValidateOption {
   override?: boolean;
 }
 
+export interface OmitRulesOptions {
+  /** 要省略的字段 */
+  fieldKeys: string[];
+  /** 覆盖规则: 默认为false */
+  override?: boolean;
+}
+
 export interface ValidateRuleItemRequiredFnOptions {
   item: ValidateRuleItem;
 }
@@ -598,10 +605,19 @@ export class Validator {
     return validateUtil.getLocaleRules(this.rules, options);
   }
 
+  /** 包装规则 */
   public wrapRules(options: WrapRulesOptions) {
     const override = options.override ?? false;
     const validator = override ? this : _.cloneDeep(this);
     validator.rules = validateUtil.getRules(options.rules ?? {}, validator.rules);
+    return validator;
+  }
+
+  /** 省略规则 */
+  public omitRules(options: OmitRulesOptions) {
+    const override = options.override ?? false;
+    const validator = override ? this : _.cloneDeep(this);
+    validator.rules = _.omit(validator.rules, options.fieldKeys);
     return validator;
   }
 }

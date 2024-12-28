@@ -465,4 +465,93 @@ describe('validator', () => {
       ],
     });
   });
+
+  test('失败: 一层/正则 wrapRules覆盖', async () => {
+    const validator = new Validator({
+      rules: {
+        name: { type: 'string', required: true, pattern: /^\d+$/ },
+      },
+      action: 'validate',
+    });
+
+    const result = await validator.wrapRules({ rules: { name: { min: 12 } }, override: true }).validate({ name: 'ABC123' });
+
+    expect(result).toEqual({
+      success: false,
+      errors: [
+        {
+          field: 'name',
+          fieldValue: 'ABC123',
+          message: '长度至少为 12 个字符',
+          model: 'Base',
+          data: {
+            rules: {
+              min: 12,
+            },
+            message: 'validate.string.must-be-at-least-characters',
+          },
+        },
+        {
+          field: 'name',
+          fieldValue: 'ABC123',
+          message: '格式不正确，不符合要求的正则表达式',
+          model: 'Base',
+          data: {
+            rules: {
+              pattern: '/^\\d+$/',
+              required: true,
+              type: 'string',
+            },
+            message: 'validate.string.pattern-mismatch',
+          },
+        },
+      ],
+    });
+
+    const result2 = await validator.validate({ name: 'ABC123' });
+
+    expect(result2).toEqual({
+      success: false,
+      errors: [
+        {
+          field: 'name',
+          fieldValue: 'ABC123',
+          message: '长度至少为 12 个字符',
+          model: 'Base',
+          data: {
+            rules: {
+              min: 12,
+            },
+            message: 'validate.string.must-be-at-least-characters',
+          },
+        },
+        {
+          field: 'name',
+          fieldValue: 'ABC123',
+          message: '格式不正确，不符合要求的正则表达式',
+          model: 'Base',
+          data: {
+            rules: {
+              pattern: '/^\\d+$/',
+              required: true,
+              type: 'string',
+            },
+            message: 'validate.string.pattern-mismatch',
+          },
+        },
+      ],
+    });
+  });
+
+  test('失败: 一层/正则, omitRules', async () => {
+    const rules: ValidateRules = {
+      name: { type: 'string', required: true, pattern: /^\d+$/ },
+      age: { type: 'number', required: true, min: 18, max: 81 },
+    };
+
+    const validator = new Validator({ rules, action: 'validate' });
+
+    expect(Object.keys(validator.getLocaleRules())).toEqual(['name', 'age']);
+    expect(Object.keys(validator.omitRules({ fieldKeys: ['age'] }).getLocaleRules())).toEqual(['name']);
+  });
 });

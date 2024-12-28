@@ -18,6 +18,12 @@ export interface WrapRulesOptions extends ValidateOption {
     /** 覆盖规则: 默认为false */
     override?: boolean;
 }
+export interface OmitRulesOptions {
+    /** 要省略的字段 */
+    fieldKeys: string[];
+    /** 覆盖规则: 默认为false */
+    override?: boolean;
+}
 export interface ValidateRuleItemRequiredFnOptions {
     item: ValidateRuleItem;
 }
@@ -126,5 +132,8 @@ export declare class Validator {
     constructor(options: ValidatorOptions);
     validate(data: ValidateValues, options?: ValidateOption, callback?: ValidateCallback): Promise<ValidateResponse>;
     getLocaleRules(options?: GetLocaleRulesOptions): ValidateRules;
+    /** 包装规则 */
     wrapRules(options: WrapRulesOptions): this;
+    /** 省略规则 */
+    omitRules(options: OmitRulesOptions): this;
 }
