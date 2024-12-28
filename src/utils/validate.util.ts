@@ -50,7 +50,7 @@ export interface ValidateRuleItem extends Omit<OriginalValidateRuleItem, 'fields
   /** 子规则 */
   fields?: ValidateRules;
   /** 消息数据 */
-  messageData?: MessageJSON;
+  data?: ErrorDataJSON;
 }
 
 export type ValidateRule = ValidateRuleItem | ValidateRuleItem[];
@@ -87,7 +87,7 @@ export interface ValidateError extends OriginalValidateError {
   /** 模型 */
   model?: string;
   /** 消息数据 */
-  messageData?: MessageJSON;
+  data?: ErrorDataJSON;
 }
 
 export interface ValidateResponse {
@@ -97,7 +97,7 @@ export interface ValidateResponse {
   errors?: ValidateError[];
 }
 
-export interface MessageJSON {
+export interface ErrorDataJSON {
   rules: Partial<GetRuleOptions>;
   message: any;
 }
@@ -119,34 +119,34 @@ export type {
   ValidateValues,
 };
 
-function getMessageJSON(messageJSON: MessageJSON) {
+function getErrorDataJSON(messageJSON: ErrorDataJSON) {
   return `json:${JSON.stringify(messageJSON)}`;
 }
 
 const defaultMessages: ValidateMessages = {
-  default: getMessageJSON({ rules: {}, message: 'validate.default.field-is-invalid' }),
-  required: getMessageJSON({ rules: {}, message: 'validate.default.field-is-required' }),
-  enum: getMessageJSON({ rules: {}, message: 'validate.default.field-must-be-enum' }),
-  whitespace: getMessageJSON({ rules: {}, message: 'validate.default.cannot-be-empty' }),
+  default: getErrorDataJSON({ rules: {}, message: 'validate.default.field-is-invalid' }),
+  required: getErrorDataJSON({ rules: {}, message: 'validate.default.field-is-required' }),
+  enum: getErrorDataJSON({ rules: {}, message: 'validate.default.field-must-be-enum' }),
+  whitespace: getErrorDataJSON({ rules: {}, message: 'validate.default.cannot-be-empty' }),
   date: {
-    format: getMessageJSON({ rules: {}, message: 'validate.date.format-is-invalid' }),
-    parse: getMessageJSON({ rules: {}, message: 'validate.date.could-not-be-parsed' }),
-    invalid: getMessageJSON({ rules: {}, message: 'validate.date.is-invalid' }),
+    format: getErrorDataJSON({ rules: {}, message: 'validate.date.format-is-invalid' }),
+    parse: getErrorDataJSON({ rules: {}, message: 'validate.date.could-not-be-parsed' }),
+    invalid: getErrorDataJSON({ rules: {}, message: 'validate.date.is-invalid' }),
   },
   types: {
-    string: getMessageJSON({ rules: {}, message: 'validate.types.must-be-string' }),
-    method: getMessageJSON({ rules: {}, message: 'validate.types.must-be-method' }),
-    array: getMessageJSON({ rules: {}, message: 'validate.types.must-be-array' }),
-    object: getMessageJSON({ rules: {}, message: 'validate.types.must-be-object' }),
-    number: getMessageJSON({ rules: {}, message: 'validate.types.must-be-number' }),
-    date: getMessageJSON({ rules: {}, message: 'validate.types.must-be-date' }),
-    boolean: getMessageJSON({ rules: {}, message: 'validate.types.must-be-boolean' }),
-    integer: getMessageJSON({ rules: {}, message: 'validate.types.must-be-integer' }),
-    float: getMessageJSON({ rules: {}, message: 'validate.types.must-be-float' }),
-    regexp: getMessageJSON({ rules: {}, message: 'validate.types.must-be-regexp' }),
-    email: getMessageJSON({ rules: {}, message: 'validate.types.must-be-email' }),
-    url: getMessageJSON({ rules: {}, message: 'validate.types.must-be-url' }),
-    hex: getMessageJSON({ rules: {}, message: 'validate.types.must-be-hex' }),
+    string: getErrorDataJSON({ rules: {}, message: 'validate.types.must-be-string' }),
+    method: getErrorDataJSON({ rules: {}, message: 'validate.types.must-be-method' }),
+    array: getErrorDataJSON({ rules: {}, message: 'validate.types.must-be-array' }),
+    object: getErrorDataJSON({ rules: {}, message: 'validate.types.must-be-object' }),
+    number: getErrorDataJSON({ rules: {}, message: 'validate.types.must-be-number' }),
+    date: getErrorDataJSON({ rules: {}, message: 'validate.types.must-be-date' }),
+    boolean: getErrorDataJSON({ rules: {}, message: 'validate.types.must-be-boolean' }),
+    integer: getErrorDataJSON({ rules: {}, message: 'validate.types.must-be-integer' }),
+    float: getErrorDataJSON({ rules: {}, message: 'validate.types.must-be-float' }),
+    regexp: getErrorDataJSON({ rules: {}, message: 'validate.types.must-be-regexp' }),
+    email: getErrorDataJSON({ rules: {}, message: 'validate.types.must-be-email' }),
+    url: getErrorDataJSON({ rules: {}, message: 'validate.types.must-be-url' }),
+    hex: getErrorDataJSON({ rules: {}, message: 'validate.types.must-be-hex' }),
   },
 };
 
@@ -172,7 +172,7 @@ const validateUtil = {
 
     if (typeof error === 'string') {
       if (i18n && typeof i18n.t === 'function') {
-        const messageJSON = validateUtil.parseMessageJSON(error);
+        const messageJSON = validateUtil.parseErrorDataJSON(error);
         return i18n.t(messageJSON.message, {
           defaultValue: messageJSON.message,
           args: messageJSON.rules,
@@ -203,7 +203,7 @@ const validateUtil = {
       return (Reflect.get(error, 'errors') as ValidateError[]).map((err) => {
         return {
           ..._.pick(err, ['field', 'fieldValue']),
-          messageData: validateUtil.parseMessageJSON(err.message),
+          data: validateUtil.parseErrorDataJSON(err.message),
           message: validateUtil.getErrorMessage(err.message, options),
           model,
         };
@@ -212,7 +212,7 @@ const validateUtil = {
 
     return [
       {
-        messageData: validateUtil.parseMessageJSON(error),
+        data: validateUtil.parseErrorDataJSON(error),
         message: validateUtil.getErrorMessage(error, options),
         fieldValue: options?.fieldValue,
         field: options?.field,
@@ -258,8 +258,8 @@ const validateUtil = {
 
       (Array.isArray(fieldRules) ? fieldRules : [fieldRules]).forEach((rule) => {
         if (i18n && typeof i18n.t === 'function' && typeof rule.message === 'string') {
-          const messageJSON = validateUtil.parseMessageJSON(rule.message);
-          rule.messageData = messageJSON;
+          const messageJSON = validateUtil.parseErrorDataJSON(rule.message);
+          rule.data = messageJSON;
           rule.message = i18n.t(messageJSON.message, {
             defaultValue: messageJSON.message,
             args: messageJSON.rules,
@@ -338,7 +338,7 @@ const validateUtil = {
       }
 
       if (regexpKey) {
-        return validateUtil.getMessageJSON({
+        return validateUtil.getErrorDataJSON({
           rules: pickedRules,
           message: `validate.regexp-key.${options.regexpReversed ? 'invalid-reversed' : 'invalid'}:${
             options.regexpKey ?? 'format'
@@ -349,35 +349,35 @@ const validateUtil = {
       switch (type) {
         case 'string':
           if (typeof options.min !== 'undefined' && typeof options.max !== 'undefined') {
-            return validateUtil.getMessageJSON({
+            return validateUtil.getErrorDataJSON({
               rules: pickedRules,
               message: 'validate.string.must-be-between-the-range-of-characters',
             });
           }
 
           if (typeof options.min !== 'undefined') {
-            return validateUtil.getMessageJSON({
+            return validateUtil.getErrorDataJSON({
               rules: pickedRules,
               message: 'validate.string.must-be-at-least-characters',
             });
           }
 
           if (typeof options.max !== 'undefined') {
-            return validateUtil.getMessageJSON({
+            return validateUtil.getErrorDataJSON({
               rules: pickedRules,
               message: 'validate.string.cannot-be-longer-than-characters',
             });
           }
 
           if (typeof options.len !== 'undefined') {
-            return validateUtil.getMessageJSON({
+            return validateUtil.getErrorDataJSON({
               rules: pickedRules,
               message: 'validate.string.must-be-exactly-characters',
             });
           }
 
           if (typeof options.pattern !== 'undefined') {
-            return validateUtil.getMessageJSON({
+            return validateUtil.getErrorDataJSON({
               rules: pickedRules,
               message: 'validate.string.pattern-mismatch',
             });
@@ -387,28 +387,28 @@ const validateUtil = {
 
         case 'number':
           if (typeof options.min !== 'undefined' && typeof options.max !== 'undefined') {
-            return validateUtil.getMessageJSON({
+            return validateUtil.getErrorDataJSON({
               rules: pickedRules,
               message: 'validate.number.must-be-between-the-range-of-numbers',
             });
           }
 
           if (typeof options.min !== 'undefined') {
-            return validateUtil.getMessageJSON({
+            return validateUtil.getErrorDataJSON({
               rules: pickedRules,
               message: 'validate.number.cannot-be-less-than',
             });
           }
 
           if (typeof options.max !== 'undefined') {
-            return validateUtil.getMessageJSON({
+            return validateUtil.getErrorDataJSON({
               rules: pickedRules,
               message: 'validate.number.cannot-be-greater-than',
             });
           }
 
           if (typeof options.len !== 'undefined') {
-            return validateUtil.getMessageJSON({
+            return validateUtil.getErrorDataJSON({
               rules: pickedRules,
               message: 'validate.number.must-equal',
             });
@@ -418,28 +418,28 @@ const validateUtil = {
 
         case 'array':
           if (typeof options.min !== 'undefined' && typeof options.max !== 'undefined') {
-            return validateUtil.getMessageJSON({
+            return validateUtil.getErrorDataJSON({
               rules: pickedRules,
               message: 'validate.array.must-be-between-the-range-of-array-length',
             });
           }
 
           if (typeof options.min !== 'undefined') {
-            return validateUtil.getMessageJSON({
+            return validateUtil.getErrorDataJSON({
               rules: pickedRules,
               message: 'validate.array.cannot-be-less-than-array-length',
             });
           }
 
           if (typeof options.max !== 'undefined') {
-            return validateUtil.getMessageJSON({
+            return validateUtil.getErrorDataJSON({
               rules: pickedRules,
               message: 'validate.array.cannot-be-greater-than-array-length',
             });
           }
 
           if (typeof options.len !== 'undefined') {
-            return validateUtil.getMessageJSON({
+            return validateUtil.getErrorDataJSON({
               rules: pickedRules,
               message: 'validate.array.must-be-exactly-array-length',
             });
@@ -511,9 +511,9 @@ const validateUtil = {
     return rule;
   },
 
-  getMessageJSON,
+  getErrorDataJSON,
 
-  parseMessageJSON: (message?: string | unknown): MessageJSON => {
+  parseErrorDataJSON: (message?: string | unknown): ErrorDataJSON => {
     try {
       return JSON.parse(`${message ?? ''}`.replace(/^json:/, ''));
     } catch (error) {

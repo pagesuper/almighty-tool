@@ -21,7 +21,7 @@ describe('validateUtil.validate()', () => {
           fieldValue: '',
           message: '字段不能为空',
           model: 'Base',
-          messageData: {
+          data: {
             message: 'validate.default.field-is-required',
             rules: {},
           },
@@ -47,7 +47,7 @@ describe('validateUtil.validate()', () => {
           min: 18,
           max: 81,
           message: '大小必须在 18 和 81 之间',
-          messageData: {
+          data: {
             message: 'validate.number.must-be-between-the-range-of-numbers',
             rules: {
               max: 81,
@@ -68,7 +68,7 @@ describe('validateUtil.validate()', () => {
           fieldValue: 17,
           message: '大小必须在 18 和 81 之间',
           model: 'Base',
-          messageData: {
+          data: {
             message: 'validate.number.must-be-between-the-range-of-numbers',
             rules: {
               max: 81,
@@ -98,7 +98,7 @@ describe('validateUtil.validate()', () => {
           fieldValue: 'ABC123',
           message: '格式不正确，不符合要求的正则表达式',
           model: 'Base',
-          messageData: {
+          data: {
             message: 'validate.string.pattern-mismatch',
             rules: {
               pattern: '/^\\d+$/',
@@ -127,7 +127,7 @@ describe('validateUtil.validate()', () => {
           fieldValue: '11010519491231893',
           message: '身份证号码格式错误',
           model: 'Base',
-          messageData: {
+          data: {
             message: 'validate.regexp-key.invalid:id-card-china',
             rules: {
               regexpKey: 'id-card-china',
@@ -156,7 +156,7 @@ describe('validateUtil.validate()', () => {
           fieldValue: '11010519491231893X',
           message: '不能为身份证号码格式',
           model: 'Base',
-          messageData: {
+          data: {
             message: 'validate.regexp-key.invalid-reversed:id-card-china',
             rules: {
               regexpKey: 'id-card-china',
@@ -190,7 +190,7 @@ describe('validateUtil.validate()', () => {
           fieldValue: 17,
           message: '大小必须在 18 和 81 之间',
           model: 'Base',
-          messageData: {
+          data: {
             rules: {
               min: 18,
               max: 81,
@@ -223,7 +223,7 @@ describe('validateUtil.validate() 英文', () => {
           fieldValue: 17,
           message: 'Must be between 18 and 81',
           model: 'Base',
-          messageData: {
+          data: {
             rules: {
               min: 18,
               max: 81,
@@ -257,7 +257,7 @@ describe('validator', () => {
           fieldValue: 'ABC123',
           message: '长度至少为 12 个字符',
           model: 'Base',
-          messageData: {
+          data: {
             rules: {
               min: 12,
             },
@@ -269,7 +269,7 @@ describe('validator', () => {
           fieldValue: 'ABC123',
           message: '格式不正确，不符合要求的正则表达式',
           model: 'Base',
-          messageData: {
+          data: {
             rules: {
               pattern: '/^\\d+$/',
               required: true,
@@ -300,7 +300,7 @@ describe('validator', () => {
           fieldValue: 'ABC123',
           message: '长度至少为 12 个字符',
           model: 'Base',
-          messageData: {
+          data: {
             rules: {
               min: 12,
             },
@@ -312,7 +312,7 @@ describe('validator', () => {
           fieldValue: 'ABC123',
           message: '格式不正确，不符合要求的正则表达式',
           model: 'Base',
-          messageData: {
+          data: {
             rules: {
               pattern: '/^\\d+$/',
               required: true,
@@ -334,7 +334,7 @@ describe('validator', () => {
           fieldValue: 'ABC123',
           message: '格式不正确，不符合要求的正则表达式',
           model: 'Base',
-          messageData: {
+          data: {
             rules: {
               pattern: '/^\\d+$/',
               required: true,
@@ -365,7 +365,7 @@ describe('validator', () => {
           fieldValue: 'ABC123',
           message: '长度至少为 12 个字符',
           model: 'Base',
-          messageData: {
+          data: {
             rules: {
               min: 12,
             },
@@ -377,7 +377,7 @@ describe('validator', () => {
           fieldValue: 'ABC123',
           message: '格式不正确，不符合要求的正则表达式',
           model: 'Base',
-          messageData: {
+          data: {
             rules: {
               pattern: '/^\\d+$/',
               required: true,
@@ -399,7 +399,7 @@ describe('validator', () => {
           fieldValue: 'ABC123',
           message: '长度至少为 12 个字符',
           model: 'Base',
-          messageData: {
+          data: {
             rules: {
               min: 12,
             },
@@ -411,7 +411,7 @@ describe('validator', () => {
           fieldValue: 'ABC123',
           message: '格式不正确，不符合要求的正则表达式',
           model: 'Base',
-          messageData: {
+          data: {
             rules: {
               pattern: '/^\\d+$/',
               required: true,
@@ -453,7 +453,7 @@ describe('validator', () => {
           fieldValue: 'ABC123',
           message: '格式不正确，不符合要求的正则表达式',
           model: 'Base',
-          messageData: {
+          data: {
             rules: {
               pattern: '/^\\d+$/',
               required: true,
