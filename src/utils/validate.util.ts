@@ -455,6 +455,13 @@ const validateUtil = {
           break;
       }
 
+      if (options.required) {
+        return validateUtil.getErrorDataJSON({
+          rules: pickedRules,
+          message: 'validate.default.field-is-required',
+        });
+      }
+
       return undefined;
     })();
 

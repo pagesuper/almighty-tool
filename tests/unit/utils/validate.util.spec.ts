@@ -23,7 +23,9 @@ describe('validateUtil.validate()', () => {
           model: 'Base',
           data: {
             message: 'validate.default.field-is-required',
-            rules: {},
+            rules: {
+              required: true,
+            },
           },
         },
       ],
