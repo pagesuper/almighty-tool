@@ -1,6 +1,32 @@
 declare const messages: {
     'en-US': {
         validate: {
+            default: {
+                'field-is-invalid': string;
+                'field-is-required': string;
+                'field-must-be-enum': string;
+                'cannot-be-empty': string;
+            };
+            date: {
+                format: string;
+                parse: string;
+                invalid: string;
+            };
+            types: {
+                string: string;
+                method: string;
+                array: string;
+                object: string;
+                number: string;
+                date: string;
+                boolean: string;
+                integer: string;
+                float: string;
+                regexp: string;
+                email: string;
+                url: string;
+                hex: string;
+            };
             string: {
                 'must-be-between-the-range-of-characters': string;
                 'must-be-at-least-characters': string;
@@ -60,6 +86,32 @@ declare const messages: {
     };
     'zh-CN': {
         validate: {
+            default: {
+                'field-is-invalid': string;
+                'field-is-required': string;
+                'field-must-be-enum': string;
+                'cannot-be-empty': string;
+            };
+            date: {
+                format: string;
+                parse: string;
+                invalid: string;
+            };
+            types: {
+                string: string;
+                method: string;
+                array: string;
+                object: string;
+                number: string;
+                date: string;
+                boolean: string;
+                integer: string;
+                float: string;
+                regexp: string;
+                email: string;
+                url: string;
+                hex: string;
+            };
             string: {
                 'must-be-between-the-range-of-characters': string;
                 'must-be-at-least-characters': string;

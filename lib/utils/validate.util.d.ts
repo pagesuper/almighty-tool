@@ -26,6 +26,8 @@ export interface ValidateRuleItem extends Omit<OriginalValidateRuleItem, 'fields
     path?: string;
     /** 子规则 */
     fields?: ValidateRules;
+    /** 消息数据 */
+    messageData?: MessageJSON;
 }
 export declare type ValidateRule = ValidateRuleItem | ValidateRuleItem[];
 export declare type ValidateRules = Record<string, ValidateRule>;
@@ -55,6 +57,8 @@ export interface GetErrorsOptions extends GetLocaleRulesOptions {
 export interface ValidateError extends OriginalValidateError {
     /** 模型 */
     model?: string;
+    /** 消息数据 */
+    messageData?: MessageJSON;
 }
 export interface ValidateResponse {
     /** 是否成功 */
@@ -64,10 +68,11 @@ export interface ValidateResponse {
 }
 export interface MessageJSON {
     rules: Partial<GetRuleOptions>;
-    message: string;
+    message: any;
 }
 export { ValidateSchema };
 export type { ValidateCallback, ValidateExecuteRule, ValidateExecuteValidator, ValidateFieldsError, ValidateInternalRuleItem, ValidateInternalValidateMessages, ValidateMessages, ValidateResult, ValidateRuleType, ValidateRuleValuePackage, ValidateValue, ValidateValues, };
+declare function getMessageJSON(messageJSON: MessageJSON): string;
 /** 校验工具 */
 declare const validateUtil: {
     /**
@@ -84,6 +89,7 @@ declare const validateUtil: {
      * @returns 错误信息
      */
     getErrors: (error: unknown, options?: GetErrorsOptions | undefined) => ValidateError[] | {
+        messageData: MessageJSON;
         message: any;
         model: string;
         field?: string | undefined;
@@ -101,8 +107,8 @@ declare const validateUtil: {
     getRules: (rules: GetRulesOptions, initialRules?: ValidateRules) => ValidateRules;
     /** 获取规则 */
     getRule(options: GetRuleOptions): ValidateRuleItem;
-    getMessageJSON: (messageJSON: MessageJSON) => string;
-    parseMessageJSON: (message: string) => MessageJSON;
+    getMessageJSON: typeof getMessageJSON;
+    parseMessageJSON: (message?: string | unknown) => MessageJSON;
     collectRulesRequired: (rules: ValidateRules, requires: Record<string, boolean[]>, path?: string) => Record<string, boolean[]>;
     collectRulesRequiredAssign: (requires: Record<string, boolean[]>, rules: ValidateRules) => void;
     normalizeRules: (rules: ValidateRules) => ValidateRules;
