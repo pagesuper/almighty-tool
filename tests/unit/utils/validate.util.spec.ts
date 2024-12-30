@@ -557,3 +557,45 @@ describe('validator', () => {
     expect(Object.keys(validator.omitRules({ fieldKeys: ['age'] }).getLocaleRules())).toEqual(['name']);
   });
 });
+
+describe('direction', () => {
+  test('成功: 方向, 前缀prefix', async () => {
+    const result = validateUtil.getRules({ name: { min: 12 } }, { name: { min: 10 } }, { direction: 'prefix' });
+    expect(result).toEqual({
+      name: [
+        {
+          message: 'json:{"rules":{"min":12},"message":"validate.string.must-be-at-least-characters"}',
+          min: 12,
+          path: 'name',
+          type: 'string',
+        },
+        {
+          min: 10,
+          message: 'json:{"rules":{"min":10},"message":"validate.string.must-be-at-least-characters"}',
+          path: 'name',
+          type: 'string',
+        },
+      ],
+    });
+  });
+
+  test('成功: 方向, 后缀suffix', async () => {
+    const result = validateUtil.getRules({ name: { min: 12 } }, { name: { min: 10 } }, { direction: 'suffix' });
+    expect(result).toEqual({
+      name: [
+        {
+          min: 10,
+          message: 'json:{"rules":{"min":10},"message":"validate.string.must-be-at-least-characters"}',
+          path: 'name',
+          type: 'string',
+        },
+        {
+          message: 'json:{"rules":{"min":12},"message":"validate.string.must-be-at-least-characters"}',
+          min: 12,
+          path: 'name',
+          type: 'string',
+        },
+      ],
+    });
+  });
+});

@@ -20,11 +20,20 @@ import _ from 'lodash';
 import { I18n, i18nConfig } from '../i18n/index';
 import { regExps } from './format.util';
 
+export interface GetRulesOptions {
+  /**
+   * 方向:
+   * - prefix: 前缀
+   * - suffix: 后缀(默认)
+   */
+  direction?: 'prefix' | 'suffix';
+}
+
 export interface ValidateOption extends OriginalValidateOption {
   /** 模型 */
   model?: string;
   /** 规则 */
-  rules?: GetRulesOptions;
+  rules?: ValidateOptionRules;
   /** 国际化 */
   i18n?: I18n;
   /**
@@ -38,6 +47,11 @@ export interface ValidateOption extends OriginalValidateOption {
 export interface WrapRulesOptions extends ValidateOption {
   /** 覆盖规则: 默认为false */
   override?: boolean;
+  /** 方向:
+   * - prefix: 前缀
+   * - suffix: 后缀(默认)
+   */
+  direction?: 'prefix' | 'suffix';
 }
 
 export interface OmitRulesOptions {
@@ -63,9 +77,9 @@ export interface ValidateRuleItem extends Omit<OriginalValidateRuleItem, 'fields
 export type ValidateRule = ValidateRuleItem | ValidateRuleItem[];
 export type ValidateRules = Record<string, ValidateRule>;
 
-export interface GetRuleOptions extends Omit<ValidateRuleItem, 'fields'> {
+export interface ValidateOptionRule extends Omit<ValidateRuleItem, 'fields'> {
   /** 子规则 */
-  fields?: Record<string, GetRuleOptions | GetRuleOptions[]>;
+  fields?: Record<string, ValidateOptionRule | ValidateOptionRule[]>;
   /** 正则表达式的key */
   regexpKey?: string;
   /** 相反 */
@@ -79,7 +93,7 @@ export interface GetLocaleRulesOptions {
   lang?: string;
 }
 
-export type GetRulesOptions = Record<string, GetRuleOptions | GetRuleOptions[]>;
+export type ValidateOptionRules = Record<string, ValidateOptionRule | ValidateOptionRule[]>;
 
 export interface GetErrorsOptions extends GetLocaleRulesOptions {
   /** 模型 */
@@ -105,7 +119,7 @@ export interface ValidateResponse {
 }
 
 export interface ErrorDataJSON {
-  rules: Partial<GetRuleOptions>;
+  rules: Partial<ValidateOptionRule>;
   message: any;
 }
 
@@ -164,7 +178,7 @@ const validateUtil = {
    * @param rules 校验规则
    * @returns 校验器
    */
-  getSchema: (rules: GetRulesOptions, options?: ValidateOption) => {
+  getSchema: (rules: ValidateOptionRules, options?: ValidateOption) => {
     return new ValidateSchema(
       validateUtil.normalizeRules(validateUtil.getRules(options?.rules ?? {}, validateUtil.getRules(rules, {}))),
     );
@@ -235,7 +249,7 @@ const validateUtil = {
    * @returns 校验结果
    */
   validate: async (
-    rules: GetRulesOptions,
+    rules: ValidateOptionRules,
     data: ValidateValues,
     options?: ValidateOption,
     callback?: ValidateCallback,
@@ -289,7 +303,7 @@ const validateUtil = {
     return validateUtil.recursiveGetLocaleRules(_.cloneDeep(validateUtil.getRules(rules)), { i18n, lang });
   },
 
-  getRules: (rules: GetRulesOptions, initialRules: ValidateRules = {}): ValidateRules => {
+  getRules: (rules: ValidateOptionRules, initialRules: ValidateRules = {}, options?: GetRulesOptions): ValidateRules => {
     const mergedRules = _.reduce(
       rules,
       (result, rule, fieldKey) => {
@@ -299,18 +313,28 @@ const validateUtil = {
 
         const previousRules = Reflect.get(result, fieldKey) ?? [];
         const storedRules = Array.isArray(previousRules) ? previousRules : [previousRules];
-        storedRules.push(...loadedRules);
+
+        switch (options?.direction ?? 'suffix') {
+          case 'prefix':
+            storedRules.unshift(...loadedRules);
+            break;
+          case 'suffix':
+          default:
+            storedRules.push(...loadedRules);
+            break;
+        }
+
         Reflect.set(result, fieldKey, storedRules);
         return result;
       },
-      initialRules,
+      _.isEmpty(initialRules) ? {} : validateUtil.getRules(initialRules, {}),
     );
 
     return mergedRules;
   },
 
   /** 获取规则 */
-  getRule(options: GetRuleOptions): ValidateRuleItem {
+  getRule(options: ValidateOptionRule): ValidateRuleItem {
     const path = options?.path ?? '';
     const regexpKey = options?.regexpKey;
     const regexp = options?.pattern ?? (regexpKey ? Reflect.get(regExps, regexpKey) : undefined);
@@ -589,7 +613,7 @@ export default validateUtil;
 
 export interface ValidatorOptions {
   action: string;
-  rules: Record<string, GetRuleOptions | GetRuleOptions[]>;
+  rules: Record<string, ValidateOptionRule | ValidateOptionRule[]>;
   model?: string;
 }
 
@@ -616,7 +640,7 @@ export class Validator {
   public wrapRules(options: WrapRulesOptions) {
     const override = options.override ?? false;
     const validator = override ? this : _.cloneDeep(this);
-    validator.rules = validateUtil.getRules(options.rules ?? {}, validator.rules);
+    validator.rules = validateUtil.getRules(options.rules ?? {}, validator.rules, { direction: options.direction });
     return validator;
   }
 

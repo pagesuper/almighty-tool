@@ -5,7 +5,7 @@
 ## Build Setup
 
 ``` bash
-$ yarn install
-$ yarn run test
-$ yarn run test --watch
+$ bun install
+$ bun run test
+$ bun run test --watch
 ```

@@ -1,10 +1,18 @@
 import ValidateSchema, { ValidateError as OriginalValidateError, ValidateOption as OriginalValidateOption, RuleItem as OriginalValidateRuleItem, ValidateCallback, ExecuteRule as ValidateExecuteRule, ExecuteValidator as ValidateExecuteValidator, ValidateFieldsError, InternalRuleItem as ValidateInternalRuleItem, InternalValidateMessages as ValidateInternalValidateMessages, ValidateMessages, ValidateResult, RuleType as ValidateRuleType, RuleValuePackage as ValidateRuleValuePackage, Value as ValidateValue, Values as ValidateValues } from 'async-validator';
 import { I18n } from '../i18n/index';
+export interface GetRulesOptions {
+    /**
+     * 方向:
+     * - prefix: 前缀
+     * - suffix: 后缀(默认)
+     */
+    direction?: 'prefix' | 'suffix';
+}
 export interface ValidateOption extends OriginalValidateOption {
     /** 模型 */
     model?: string;
     /** 规则 */
-    rules?: GetRulesOptions;
+    rules?: ValidateOptionRules;
     /** 国际化 */
     i18n?: I18n;
     /**
@@ -17,6 +25,11 @@ export interface ValidateOption extends OriginalValidateOption {
 export interface WrapRulesOptions extends ValidateOption {
     /** 覆盖规则: 默认为false */
     override?: boolean;
+    /** 方向:
+     * - prefix: 前缀
+     * - suffix: 后缀(默认)
+     */
+    direction?: 'prefix' | 'suffix';
 }
 export interface OmitRulesOptions {
     /** 要省略的字段 */
@@ -37,9 +50,9 @@ export interface ValidateRuleItem extends Omit<OriginalValidateRuleItem, 'fields
 }
 export declare type ValidateRule = ValidateRuleItem | ValidateRuleItem[];
 export declare type ValidateRules = Record<string, ValidateRule>;
-export interface GetRuleOptions extends Omit<ValidateRuleItem, 'fields'> {
+export interface ValidateOptionRule extends Omit<ValidateRuleItem, 'fields'> {
     /** 子规则 */
-    fields?: Record<string, GetRuleOptions | GetRuleOptions[]>;
+    fields?: Record<string, ValidateOptionRule | ValidateOptionRule[]>;
     /** 正则表达式的key */
     regexpKey?: string;
     /** 相反 */
@@ -51,7 +64,7 @@ export interface GetLocaleRulesOptions {
     /** 语言 */
     lang?: string;
 }
-export declare type GetRulesOptions = Record<string, GetRuleOptions | GetRuleOptions[]>;
+export declare type ValidateOptionRules = Record<string, ValidateOptionRule | ValidateOptionRule[]>;
 export interface GetErrorsOptions extends GetLocaleRulesOptions {
     /** 模型 */
     model?: string;
@@ -73,7 +86,7 @@ export interface ValidateResponse {
     errors?: ValidateError[];
 }
 export interface ErrorDataJSON {
-    rules: Partial<GetRuleOptions>;
+    rules: Partial<ValidateOptionRule>;
     message: any;
 }
 export { ValidateSchema };
@@ -86,7 +99,7 @@ declare const validateUtil: {
      * @param rules 校验规则
      * @returns 校验器
      */
-    getSchema: (rules: GetRulesOptions, options?: ValidateOption | undefined) => ValidateSchema;
+    getSchema: (rules: ValidateOptionRules, options?: ValidateOption | undefined) => ValidateSchema;
     getErrorMessage: (error: unknown, options?: GetErrorsOptions | undefined) => any;
     /**
      * 获取错误信息
@@ -107,12 +120,12 @@ declare const validateUtil: {
      * @param data 数据
      * @returns 校验结果
      */
-    validate: (rules: GetRulesOptions, data: ValidateValues, options?: ValidateOption | undefined, callback?: ValidateCallback | undefined) => Promise<ValidateResponse>;
+    validate: (rules: ValidateOptionRules, data: ValidateValues, options?: ValidateOption | undefined, callback?: ValidateCallback | undefined) => Promise<ValidateResponse>;
     recursiveGetLocaleRules: (rules: ValidateRules, options?: GetLocaleRulesOptions) => ValidateRules;
     getLocaleRules: (rules: ValidateRules, options?: GetLocaleRulesOptions) => ValidateRules;
-    getRules: (rules: GetRulesOptions, initialRules?: ValidateRules) => ValidateRules;
+    getRules: (rules: ValidateOptionRules, initialRules?: ValidateRules, options?: GetRulesOptions | undefined) => ValidateRules;
     /** 获取规则 */
-    getRule(options: GetRuleOptions): ValidateRuleItem;
+    getRule(options: ValidateOptionRule): ValidateRuleItem;
     getErrorDataJSON: typeof getErrorDataJSON;
     parseErrorDataJSON: (message?: string | unknown) => ErrorDataJSON;
     collectRulesRequired: (rules: ValidateRules, requires: Record<string, boolean[]>, path?: string) => Record<string, boolean[]>;
@@ -122,7 +135,7 @@ declare const validateUtil: {
 export default validateUtil;
 export interface ValidatorOptions {
     action: string;
-    rules: Record<string, GetRuleOptions | GetRuleOptions[]>;
+    rules: Record<string, ValidateOptionRule | ValidateOptionRule[]>;
     model?: string;
 }
 export declare class Validator {
