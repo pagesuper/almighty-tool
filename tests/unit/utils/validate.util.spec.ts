@@ -599,3 +599,37 @@ describe('direction', () => {
     });
   });
 });
+
+describe('transform', () => {
+  test('成功: 转换', async () => {
+    const validator = new Validator({ rules: { name: { type: 'string', min: 6 } }, action: 'validate' });
+    const result = await validator.validate({ name: '  AB12' });
+
+    expect(result).toEqual({
+      success: true,
+    });
+
+    const result2 = await validator
+      .wrapRules({ rules: { name: { transform: (value) => value.trim() } }, direction: 'prefix' })
+      .validate({ name: '  AB12' });
+
+    expect(result2).toEqual({
+      success: false,
+      errors: [
+        {
+          field: 'name',
+          fieldValue: 'AB12',
+          message: '长度至少为 6 个字符',
+          model: 'Base',
+          data: {
+            message: 'validate.string.must-be-at-least-characters',
+            rules: {
+              min: 6,
+              type: 'string',
+            },
+          },
+        },
+      ],
+    });
+  });
+});

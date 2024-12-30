@@ -116,6 +116,8 @@ export interface ValidateResponse {
   success: boolean;
   /** 错误信息 */
   errors?: ValidateError[];
+  /** 数据 */
+  values?: ValidateValues;
 }
 
 export interface ErrorDataJSON {
@@ -250,7 +252,7 @@ const validateUtil = {
    */
   validate: async (
     rules: ValidateOptionRules,
-    data: ValidateValues,
+    values: ValidateValues,
     options?: ValidateOption,
     callback?: ValidateCallback,
   ): Promise<ValidateResponse> => {
@@ -258,13 +260,17 @@ const validateUtil = {
 
     try {
       const schema = validateUtil.getSchema(rules, options);
-      await schema.validate(data, deepmerge({ messages: defaultMessages }, options ?? {}), callback);
+      // console.log('rules: ...', schema.rules);
+      // TODO: 增加 transform 后的返回值获取
+      await schema.validate(values, deepmerge({ messages: defaultMessages }, options ?? {}), callback);
       return {
         success: true,
+        // values,
       };
     } catch (error) {
       return {
         success: false,
+        // values,
         errors: validateUtil.getErrors(error, { model, i18n: options?.i18n ?? i18nConfig.i18n, lang: options?.lang }),
       };
     }
