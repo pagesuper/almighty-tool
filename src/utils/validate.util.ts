@@ -20,6 +20,8 @@ import _ from 'lodash';
 import { I18n, i18nConfig } from '../i18n/index';
 import { regExps } from './format.util';
 
+export type ValidateTransform = (value: ValidateValue) => ValidateValue;
+
 export interface GetRulesOptions {
   /**
    * 方向:
@@ -72,6 +74,8 @@ export interface ValidateRuleItem extends Omit<OriginalValidateRuleItem, 'fields
   fields?: ValidateRules;
   /** 消息数据 */
   data?: ErrorDataJSON;
+  /** 默认字段 */
+  defaultField?: ValidateRule;
 }
 
 export type ValidateRule = ValidateRuleItem | ValidateRuleItem[];
@@ -244,6 +248,45 @@ const validateUtil = {
     ] as ValidateError[];
   },
 
+  transform: (values: ValidateValues, rules?: ValidateOptionRules) => {
+    const transforms = validateUtil.collectRulesTransform(rules ?? {}, {});
+
+    function doTransform(values: ValidateValues, parentPath: string) {
+      return _.transform(
+        values,
+        (result: ValidateValues, value: ValidateValue, key: string) => {
+          const path = `${parentPath ? `${parentPath}.` : ''}${key}`;
+          const transform = transforms[path];
+
+          if (typeof value === 'object') {
+            if (Array.isArray(value)) {
+              result[key] = value.map((item) => {
+                if (transform?.length) {
+                  return transform.reduce((value, transform) => transform(value), item);
+                }
+
+                return item;
+              });
+            } else {
+              result[key] = doTransform(value, path);
+            }
+          } else {
+            if (transform?.length) {
+              result[key] = transform.reduce((value, transform) => transform(value), value);
+            } else {
+              result[key] = value;
+            }
+          }
+
+          return result[key];
+        },
+        {},
+      );
+    }
+
+    return doTransform(values, '');
+  },
+
   /**
    * 校验数据
    * @param rules 校验规则
@@ -257,20 +300,21 @@ const validateUtil = {
     callback?: ValidateCallback,
   ): Promise<ValidateResponse> => {
     const model = options?.model ?? 'Base';
+    let transformedValues: ValidateValues = values;
 
     try {
       const schema = validateUtil.getSchema(rules, options);
-      // console.log('rules: ...', schema.rules);
-      // TODO: 增加 transform 后的返回值获取
+      transformedValues = validateUtil.transform(values, schema.rules);
       await schema.validate(values, deepmerge({ messages: defaultMessages }, options ?? {}), callback);
+
       return {
         success: true,
-        // values,
+        values: transformedValues,
       };
     } catch (error) {
       return {
         success: false,
-        // values,
+        values: transformedValues,
         errors: validateUtil.getErrors(error, { model, i18n: options?.i18n ?? i18nConfig.i18n, lang: options?.lang }),
       };
     }
@@ -538,6 +582,10 @@ const validateUtil = {
       rule.asyncValidator = asyncValidator;
     }
 
+    if (options.defaultField) {
+      rule.defaultField = { ...options.defaultField, path };
+    }
+
     if (options.fields) {
       rule.fields = _.reduce(
         options.fields,
@@ -563,6 +611,38 @@ const validateUtil = {
     } catch (error) {
       return { rules: {}, message: message ?? '' };
     }
+  },
+
+  collectRulesTransform: (rules: ValidateRules, transforms: Record<string, ValidateTransform[]>, path = '') => {
+    Object.keys(rules).forEach((fieldKey) => {
+      const fieldRules = rules[fieldKey];
+      (Array.isArray(fieldRules) ? fieldRules : [fieldRules]).forEach((rule) => {
+        rule.path = rule.path ?? `${path ? `${path}.` : ''}${fieldKey}`;
+
+        if (rule.type === 'array') {
+          const defaultFieldRules = Array.isArray(rule.defaultField) ? rule.defaultField : [rule.defaultField];
+          defaultFieldRules.forEach((defaultFieldRule) => {
+            if (defaultFieldRule && typeof defaultFieldRule?.transform === 'function') {
+              if (defaultFieldRule.path) {
+                transforms[defaultFieldRule.path] ||= [];
+                transforms[defaultFieldRule.path].push(defaultFieldRule.transform);
+              }
+            }
+          });
+        } else {
+          if (typeof rule.transform === 'function') {
+            transforms[rule.path] ||= [];
+            transforms[rule.path].push(rule.transform);
+          }
+        }
+
+        if (rule.fields) {
+          validateUtil.collectRulesTransform(rule.fields, transforms, rule.path);
+        }
+      });
+    });
+
+    return transforms;
   },
 
   collectRulesRequired: (rules: ValidateRules, requires: Record<string, boolean[]>, path = '') => {
