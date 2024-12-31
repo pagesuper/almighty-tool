@@ -582,8 +582,11 @@ const validateUtil = {
       rule.asyncValidator = asyncValidator;
     }
 
-    if (options.defaultField) {
-      rule.defaultField = { ...options.defaultField, path };
+    // TODO 复杂的场景
+    if (rule.defaultField) {
+      (Array.isArray(rule.defaultField) ? rule.defaultField : [rule.defaultField]).forEach((defaultField) => {
+        defaultField.path = path;
+      });
     }
 
     if (options.fields) {
@@ -622,10 +625,12 @@ const validateUtil = {
         if (rule.type === 'array') {
           const defaultFieldRules = Array.isArray(rule.defaultField) ? rule.defaultField : [rule.defaultField];
           defaultFieldRules.forEach((defaultFieldRule) => {
-            if (defaultFieldRule && typeof defaultFieldRule?.transform === 'function') {
-              if (defaultFieldRule.path) {
-                transforms[defaultFieldRule.path] ||= [];
-                transforms[defaultFieldRule.path].push(defaultFieldRule.transform);
+            if (defaultFieldRule) {
+              if (typeof defaultFieldRule?.transform === 'function') {
+                if (defaultFieldRule.path) {
+                  transforms[defaultFieldRule.path] ||= [];
+                  transforms[defaultFieldRule.path].push(defaultFieldRule.transform);
+                }
               }
             }
           });
