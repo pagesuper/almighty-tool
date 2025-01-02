@@ -146,8 +146,25 @@ export type {
   ValidateValues,
 };
 
+const SIMPLE_RULE_KEYS = [
+  'len',
+  'min',
+  'max',
+  'pattern',
+  'regexpKey',
+  'regexpReversed',
+  'type',
+  'required',
+  'enum',
+  'whitespace',
+];
+
 function getErrorDataJSON(messageJSON: ErrorDataJSON) {
   return `json:${JSON.stringify(messageJSON)}`;
+}
+
+function isPresent(value: any) {
+  return typeof value !== 'undefined' && value !== null;
 }
 
 const defaultMessages: ValidateMessages = {
@@ -361,9 +378,11 @@ const validateUtil = {
     const mergedRules = _.reduce(
       rules,
       (result, rule, fieldKey) => {
-        const loadedRules = Array.isArray(rule)
-          ? rule.map((option) => validateUtil.getRule({ path: fieldKey, ...option }))
-          : [validateUtil.getRule({ path: fieldKey, ...rule })];
+        const loadedRules: ValidateRuleItem[] = [];
+
+        (Array.isArray(rule) ? rule : [rule]).forEach((option) => {
+          loadedRules.push(...validateUtil.parseToRules({ path: fieldKey, ...option }));
+        });
 
         const previousRules = Reflect.get(result, fieldKey) ?? [];
         const storedRules = Array.isArray(previousRules) ? previousRules : [previousRules];
@@ -387,6 +406,67 @@ const validateUtil = {
     return mergedRules;
   },
 
+  parseToRules: (opts: ValidateOptionRule): ValidateRuleItem[] => {
+    const rules: ValidateRuleItem[] = [];
+    const options = _.cloneDeep(opts);
+
+    if (options.message) {
+      rules.push(validateUtil.getRule(options));
+    } else {
+      if (isPresent(options.regexpKey)) {
+        rules.push(validateUtil.getRule({ ...options }));
+        delete options.regexpKey;
+      }
+
+      if (isPresent(options.enum)) {
+        rules.push(validateUtil.getRule({ ...options }));
+        delete options.enum;
+      }
+
+      if (isPresent(options.len)) {
+        rules.push(validateUtil.getRule({ ...options }));
+        delete options.len;
+      }
+
+      if (isPresent(options.min) && isPresent(options.max)) {
+        rules.push(validateUtil.getRule({ ...options }));
+        delete options.min;
+        delete options.max;
+      }
+
+      if (isPresent(options.min)) {
+        rules.push(validateUtil.getRule({ ...options }));
+        delete options.min;
+      }
+
+      if (isPresent(options.max)) {
+        rules.push(validateUtil.getRule({ ...options }));
+        delete options.max;
+      }
+
+      if (isPresent(options.pattern)) {
+        rules.push(validateUtil.getRule({ ...options }));
+        delete options.pattern;
+      }
+
+      if (isPresent(options.whitespace)) {
+        rules.push(validateUtil.getRule({ ...options }));
+        delete options.whitespace;
+      }
+
+      if (isPresent(options.required)) {
+        rules.unshift(validateUtil.getRule({ ...options }));
+        delete options.required;
+      }
+
+      if (!_.isEmpty(_.omit(options, ['path', 'data', 'type']))) {
+        rules.push(validateUtil.getRule(options));
+      }
+    }
+
+    return rules;
+  },
+
   /** 获取规则 */
   getRule(options: ValidateOptionRule): ValidateRuleItem {
     const path = options?.path ?? '';
@@ -396,19 +476,7 @@ const validateUtil = {
     const regexpReversed = options?.regexpReversed ?? false;
 
     const message = (() => {
-      const pickedRules = _.pick(options, [
-        'min',
-        'max',
-        'len',
-        'range',
-        'pattern',
-        'regexpKey',
-        'regexpReversed',
-        'type',
-        'required',
-        'enum',
-        'whitespace',
-      ]);
+      const pickedRules = _.pick(options, SIMPLE_RULE_KEYS);
 
       if (pickedRules.pattern) {
         pickedRules.pattern = pickedRules.pattern.toString();
@@ -431,102 +499,130 @@ const validateUtil = {
         });
       }
 
+      if (options.enum) {
+        return validateUtil.getErrorDataJSON({
+          rules: pickedRules,
+          message: `validate.default.field-must-be-enum`,
+        });
+      }
+
       switch (type) {
         case 'string':
-          if (typeof options.min !== 'undefined' && typeof options.max !== 'undefined') {
-            return validateUtil.getErrorDataJSON({
-              rules: pickedRules,
-              message: 'validate.string.must-be-between-the-range-of-characters',
-            });
-          }
-
-          if (typeof options.min !== 'undefined') {
-            return validateUtil.getErrorDataJSON({
-              rules: pickedRules,
-              message: 'validate.string.must-be-at-least-characters',
-            });
-          }
-
-          if (typeof options.max !== 'undefined') {
-            return validateUtil.getErrorDataJSON({
-              rules: pickedRules,
-              message: 'validate.string.cannot-be-longer-than-characters',
-            });
-          }
-
-          if (typeof options.len !== 'undefined') {
+          // len 存在时，表示固定长度
+          // min 和 max 同时存在时，表示长度范围
+          // min 存在时，表示最小长度
+          // max 存在时，表示最大长度
+          // pattern 存在时，表示正则表达式
+          if (isPresent(options.len)) {
             return validateUtil.getErrorDataJSON({
               rules: pickedRules,
               message: 'validate.string.must-be-exactly-characters',
             });
           }
 
-          if (typeof options.pattern !== 'undefined') {
+          if (isPresent(options.min) && isPresent(options.max)) {
+            return validateUtil.getErrorDataJSON({
+              rules: pickedRules,
+              message: 'validate.string.must-be-between-the-range-of-characters',
+            });
+          }
+
+          if (isPresent(options.min)) {
+            return validateUtil.getErrorDataJSON({
+              rules: pickedRules,
+              message: 'validate.string.must-be-at-least-characters',
+            });
+          }
+
+          if (isPresent(options.max)) {
+            return validateUtil.getErrorDataJSON({
+              rules: pickedRules,
+              message: 'validate.string.cannot-be-longer-than-characters',
+            });
+          }
+
+          if (isPresent(options.pattern)) {
             return validateUtil.getErrorDataJSON({
               rules: pickedRules,
               message: 'validate.string.pattern-mismatch',
             });
           }
 
+          if (isPresent(options.whitespace)) {
+            return validateUtil.getErrorDataJSON({
+              rules: pickedRules,
+              message: 'validate.string.cannot-be-empty',
+            });
+          }
+
           break;
 
         case 'number':
-          if (typeof options.min !== 'undefined' && typeof options.max !== 'undefined') {
-            return validateUtil.getErrorDataJSON({
-              rules: pickedRules,
-              message: 'validate.number.must-be-between-the-range-of-numbers',
-            });
-          }
+          // len 存在时，表示固定长度
+          // min 和 max 同时存在时，表示范围
+          // min 存在时，表示最小值
+          // max 存在时，表示最大值
 
-          if (typeof options.min !== 'undefined') {
-            return validateUtil.getErrorDataJSON({
-              rules: pickedRules,
-              message: 'validate.number.cannot-be-less-than',
-            });
-          }
-
-          if (typeof options.max !== 'undefined') {
-            return validateUtil.getErrorDataJSON({
-              rules: pickedRules,
-              message: 'validate.number.cannot-be-greater-than',
-            });
-          }
-
-          if (typeof options.len !== 'undefined') {
+          if (isPresent(options.len)) {
             return validateUtil.getErrorDataJSON({
               rules: pickedRules,
               message: 'validate.number.must-equal',
             });
           }
 
+          if (isPresent(options.min) && isPresent(options.max)) {
+            return validateUtil.getErrorDataJSON({
+              rules: pickedRules,
+              message: 'validate.number.must-be-between-the-range-of-numbers',
+            });
+          }
+
+          if (isPresent(options.min)) {
+            return validateUtil.getErrorDataJSON({
+              rules: pickedRules,
+              message: 'validate.number.cannot-be-less-than',
+            });
+          }
+
+          if (isPresent(options.max)) {
+            return validateUtil.getErrorDataJSON({
+              rules: pickedRules,
+              message: 'validate.number.cannot-be-greater-than',
+            });
+          }
+
           break;
 
         case 'array':
-          if (typeof options.min !== 'undefined' && typeof options.max !== 'undefined') {
+          // len 存在时，表示固定长度
+          // min 和 max 同时存在时，表示范围
+          // min 存在时，表示最小长度
+          // max 存在时，表示最大长度
+          if (isPresent(options.len)) {
+            return validateUtil.getErrorDataJSON({
+              rules: pickedRules,
+              message: 'validate.array.must-be-exactly-array-length',
+            });
+          }
+
+          if (isPresent(options.min) && isPresent(options.max)) {
             return validateUtil.getErrorDataJSON({
               rules: pickedRules,
               message: 'validate.array.must-be-between-the-range-of-array-length',
             });
           }
 
-          if (typeof options.min !== 'undefined') {
+          if (isPresent(options.min)) {
             return validateUtil.getErrorDataJSON({
               rules: pickedRules,
               message: 'validate.array.cannot-be-less-than-array-length',
             });
           }
 
-          if (typeof options.max !== 'undefined') {
+          if (isPresent(options.max)) {
             return validateUtil.getErrorDataJSON({
               rules: pickedRules,
               message: 'validate.array.cannot-be-greater-than-array-length',
-            });
-          }
-
-          if (typeof options.len !== 'undefined') {
-            return validateUtil.getErrorDataJSON({
-              rules: pickedRules,
-              message: 'validate.array.must-be-exactly-array-length',
             });
           }
 
@@ -539,11 +635,6 @@ const validateUtil = {
           message: 'validate.default.field-is-required',
         });
       }
-
-      return validateUtil.getErrorDataJSON({
-        rules: pickedRules,
-        message: `validate.types.must-be-${type}`,
-      });
     })();
 
     const asyncValidator = (() => {
@@ -597,8 +688,9 @@ const validateUtil = {
           defaultField.fields = _.reduce(
             defaultField.fields,
             (result: ValidateRules, field, fieldKey) => {
-              const fields = (Array.isArray(field) ? field : [field]).map((field) => {
-                return validateUtil.getRule({ path: `${path}.${fieldKey}`, ...field });
+              const fields: ValidateRuleItem[] = [];
+              (Array.isArray(field) ? field : [field]).forEach((field) => {
+                fields.push(...validateUtil.parseToRules({ path: `${path}.${fieldKey}`, ...field }));
               });
               Reflect.set(result, fieldKey, fields);
               return result;
@@ -613,8 +705,9 @@ const validateUtil = {
       rule.fields = _.reduce(
         options.fields,
         (result: ValidateRules, field, fieldKey) => {
-          const fields = (Array.isArray(field) ? field : [field]).map((field) => {
-            return validateUtil.getRule({ path: `${path}.${fieldKey}`, ...field });
+          const fields: ValidateRuleItem[] = [];
+          (Array.isArray(field) ? field : [field]).forEach((field) => {
+            fields.push(...validateUtil.parseToRules({ path: `${path}.${fieldKey}`, ...field }));
           });
           Reflect.set(result, fieldKey, fields);
           return result;

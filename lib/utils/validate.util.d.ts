@@ -130,6 +130,7 @@ declare const validateUtil: {
     recursiveGetLocaleRules: (rules: ValidateRules, options?: GetLocaleRulesOptions) => ValidateRules;
     getLocaleRules: (rules: ValidateRules, options?: GetLocaleRulesOptions) => ValidateRules;
     getRules: (rules: ValidateOptionRules, initialRules?: ValidateRules, options?: GetRulesOptions | undefined) => ValidateRules;
+    parseToRules: (opts: ValidateOptionRule) => ValidateRuleItem[];
     /** 获取规则 */
     getRule(options: ValidateOptionRule): ValidateRuleItem;
     getErrorDataJSON: typeof getErrorDataJSON;
