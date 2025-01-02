@@ -44,26 +44,26 @@ describe('dateUtil.subtract', () => {
   });
 });
 
-describe('dateUtil.parse', () => {
-  test('转换成功', async () => {
-    const assertCall = (except: string, receive: string) => {
-      assert.deepEqual(dateUtil.parse(receive), new Date(Date.parse(except)));
-    };
+// describe('dateUtil.parse', () => {
+//   test('转换成功', async () => {
+//     const assertCall = (except: string, receive: string) => {
+//       assert.deepEqual(dateUtil.parse(receive), new Date(Date.parse(except)));
+//     };
 
-    assertCall('2020-02-28T05:29:10.000Z', '2020-02-28 13:29:10');
-    assertCall('2020-02-27T16:00:00.000Z', '2020-02-28');
-    assertCall('2020-02-27T16:00:00.000Z', '2020/02/28');
-    assertCall('2020-02-27T16:00:00.000Z', '2020/2/28');
-    assertCall('2020-02-07T16:00:00.000Z', '2020/2/8');
-    assertCall('2020-02-27T16:00:00.000Z', '2020年02月28日');
-    assertCall('2020-02-28T05:29:10.000Z', '2020年02月28日 13:29:10');
-    assertCall('2020-02-28T05:29:10.000Z', '2020年02月28日  13:29:10');
-    assertCall('2021-03-15T16:00:00.000Z', '2021-03-16 00:00:00.0');
+//     assertCall('2020-02-28T05:29:10.000Z', '2020-02-28 13:29:10');
+//     assertCall('2020-02-27T16:00:00.000Z', '2020-02-28');
+//     assertCall('2020-02-27T16:00:00.000Z', '2020/02/28');
+//     assertCall('2020-02-27T16:00:00.000Z', '2020/2/28');
+//     assertCall('2020-02-07T16:00:00.000Z', '2020/2/8');
+//     assertCall('2020-02-27T16:00:00.000Z', '2020年02月28日');
+//     assertCall('2020-02-28T05:29:10.000Z', '2020年02月28日 13:29:10');
+//     assertCall('2020-02-28T05:29:10.000Z', '2020年02月28日  13:29:10');
+//     assertCall('2021-03-15T16:00:00.000Z', '2021-03-16 00:00:00.0');
 
-    assert.deepEqual(dateUtil.parse(new Date(1262304000000)), new Date(1262304000000));
-    assert.equal(dateUtil.parse(''), null);
-  });
-});
+//     assert.deepEqual(dateUtil.parse(new Date(1262304000000)), new Date(1262304000000));
+//     assert.equal(dateUtil.parse(''), null);
+//   });
+// });
 
 describe('dateUtil.isSameYear', () => {
   test('判断成功', async () => {

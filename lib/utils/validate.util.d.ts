@@ -1,5 +1,6 @@
 import ValidateSchema, { ValidateError as OriginalValidateError, ValidateOption as OriginalValidateOption, RuleItem as OriginalValidateRuleItem, ValidateCallback, ExecuteRule as ValidateExecuteRule, ExecuteValidator as ValidateExecuteValidator, ValidateFieldsError, InternalRuleItem as ValidateInternalRuleItem, InternalValidateMessages as ValidateInternalValidateMessages, ValidateMessages, ValidateResult, RuleType as ValidateRuleType, RuleValuePackage as ValidateRuleValuePackage, Value as ValidateValue, Values as ValidateValues } from 'async-validator';
 import { I18n } from '../i18n/index';
+export declare type ValidateTransform = (value: ValidateValue) => ValidateValue;
 export interface GetRulesOptions {
     /**
      * 方向:
@@ -47,6 +48,8 @@ export interface ValidateRuleItem extends Omit<OriginalValidateRuleItem, 'fields
     fields?: ValidateRules;
     /** 消息数据 */
     data?: ErrorDataJSON;
+    /** 默认字段 */
+    defaultField?: ValidateRule;
 }
 export declare type ValidateRule = ValidateRuleItem | ValidateRuleItem[];
 export declare type ValidateRules = Record<string, ValidateRule>;
@@ -84,6 +87,8 @@ export interface ValidateResponse {
     success: boolean;
     /** 错误信息 */
     errors?: ValidateError[];
+    /** 数据 */
+    values?: ValidateValues;
 }
 export interface ErrorDataJSON {
     rules: Partial<ValidateOptionRule>;
@@ -114,13 +119,14 @@ declare const validateUtil: {
         field?: string | undefined;
         fieldValue?: any;
     }[];
+    transform: (values: ValidateValues, rules?: ValidateOptionRules | undefined) => {};
     /**
      * 校验数据
      * @param rules 校验规则
      * @param data 数据
      * @returns 校验结果
      */
-    validate: (rules: ValidateOptionRules, data: ValidateValues, options?: ValidateOption | undefined, callback?: ValidateCallback | undefined) => Promise<ValidateResponse>;
+    validate: (rules: ValidateOptionRules, values: ValidateValues, options?: ValidateOption | undefined, callback?: ValidateCallback | undefined) => Promise<ValidateResponse>;
     recursiveGetLocaleRules: (rules: ValidateRules, options?: GetLocaleRulesOptions) => ValidateRules;
     getLocaleRules: (rules: ValidateRules, options?: GetLocaleRulesOptions) => ValidateRules;
     getRules: (rules: ValidateOptionRules, initialRules?: ValidateRules, options?: GetRulesOptions | undefined) => ValidateRules;
@@ -128,6 +134,7 @@ declare const validateUtil: {
     getRule(options: ValidateOptionRule): ValidateRuleItem;
     getErrorDataJSON: typeof getErrorDataJSON;
     parseErrorDataJSON: (message?: string | unknown) => ErrorDataJSON;
+    collectRulesTransform: (rules: ValidateRules, transforms: Record<string, ValidateTransform[]>, path?: string) => Record<string, ValidateTransform[]>;
     collectRulesRequired: (rules: ValidateRules, requires: Record<string, boolean[]>, path?: string) => Record<string, boolean[]>;
     collectRulesRequiredAssign: (requires: Record<string, boolean[]>, rules: ValidateRules) => void;
     normalizeRules: (rules: ValidateRules) => ValidateRules;
