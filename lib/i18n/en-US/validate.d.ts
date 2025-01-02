@@ -5,6 +5,7 @@ declare const _default: {
             'field-is-required': string;
             'field-must-be-enum': string;
             'cannot-be-empty': string;
+            taken: string;
         };
         date: {
             format: string;

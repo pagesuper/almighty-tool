@@ -1,7 +1,8 @@
+import deepmerge from 'deepmerge';
 import _ from 'lodash';
+import mustache from 'mustache';
 import enUSMessages from './en-US/index';
 import zhCNMessages from './zh-CN/index';
-import mustache from 'mustache';
 
 const messages = {
   'en-US': enUSMessages,
@@ -43,14 +44,22 @@ export interface I18nOptions {
 }
 
 export class I18n {
-  private lang: string;
-  private fallbackLang: string;
-  private messages: Record<string, any>;
+  public lang: string;
+  public fallbackLang: string;
+  public messages: Record<string, any>;
 
   constructor(options: I18nOptions) {
     this.lang = options.lang ?? options.locale ?? defaultLang;
     this.fallbackLang = options.fallbackLang ?? options.fallbackLocale ?? defaultLang;
     this.messages = options.messages ?? messages;
+  }
+
+  setMessages(messages: Record<string, any>) {
+    this.messages = messages;
+  }
+
+  mergeMessages(messages: Record<string, any>) {
+    this.messages = deepmerge(this.messages, messages);
   }
 
   setLang(lang: string) {

@@ -4,6 +4,7 @@ const validate = {
     'field-is-required': '字段不能为空',
     'field-must-be-enum': '字段必须为列表中的值',
     'cannot-be-empty': '字段不能为空白',
+    taken: '已被占用',
   },
   date: {
     format: '日期格式错误',

@@ -4,6 +4,7 @@ const validate = {
     'field-is-required': 'Is required',
     'field-must-be-enum': 'Please select a value from the list',
     'cannot-be-empty': 'Cannot be blank',
+    taken: 'has been taken',
   },
   date: {
     format: 'Date format error',

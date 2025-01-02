@@ -6,6 +6,7 @@ declare const messages: {
                 'field-is-required': string;
                 'field-must-be-enum': string;
                 'cannot-be-empty': string;
+                taken: string;
             };
             date: {
                 format: string;
@@ -91,6 +92,7 @@ declare const messages: {
                 'field-is-required': string;
                 'field-must-be-enum': string;
                 'cannot-be-empty': string;
+                taken: string;
             };
             date: {
                 format: string;
@@ -196,10 +198,12 @@ export interface I18nOptions {
     messages?: Record<string, any>;
 }
 export declare class I18n {
-    private lang;
-    private fallbackLang;
-    private messages;
+    lang: string;
+    fallbackLang: string;
+    messages: Record<string, any>;
     constructor(options: I18nOptions);
+    setMessages(messages: Record<string, any>): void;
+    mergeMessages(messages: Record<string, any>): void;
     setLang(lang: string): void;
     setFallbackLang(lang: string): void;
     t(key: string, options?: TranslateOptions): string;
