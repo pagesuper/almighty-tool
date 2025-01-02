@@ -72,6 +72,7 @@ const codeUtil = {
     // 使用变量渲染模板
     const result = mustache
       .render(template, variables)
+      .replace(/&#x2F;/g, '/')
       .replace(/&lbrace;/g, '{')
       .replace(/&rbrace;/g, '}');
 
