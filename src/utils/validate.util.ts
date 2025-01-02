@@ -265,6 +265,10 @@ const validateUtil = {
                   return transform.reduce((value, transform) => transform(value), item);
                 }
 
+                if (typeof item === 'object') {
+                  return doTransform(item, path);
+                }
+
                 return item;
               });
             } else {
@@ -536,7 +540,10 @@ const validateUtil = {
         });
       }
 
-      return undefined;
+      return validateUtil.getErrorDataJSON({
+        rules: pickedRules,
+        message: `validate.types.must-be-${type}`,
+      });
     })();
 
     const asyncValidator = (() => {
@@ -582,10 +589,23 @@ const validateUtil = {
       rule.asyncValidator = asyncValidator;
     }
 
-    // TODO 复杂的场景
     if (rule.defaultField) {
       (Array.isArray(rule.defaultField) ? rule.defaultField : [rule.defaultField]).forEach((defaultField) => {
         defaultField.path = path;
+
+        if (defaultField.fields) {
+          defaultField.fields = _.reduce(
+            defaultField.fields,
+            (result: ValidateRules, field, fieldKey) => {
+              const fields = (Array.isArray(field) ? field : [field]).map((field) => {
+                return validateUtil.getRule({ path: `${path}.${fieldKey}`, ...field });
+              });
+              Reflect.set(result, fieldKey, fields);
+              return result;
+            },
+            {},
+          );
+        }
       });
     }
 
@@ -623,14 +643,17 @@ const validateUtil = {
         rule.path = rule.path ?? `${path ? `${path}.` : ''}${fieldKey}`;
 
         if (rule.type === 'array') {
-          const defaultFieldRules = Array.isArray(rule.defaultField) ? rule.defaultField : [rule.defaultField];
-          defaultFieldRules.forEach((defaultFieldRule) => {
+          (Array.isArray(rule.defaultField) ? rule.defaultField : [rule.defaultField]).forEach((defaultFieldRule) => {
             if (defaultFieldRule) {
               if (typeof defaultFieldRule?.transform === 'function') {
                 if (defaultFieldRule.path) {
                   transforms[defaultFieldRule.path] ||= [];
                   transforms[defaultFieldRule.path].push(defaultFieldRule.transform);
                 }
+              }
+
+              if (defaultFieldRule.fields) {
+                validateUtil.collectRulesTransform(defaultFieldRule.fields, transforms, defaultFieldRule.path);
               }
             }
           });
