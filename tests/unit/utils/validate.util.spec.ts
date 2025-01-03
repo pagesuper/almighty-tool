@@ -910,3 +910,20 @@ describe('validateUtil.getRule()', () => {
     });
   });
 });
+
+describe('validateUtil.getRule() trigger', () => {
+  test('成功: 转换', async () => {
+    const rules = await validateUtil.getRules({ name: { trigger: 'change' } });
+
+    expect(rules).toEqual({
+      name: [
+        {
+          message: undefined,
+          path: 'name',
+          trigger: 'change',
+          type: 'string',
+        },
+      ],
+    });
+  });
+});

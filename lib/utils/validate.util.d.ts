@@ -1,5 +1,6 @@
 import ValidateSchema, { ValidateError as OriginalValidateError, ValidateOption as OriginalValidateOption, RuleItem as OriginalValidateRuleItem, ValidateCallback, ExecuteRule as ValidateExecuteRule, ExecuteValidator as ValidateExecuteValidator, ValidateFieldsError, InternalRuleItem as ValidateInternalRuleItem, InternalValidateMessages as ValidateInternalValidateMessages, ValidateMessages, ValidateResult, RuleType as ValidateRuleType, RuleValuePackage as ValidateRuleValuePackage, Value as ValidateValue, Values as ValidateValues } from 'async-validator';
 import { I18n } from '../i18n/index';
+export declare type ValidateTrigger = 'blur' | 'change' | Array<'change' | 'blur'>;
 export declare type ValidateTransform = (value: ValidateValue) => ValidateValue;
 export declare type ValidateTransformer = 'toDate' | 'toBoolean' | 'trim' | 'trimLeft' | 'trimRight' | 'trimStart' | 'trimEnd' | 'toLower' | 'toUpper' | 'toNumber' | 'firstLetterUpper' | 'firstLetterLower' | 'capitalize' | 'camelize' | 'dasherize' | 'underscore' | 'pluralize' | 'singularize' | 'humanize';
 export interface GetRulesOptions {
@@ -55,6 +56,8 @@ export interface ValidateRuleItem extends Omit<OriginalValidateRuleItem, 'fields
     data?: ErrorDataJSON;
     /** 默认字段 */
     defaultField?: ValidateRule;
+    /** 触发时机 */
+    trigger?: ValidateTrigger;
 }
 export declare type ValidateRule = ValidateRuleItem | ValidateRuleItem[];
 export declare type ValidateRules = Record<string, ValidateRule>;
@@ -89,6 +92,8 @@ export interface ValidateOptionRule extends Omit<ValidateRuleItem, 'fields'> {
      * - humanize 人类化
      */
     transformers?: ValidateTransformer[];
+    /** 触发时机 */
+    trigger?: ValidateTrigger;
 }
 export interface GetLocaleRulesOptions {
     /** 国际化 */

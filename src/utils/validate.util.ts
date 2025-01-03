@@ -21,6 +21,7 @@ import _ from 'lodash';
 import { I18n, i18nConfig } from '../i18n/index';
 import { regExps } from './format.util';
 
+export type ValidateTrigger = 'blur' | 'change' | Array<'change' | 'blur'>;
 export type ValidateTransform = (value: ValidateValue) => ValidateValue;
 export type ValidateTransformer =
   | 'toDate' // string, number -> date
@@ -101,6 +102,8 @@ export interface ValidateRuleItem extends Omit<OriginalValidateRuleItem, 'fields
   data?: ErrorDataJSON;
   /** 默认字段 */
   defaultField?: ValidateRule;
+  /** 触发时机 */
+  trigger?: ValidateTrigger;
 }
 
 export type ValidateRule = ValidateRuleItem | ValidateRuleItem[];
@@ -137,6 +140,8 @@ export interface ValidateOptionRule extends Omit<ValidateRuleItem, 'fields'> {
    * - humanize 人类化
    */
   transformers?: ValidateTransformer[];
+  /** 触发时机 */
+  trigger?: ValidateTrigger;
 }
 
 export interface GetLocaleRulesOptions {
