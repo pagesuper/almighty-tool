@@ -16,11 +16,32 @@ import ValidateSchema, {
   Values as ValidateValues,
 } from 'async-validator';
 import deepmerge from 'deepmerge';
+import inflection from 'inflection';
 import _ from 'lodash';
 import { I18n, i18nConfig } from '../i18n/index';
 import { regExps } from './format.util';
 
 export type ValidateTransform = (value: ValidateValue) => ValidateValue;
+export type ValidateTransformer =
+  | 'toDate' // string, number -> date
+  | 'toBoolean' // string, number, boolean -> boolean
+  | 'trim'
+  | 'trimLeft'
+  | 'trimRight'
+  | 'trimStart'
+  | 'trimEnd'
+  | 'toLower'
+  | 'toUpper'
+  | 'toNumber'
+  | 'firstLetterUpper'
+  | 'firstLetterLower'
+  | 'capitalize'
+  | 'camelize'
+  | 'dasherize'
+  | 'underscore'
+  | 'pluralize'
+  | 'singularize'
+  | 'humanize';
 
 export interface GetRulesOptions {
   /**
@@ -92,6 +113,30 @@ export interface ValidateOptionRule extends Omit<ValidateRuleItem, 'fields'> {
   regexpKey?: string;
   /** 相反 */
   regexpReversed?: boolean;
+  /**
+   * 转换器
+   *
+   * - toDate 转为日期对象
+   * - toBoolean 转为布尔值
+   * - trim 去除首尾空格
+   * - trimLeft 去除首空格
+   * - trimRight 去除尾空格
+   * - trimStart 去除首空格
+   * - trimEnd 去除尾空格
+   * - toLower 转为小写
+   * - toUpper 转为大写
+   * - toNumber 转为数字
+   * - firstLetterUpper 首字母大写
+   * - firstLetterLower 首字母小写
+   * - capitalize 首字母大写
+   * - camelize 驼峰命名
+   * - dasherize 短横线命名
+   * - underscore 下划线命名
+   * - pluralize 复数
+   * - singularize 单数
+   * - humanize 人类化
+   */
+  transformers?: ValidateTransformer[];
 }
 
 export interface GetLocaleRulesOptions {
@@ -295,7 +340,9 @@ const validateUtil = {
             if (Array.isArray(value)) {
               result[key] = value.map((item) => {
                 if (transform?.length) {
-                  return transform.reduce((value, transform) => transform(value), item);
+                  return transform.reduce((value, trans) => {
+                    return trans(value);
+                  }, item);
                 }
 
                 if (typeof item === 'object') {
@@ -309,7 +356,9 @@ const validateUtil = {
             }
           } else {
             if (transform?.length) {
-              result[key] = transform.reduce((value, transform) => transform(value), value);
+              result[key] = transform.reduce((value, trans) => {
+                return trans(value);
+              }, value);
             } else {
               result[key] = value;
             }
@@ -453,6 +502,7 @@ const validateUtil = {
 
     if (options.message) {
       rules.push(validateUtil.getRule(options));
+      delete options.message;
     } else {
       if (isPresent(options.regexpKey)) {
         rules.push(validateUtil.getRule({ ...options }));
@@ -714,6 +764,65 @@ const validateUtil = {
       };
     })();
 
+    const transform = (() => {
+      if ((options.transformers && options.transformers.length) || typeof options.transform === 'function') {
+        return (value: ValidateValue) => {
+          let newValue = (options.transformers ?? []).reduce((val: ValidateValue, transformer) => {
+            switch (transformer) {
+              case 'toBoolean':
+                return Boolean(val);
+              case 'toDate':
+                return new Date(val);
+              case 'trim':
+                return val.trim();
+              case 'trimLeft':
+                return val.trimLeft();
+              case 'trimRight':
+                return val.trimRight();
+              case 'trimStart':
+                return val.trimStart();
+              case 'trimEnd':
+                return val.trimEnd();
+              case 'toLower':
+                return val.toLowerCase();
+              case 'toUpper':
+                return val.toUpperCase();
+              case 'toNumber':
+                return Number(val);
+              case 'firstLetterUpper':
+                return val.charAt(0).toUpperCase() + val.slice(1);
+              case 'firstLetterLower':
+                return val.charAt(0).toLowerCase() + val.slice(1);
+              case 'capitalize':
+                return inflection.capitalize(val);
+              case 'camelize':
+                return inflection.camelize(val);
+              case 'dasherize':
+                return inflection.dasherize(val);
+              case 'underscore':
+                return inflection.underscore(val);
+              case 'pluralize':
+                return inflection.pluralize(val);
+              case 'singularize':
+                return inflection.singularize(val);
+              case 'humanize':
+                return inflection.humanize(val);
+              default:
+                return val;
+            }
+          }, value);
+
+          if (typeof options.transform === 'function') {
+            newValue = options.transform(newValue);
+          }
+
+          return newValue;
+        };
+      }
+
+      return undefined;
+    })();
+
     const rule: ValidateRuleItem = {
       ...options,
       type,
@@ -723,6 +832,10 @@ const validateUtil = {
 
     if (asyncValidator) {
       rule.asyncValidator = asyncValidator;
+    }
+
+    if (transform) {
+      rule.transform = transform;
     }
 
     if (rule.defaultField) {

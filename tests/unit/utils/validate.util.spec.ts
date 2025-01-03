@@ -1,4 +1,4 @@
-import validateUtil, { ValidateRules, ValidateSchema, Validator } from '../../../src/utils/validate.util';
+import validateUtil, { ValidateOptionRules, ValidateRules, ValidateSchema, Validator } from '../../../src/utils/validate.util';
 
 describe('validateUtil.getSchema()', () => {
   test('成功', async () => {
@@ -673,10 +673,12 @@ describe('transform', () => {
     const result2 = await validator
       .wrapRules({
         rules: {
-          name: { transform: (value) => value.trim() },
+          name: {
+            transformers: ['trim'],
+          },
           user: {
             fields: {
-              name: { transform: (value) => value.trim() },
+              name: { transformers: ['trim'] },
             },
           },
         },
@@ -890,6 +892,20 @@ describe('validateUtil.validate() with pickKeys', () => {
       success: true,
       values: {
         name: 'Jack',
+      },
+    });
+  });
+});
+
+describe('validateUtil.getRule()', () => {
+  test('成功: 转换', async () => {
+    const rules: ValidateOptionRules = { name: { transformers: ['trim', 'firstLetterUpper'], max: 4 } };
+    const result = await validateUtil.validate(rules, { name: '  jck1' });
+
+    expect(result).toEqual({
+      success: true,
+      values: {
+        name: 'Jck1',
       },
     });
   });

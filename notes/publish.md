@@ -10,4 +10,4 @@ npm login --registry https://registry.npmjs.org/ --auth-type legacy
 ## TODO
 
 - [x] validate.util 增加pickKeys
-- [ ] validate.util 增加常用的transformers
+- [x] validate.util 增加常用的transformers
