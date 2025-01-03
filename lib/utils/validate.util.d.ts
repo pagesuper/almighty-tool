@@ -1,6 +1,7 @@
 import ValidateSchema, { ValidateError as OriginalValidateError, ValidateOption as OriginalValidateOption, RuleItem as OriginalValidateRuleItem, ValidateCallback, ExecuteRule as ValidateExecuteRule, ExecuteValidator as ValidateExecuteValidator, ValidateFieldsError, InternalRuleItem as ValidateInternalRuleItem, InternalValidateMessages as ValidateInternalValidateMessages, ValidateMessages, ValidateResult, RuleType as ValidateRuleType, RuleValuePackage as ValidateRuleValuePackage, Value as ValidateValue, Values as ValidateValues } from 'async-validator';
 import { I18n } from '../i18n/index';
 export declare type ValidateTransform = (value: ValidateValue) => ValidateValue;
+export declare type ValidateTransformer = 'toDate' | 'toBoolean' | 'trim' | 'trimLeft' | 'trimRight' | 'trimStart' | 'trimEnd' | 'toLower' | 'toUpper' | 'toNumber' | 'firstLetterUpper' | 'firstLetterLower' | 'capitalize' | 'camelize' | 'dasherize' | 'underscore' | 'pluralize' | 'singularize' | 'humanize';
 export interface GetRulesOptions {
     /**
      * 方向:
@@ -64,6 +65,30 @@ export interface ValidateOptionRule extends Omit<ValidateRuleItem, 'fields'> {
     regexpKey?: string;
     /** 相反 */
     regexpReversed?: boolean;
+    /**
+     * 转换器
+     *
+     * - toDate 转为日期对象
+     * - toBoolean 转为布尔值
+     * - trim 去除首尾空格
+     * - trimLeft 去除首空格
+     * - trimRight 去除尾空格
+     * - trimStart 去除首空格
+     * - trimEnd 去除尾空格
+     * - toLower 转为小写
+     * - toUpper 转为大写
+     * - toNumber 转为数字
+     * - firstLetterUpper 首字母大写
+     * - firstLetterLower 首字母小写
+     * - capitalize 首字母大写
+     * - camelize 驼峰命名
+     * - dasherize 短横线命名
+     * - underscore 下划线命名
+     * - pluralize 复数
+     * - singularize 单数
+     * - humanize 人类化
+     */
+    transformers?: ValidateTransformer[];
 }
 export interface GetLocaleRulesOptions {
     /** 国际化 */
