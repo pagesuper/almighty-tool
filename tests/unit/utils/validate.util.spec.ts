@@ -706,157 +706,174 @@ describe('transform', () => {
   });
 });
 
-// describe('transform: array', () => {
-//   test('成功: 转换', async () => {
-//     const validator = new Validator({
-//       rules: {
-//         names: { type: 'array' },
-//       },
-//       action: 'validate',
-//     });
+describe('transform: array', () => {
+  test('成功: 转换', async () => {
+    const validator = new Validator({
+      rules: {
+        names: { type: 'array' },
+      },
+      action: 'validate',
+    });
 
-//     const result = await validator
-//       .wrapRules({
-//         rules: {
-//           names: {
-//             type: 'array',
-//             defaultField: {
-//               type: 'string',
-//               transform: (value) => {
-//                 return (value ?? '').trim();
-//               },
-//             },
-//           },
-//         },
-//       })
-//       .validate({ names: ['  AB12', '  AB45'] });
+    const result = await validator
+      .wrapRules({
+        rules: {
+          names: {
+            type: 'array',
+            defaultField: {
+              type: 'string',
+              transform: (value) => {
+                return (value ?? '').trim();
+              },
+            },
+          },
+        },
+      })
+      .validate({ names: ['  AB12', '  AB45'] });
 
-//     expect(result).toEqual({
-//       success: true,
-//       values: { names: ['AB12', 'AB45'] },
-//     });
-//   });
+    expect(result).toEqual({
+      success: true,
+      values: { names: ['AB12', 'AB45'] },
+    });
+  });
 
-//   test('成功: 未转换', async () => {
-//     const validator = new Validator({
-//       rules: {
-//         users: {
-//           type: 'array',
-//           fields: {
-//             name: { type: 'string', min: 6 },
-//           },
-//         },
-//       },
-//       action: 'validate',
-//     });
+  test('成功: 未转换', async () => {
+    const validator = new Validator({
+      rules: {
+        users: {
+          type: 'array',
+          fields: {
+            name: { type: 'string', min: 6 },
+          },
+        },
+      },
+      action: 'validate',
+    });
 
-//     const result = await validator.validate({ users: [{ name: ' AB12' }, { name: ' AB45' }] });
+    const result = await validator.validate({ users: [{ name: ' AB12' }, { name: ' AB45' }] });
 
-//     expect(result).toEqual({
-//       success: true,
-//       values: { users: [{ name: ' AB12' }, { name: ' AB45' }] },
-//     });
-//   });
+    expect(result).toEqual({
+      success: true,
+      values: { users: [{ name: ' AB12' }, { name: ' AB45' }] },
+    });
+  });
 
-//   test('成功: 对象数组转换', async () => {
-//     const validator = new Validator({
-//       rules: {
-//         users: {
-//           type: 'array',
-//           defaultField: {
-//             type: 'object',
-//             fields: {
-//               name: { type: 'string', min: 6 },
-//             },
-//           },
-//         },
-//       },
-//       action: 'validate',
-//     });
+  test('成功: 对象数组转换', async () => {
+    const validator = new Validator({
+      rules: {
+        users: {
+          type: 'array',
+          defaultField: {
+            type: 'object',
+            fields: {
+              name: { type: 'string', min: 6 },
+            },
+          },
+        },
+      },
+      action: 'validate',
+    });
 
-//     const result = await validator
-//       .wrapRules({
-//         rules: {
-//           users: {
-//             type: 'array',
-//             defaultField: {
-//               type: 'object',
-//               fields: {
-//                 name: [
-//                   {
-//                     type: 'string',
-//                     transform: (value) => {
-//                       if (value) {
-//                         return value.trim();
-//                       }
+    const result = await validator
+      .wrapRules({
+        rules: {
+          users: {
+            type: 'array',
+            defaultField: {
+              type: 'object',
+              fields: {
+                name: [
+                  {
+                    type: 'string',
+                    transform: (value) => {
+                      if (value) {
+                        return value.trim();
+                      }
 
-//                       return value;
-//                     },
-//                   },
-//                 ],
-//               },
-//             },
-//           },
-//         },
-//       })
-//       .validate({ users: [{ name: '  AB12' }, { name: '  AB45' }] });
+                      return value;
+                    },
+                  },
+                ],
+              },
+            },
+          },
+        },
+      })
+      .validate({ users: [{ name: '  AB12' }, { name: '  AB45' }] });
 
-//     expect(result).toEqual({
-//       success: true,
-//       values: { users: [{ name: 'AB12' }, { name: 'AB45' }] },
-//     });
-//   });
-// });
+    expect(result).toEqual({
+      success: true,
+      values: { users: [{ name: 'AB12' }, { name: 'AB45' }] },
+    });
+  });
+});
 
-// describe('validateUtil.getRules()', () => {
-//   test('成功: 一层/规则拆分/required', async () => {
-//     const rules = {
-//       name: { required: true },
-//     };
+describe('validateUtil.getRules()', () => {
+  test('成功: 一层/规则拆分/required', async () => {
+    const rules = {
+      name: { required: true },
+    };
 
-//     const newRules = await validateUtil.getRules(rules);
+    const newRules = await validateUtil.getRules(rules);
 
-//     expect(newRules).toEqual({
-//       name: [
-//         {
-//           message: 'json:{"rules":{"required":true},"message":"validate.default.field-is-required"}',
-//           path: 'name',
-//           required: true,
-//           type: 'string',
-//         },
-//       ],
-//     });
-//   });
+    expect(newRules).toEqual({
+      name: [
+        {
+          message: 'json:{"rules":{"required":true},"message":"validate.default.field-is-required"}',
+          path: 'name',
+          required: true,
+          type: 'string',
+        },
+      ],
+    });
+  });
 
-//   test('成功: 一层/规则拆分/required', async () => {
-//     const rules = {
-//       name: {
-//         required: true,
-//         min: 4,
-//         max: 20,
-//       },
-//     };
+  test('成功: 一层/规则拆分/required', async () => {
+    const rules = {
+      name: {
+        required: true,
+        min: 4,
+        max: 20,
+      },
+    };
 
-//     const newRules = await validateUtil.getRules(rules);
+    const newRules = await validateUtil.getRules(rules);
 
-//     expect(newRules).toEqual({
-//       name: [
-//         {
-//           message: 'json:{"rules":{"required":true},"message":"validate.default.field-is-required"}',
-//           path: 'name',
-//           required: true,
-//           type: 'string',
-//         },
-//         {
-//           max: 20,
-//           message:
-//             'json:{"rules":{"min":4,"max":20,"required":true},"message":"validate.string.must-be-between-the-range-of-characters"}',
-//           min: 4,
-//           path: 'name',
-//           required: true,
-//           type: 'string',
-//         },
-//       ],
-//     });
-//   });
-// });
+    expect(newRules).toEqual({
+      name: [
+        {
+          message: 'json:{"rules":{"required":true},"message":"validate.default.field-is-required"}',
+          path: 'name',
+          required: true,
+          type: 'string',
+        },
+        {
+          max: 20,
+          message:
+            'json:{"rules":{"min":4,"max":20,"required":true},"message":"validate.string.must-be-between-the-range-of-characters"}',
+          min: 4,
+          path: 'name',
+          required: true,
+          type: 'string',
+        },
+      ],
+    });
+  });
+});
+
+describe('validateUtil.validate() with omitKeys', () => {
+  test('成功: 一层/必须', async () => {
+    const rules = {
+      name: { required: true },
+    };
+
+    const result = await validateUtil.validate(rules, { name: 'Jack', age: 12 }, { omitKeys: ['age'] });
+
+    expect(result).toEqual({
+      success: true,
+      values: {
+        name: 'Jack',
+      },
+    });
+  });
+});

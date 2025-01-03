@@ -44,6 +44,8 @@ export interface ValidateOption extends OriginalValidateOption {
    * - en-US
    */
   lang?: string;
+  /** 忽略的字段 */
+  omitKeys?: string[];
 }
 
 export interface WrapRulesOptions extends ValidateOption {
@@ -324,9 +326,10 @@ const validateUtil = {
     let transformedValues: ValidateValues = values;
 
     try {
+      const usingValues = _.omit(values, options?.omitKeys ?? []);
       const schema = validateUtil.getSchema(rules, options);
-      transformedValues = validateUtil.transform(values, schema.rules);
-      await schema.validate(values, deepmerge({ messages: defaultMessages }, options ?? {}), callback);
+      transformedValues = validateUtil.transform(usingValues, schema.rules);
+      await schema.validate(usingValues, deepmerge({ messages: defaultMessages }, options ?? {}), callback);
 
       return {
         success: true,

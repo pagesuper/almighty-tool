@@ -29,6 +29,8 @@ export interface CodeUtilGetGenerateData {
   FirstLowerModelsName: string;
   /* 模块路径 eg. service-forum/src/modules/auth */
   ModulePath: string;
+  /* 模块名称 eg. auth */
+  ModuleName: string;
   /* 大驼峰 eg. AuthCollection */
   ModelName: string;
   /* 大驼峰复数 eg. AuthCollections */
@@ -70,6 +72,7 @@ const codeUtil = {
     // 使用变量渲染模板
     const result = mustache
       .render(template, variables)
+      .replace(/&#x2F;/g, '/')
       .replace(/&lbrace;/g, '{')
       .replace(/&rbrace;/g, '}');
 
@@ -96,6 +99,8 @@ const codeUtil = {
     }
 
     const ModulePath = options.modulePath;
+    const ModulePathParts = ModulePath.split('/');
+    const ModuleName = ModulePathParts[ModulePathParts.length - 1];
     const ModelName = inflection.camelize(options.modelName);
     const ModelsName = inflection.pluralize(ModelName);
     const UnderscoreModelName = inflection.underscore(ModelName);
@@ -109,6 +114,7 @@ const codeUtil = {
       FirstLowerModelName,
       FirstLowerModelsName,
       ModulePath,
+      ModuleName,
       ModelName,
       ModelsName,
       KebabCaseModelName,
