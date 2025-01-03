@@ -22,6 +22,10 @@ export interface ValidateOption extends OriginalValidateOption {
      * - en-US
      */
     lang?: string;
+    /** 忽略的字段 */
+    omitKeys?: string[];
+    /** 选择字段 */
+    pickKeys?: string[];
 }
 export interface WrapRulesOptions extends ValidateOption {
     /** 覆盖规则: 默认为false */
@@ -105,6 +109,12 @@ declare const validateUtil: {
      * @returns 校验器
      */
     getSchema: (rules: ValidateOptionRules, options?: ValidateOption | undefined) => ValidateSchema;
+    /**
+     * 获取错误信息
+     * @param error 错误信息
+     * @param options 选项
+     * @returns 错误信息
+     */
     getErrorMessage: (error: unknown, options?: GetErrorsOptions | undefined) => any;
     /**
      * 获取错误信息
@@ -119,6 +129,12 @@ declare const validateUtil: {
         field?: string | undefined;
         fieldValue?: any;
     }[];
+    /**
+     * 转换数据
+     * @param values 数据
+     * @param rules 校验规则
+     * @returns 转换后的数据
+     */
     transform: (values: ValidateValues, rules?: ValidateOptionRules | undefined) => {};
     /**
      * 校验数据
@@ -127,34 +143,123 @@ declare const validateUtil: {
      * @returns 校验结果
      */
     validate: (rules: ValidateOptionRules, values: ValidateValues, options?: ValidateOption | undefined, callback?: ValidateCallback | undefined) => Promise<ValidateResponse>;
+    /**
+     * 递归获取国际化规则
+     * @param rules 校验规则
+     * @param options 选项
+     * @returns 校验规则
+     */
     recursiveGetLocaleRules: (rules: ValidateRules, options?: GetLocaleRulesOptions) => ValidateRules;
+    /**
+     * 获取国际化规则
+     * @param rules 校验规则
+     * @param options 选项
+     * @returns 校验规则
+     */
     getLocaleRules: (rules: ValidateRules, options?: GetLocaleRulesOptions) => ValidateRules;
+    /**
+     * 获取校验规则
+     * @param rules 校验规则
+     * @param initialRules 初始校验规则
+     * @param options 选项
+     * @returns 校验规则
+     */
     getRules: (rules: ValidateOptionRules, initialRules?: ValidateRules, options?: GetRulesOptions | undefined) => ValidateRules;
+    /**
+     * 解析校验规则
+     * @param opts 校验规则
+     * @returns 校验规则
+     */
     parseToRules: (opts: ValidateOptionRule) => ValidateRuleItem[];
-    /** 获取规则 */
+    /**
+     * 获取规则
+     * @param options 校验规则
+     * @returns 校验规则
+     */
     getRule(options: ValidateOptionRule): ValidateRuleItem;
+    /**
+     * 获取错误信息
+     * @param error 错误信息
+     * @param options 选项
+     * @returns 错误信息
+     */
     getErrorDataJSON: typeof getErrorDataJSON;
+    /**
+     * 解析错误信息
+     * @param message 错误信息
+     * @returns 错误信息
+     */
     parseErrorDataJSON: (message?: string | unknown) => ErrorDataJSON;
+    /**
+     * 收集规则转换
+     * @param rules 校验规则
+     * @param transforms 转换规则
+     * @param path 路径
+     * @returns 转换规则
+     */
     collectRulesTransform: (rules: ValidateRules, transforms: Record<string, ValidateTransform[]>, path?: string) => Record<string, ValidateTransform[]>;
+    /**
+     * 收集规则必填
+     * @param rules 校验规则
+     * @param requires 必填规则
+     * @param path 路径
+     * @returns 必填规则
+     */
     collectRulesRequired: (rules: ValidateRules, requires: Record<string, boolean[]>, path?: string) => Record<string, boolean[]>;
+    /**
+     * 收集规则必填
+     * @param requires 必填规则
+     * @param rules 校验规则
+     */
     collectRulesRequiredAssign: (requires: Record<string, boolean[]>, rules: ValidateRules) => void;
+    /**
+     * 规范化规则
+     * @param rules 校验规则
+     * @returns 校验规则
+     */
     normalizeRules: (rules: ValidateRules) => ValidateRules;
 };
 export default validateUtil;
+/**
+ * 校验器选项
+ */
 export interface ValidatorOptions {
     action: string;
     rules: Record<string, ValidateOptionRule | ValidateOptionRule[]>;
     model?: string;
 }
+/**
+ * 校验器
+ */
 export declare class Validator {
     action: string;
     rules: ValidateRules;
     model: string;
     constructor(options: ValidatorOptions);
+    /**
+     * 校验数据
+     * @param data 数据
+     * @param options 选项
+     * @param callback 回调
+     * @returns 校验结果
+     */
     validate(data: ValidateValues, options?: ValidateOption, callback?: ValidateCallback): Promise<ValidateResponse>;
+    /**
+     * 获取国际化规则
+     * @param options 选项
+     * @returns 校验规则
+     */
     getLocaleRules(options?: GetLocaleRulesOptions): ValidateRules;
-    /** 包装规则 */
+    /**
+     * 包装规则
+     * @param options 选项
+     * @returns 校验器
+     */
     wrapRules(options: WrapRulesOptions): this;
-    /** 省略规则 */
+    /**
+     * 省略规则
+     * @param options 选项
+     * @returns 校验器
+     */
     omitRules(options: OmitRulesOptions): this;
 }

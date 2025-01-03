@@ -46,6 +46,8 @@ export interface ValidateOption extends OriginalValidateOption {
   lang?: string;
   /** 忽略的字段 */
   omitKeys?: string[];
+  /** 选择字段 */
+  pickKeys?: string[];
 }
 
 export interface WrapRulesOptions extends ValidateOption {
@@ -209,6 +211,12 @@ const validateUtil = {
     );
   },
 
+  /**
+   * 获取错误信息
+   * @param error 错误信息
+   * @param options 选项
+   * @returns 错误信息
+   */
   getErrorMessage: (error: unknown, options?: GetErrorsOptions) => {
     const i18n = options?.i18n ?? i18nConfig.i18n;
 
@@ -267,6 +275,12 @@ const validateUtil = {
     ] as ValidateError[];
   },
 
+  /**
+   * 转换数据
+   * @param values 数据
+   * @param rules 校验规则
+   * @returns 转换后的数据
+   */
   transform: (values: ValidateValues, rules?: ValidateOptionRules) => {
     const transforms = validateUtil.collectRulesTransform(rules ?? {}, {});
 
@@ -326,7 +340,7 @@ const validateUtil = {
     let transformedValues: ValidateValues = values;
 
     try {
-      const usingValues = _.omit(values, options?.omitKeys ?? []);
+      const usingValues = _.omit(options?.pickKeys ? _.pick(values, options.pickKeys) : values, options?.omitKeys ?? []);
       const schema = validateUtil.getSchema(rules, options);
       transformedValues = validateUtil.transform(usingValues, schema.rules);
       await schema.validate(usingValues, deepmerge({ messages: defaultMessages }, options ?? {}), callback);
@@ -344,6 +358,12 @@ const validateUtil = {
     }
   },
 
+  /**
+   * 递归获取国际化规则
+   * @param rules 校验规则
+   * @param options 选项
+   * @returns 校验规则
+   */
   recursiveGetLocaleRules: (rules: ValidateRules, options: GetLocaleRulesOptions = {}) => {
     const i18n = options?.i18n ?? i18nConfig.i18n;
     const lang = options?.lang ?? i18nConfig.defaultLang;
@@ -371,12 +391,25 @@ const validateUtil = {
     return rules;
   },
 
+  /**
+   * 获取国际化规则
+   * @param rules 校验规则
+   * @param options 选项
+   * @returns 校验规则
+   */
   getLocaleRules: (rules: ValidateRules, options: GetLocaleRulesOptions = {}) => {
     const i18n = options?.i18n ?? i18nConfig.i18n;
     const lang = options?.lang ?? i18nConfig.defaultLang;
     return validateUtil.recursiveGetLocaleRules(_.cloneDeep(validateUtil.getRules(rules)), { i18n, lang });
   },
 
+  /**
+   * 获取校验规则
+   * @param rules 校验规则
+   * @param initialRules 初始校验规则
+   * @param options 选项
+   * @returns 校验规则
+   */
   getRules: (rules: ValidateOptionRules, initialRules: ValidateRules = {}, options?: GetRulesOptions): ValidateRules => {
     const mergedRules = _.reduce(
       rules,
@@ -409,6 +442,11 @@ const validateUtil = {
     return mergedRules;
   },
 
+  /**
+   * 解析校验规则
+   * @param opts 校验规则
+   * @returns 校验规则
+   */
   parseToRules: (opts: ValidateOptionRule): ValidateRuleItem[] => {
     const rules: ValidateRuleItem[] = [];
     const options = _.cloneDeep(opts);
@@ -470,7 +508,11 @@ const validateUtil = {
     return rules;
   },
 
-  /** 获取规则 */
+  /**
+   * 获取规则
+   * @param options 校验规则
+   * @returns 校验规则
+   */
   getRule(options: ValidateOptionRule): ValidateRuleItem {
     const path = options?.path ?? '';
     const regexpKey = options?.regexpKey;
@@ -722,8 +764,19 @@ const validateUtil = {
     return rule;
   },
 
+  /**
+   * 获取错误信息
+   * @param error 错误信息
+   * @param options 选项
+   * @returns 错误信息
+   */
   getErrorDataJSON,
 
+  /**
+   * 解析错误信息
+   * @param message 错误信息
+   * @returns 错误信息
+   */
   parseErrorDataJSON: (message?: string | unknown): ErrorDataJSON => {
     try {
       return JSON.parse(`${message ?? ''}`.replace(/^json:/, ''));
@@ -732,6 +785,13 @@ const validateUtil = {
     }
   },
 
+  /**
+   * 收集规则转换
+   * @param rules 校验规则
+   * @param transforms 转换规则
+   * @param path 路径
+   * @returns 转换规则
+   */
   collectRulesTransform: (rules: ValidateRules, transforms: Record<string, ValidateTransform[]>, path = '') => {
     Object.keys(rules).forEach((fieldKey) => {
       const fieldRules = rules[fieldKey];
@@ -769,6 +829,13 @@ const validateUtil = {
     return transforms;
   },
 
+  /**
+   * 收集规则必填
+   * @param rules 校验规则
+   * @param requires 必填规则
+   * @param path 路径
+   * @returns 必填规则
+   */
   collectRulesRequired: (rules: ValidateRules, requires: Record<string, boolean[]>, path = '') => {
     Object.keys(rules).forEach((fieldKey) => {
       const fieldRules = rules[fieldKey];
@@ -792,6 +859,11 @@ const validateUtil = {
     return requires;
   },
 
+  /**
+   * 收集规则必填
+   * @param requires 必填规则
+   * @param rules 校验规则
+   */
   collectRulesRequiredAssign: (requires: Record<string, boolean[]>, rules: ValidateRules) => {
     Object.keys(rules).forEach((fieldKey) => {
       const fieldRules = (Array.isArray(rules[fieldKey]) ? rules[fieldKey] : [rules[fieldKey]]) as ValidateRuleItem[];
@@ -811,6 +883,11 @@ const validateUtil = {
     });
   },
 
+  /**
+   * 规范化规则
+   * @param rules 校验规则
+   * @returns 校验规则
+   */
   normalizeRules: (rules: ValidateRules) => {
     const pureRules = _.cloneDeep(rules);
     const requires = validateUtil.collectRulesRequired(pureRules, {}, '');
@@ -821,12 +898,18 @@ const validateUtil = {
 
 export default validateUtil;
 
+/**
+ * 校验器选项
+ */
 export interface ValidatorOptions {
   action: string;
   rules: Record<string, ValidateOptionRule | ValidateOptionRule[]>;
   model?: string;
 }
 
+/**
+ * 校验器
+ */
 export class Validator {
   public action!: string;
   public rules: ValidateRules = {};
@@ -838,15 +921,31 @@ export class Validator {
     this.model = options.model ?? this.model;
   }
 
+  /**
+   * 校验数据
+   * @param data 数据
+   * @param options 选项
+   * @param callback 回调
+   * @returns 校验结果
+   */
   public validate(data: ValidateValues, options?: ValidateOption, callback?: ValidateCallback) {
     return validateUtil.validate(this.rules, data, { model: this.model, ...options }, callback);
   }
 
+  /**
+   * 获取国际化规则
+   * @param options 选项
+   * @returns 校验规则
+   */
   public getLocaleRules(options?: GetLocaleRulesOptions) {
     return validateUtil.getLocaleRules(this.rules, options);
   }
 
-  /** 包装规则 */
+  /**
+   * 包装规则
+   * @param options 选项
+   * @returns 校验器
+   */
   public wrapRules(options: WrapRulesOptions) {
     const override = options.override ?? false;
     const validator = override ? this : _.cloneDeep(this);
@@ -854,7 +953,11 @@ export class Validator {
     return validator;
   }
 
-  /** 省略规则 */
+  /**
+   * 省略规则
+   * @param options 选项
+   * @returns 校验器
+   */
   public omitRules(options: OmitRulesOptions) {
     const override = options.override ?? false;
     const validator = override ? this : _.cloneDeep(this);

@@ -877,3 +877,20 @@ describe('validateUtil.validate() with omitKeys', () => {
     });
   });
 });
+
+describe('validateUtil.validate() with pickKeys', () => {
+  test('成功: 一层/必须', async () => {
+    const rules = {
+      name: { required: true },
+    };
+
+    const result = await validateUtil.validate(rules, { name: 'Jack', age: 12 }, { pickKeys: ['name'] });
+
+    expect(result).toEqual({
+      success: true,
+      values: {
+        name: 'Jack',
+      },
+    });
+  });
+});
