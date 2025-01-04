@@ -463,7 +463,17 @@ const validateUtil = {
    * @returns 校验规则
    */
   getLocaleRules: (rules: ValidateRules, options: GetLocaleRulesOptions = {}) => {
-    return validateUtil.recursiveGetLocaleRules(validateUtil.parseRules(rules, {}), options);
+    return validateUtil.recursiveGetLocaleRules(validateUtil.parseRules(rules, {}, options));
+  },
+
+  /**
+   * 获取校验规则
+   * @param rules 校验规则
+   * @param options 选项
+   * @returns 校验规则
+   */
+  getRules: (rules: ValidateRules, options: GetRulesOptions = {}) => {
+    return validateUtil.parseRules(rules, {}, options);
   },
 
   /**
@@ -502,7 +512,7 @@ const validateUtil = {
       _.isEmpty(initialRules) ? {} : validateUtil.parseRules(initialRules, {}),
     );
 
-    return validateUtil.normalizeRules(mergedRules, { settings: options?.settings });
+    return validateUtil.filterRules(mergedRules, options?.settings ?? {});
   },
 
   /**
@@ -1104,6 +1114,11 @@ export class Validator {
   public getLocaleRules(options?: GetLocaleRulesOptions) {
     const settings = deepmerge(this.settings, options?.settings ?? {});
     return validateUtil.getLocaleRules(this.rules, { ...options, settings });
+  }
+
+  public getRules(options?: GetRulesOptions) {
+    const settings = deepmerge(this.settings, options?.settings ?? {});
+    return validateUtil.getRules(this.rules, { ...options, settings });
   }
 
   /**

@@ -603,6 +603,100 @@ describe('validator', () => {
     expect(Object.keys(validator.getLocaleRules())).toEqual(['name', 'age']);
     expect(Object.keys(validator.omitRules({ fieldKeys: ['age'] }).getLocaleRules())).toEqual(['name']);
   });
+
+  test('成功: 合并设置', async () => {
+    const rules: ValidateRules = {
+      name: { type: 'string', required: true },
+      age: { type: 'number', required: true, min: 18, max: 81 },
+    };
+
+    const validator = new Validator({ rules, action: 'validate' });
+    validator.mergeSettings({ name: { disabled: true } });
+    expect(validator.getLocaleRules()).toEqual({
+      age: [
+        {
+          data: {
+            message: 'validate.default.field-is-required',
+            rules: {
+              required: true,
+              type: 'number',
+            },
+          },
+          message: '字段不能为空',
+          path: 'age',
+          required: true,
+          type: 'number',
+        },
+        {
+          data: {
+            message: 'validate.number.must-be-between-the-range-of-numbers',
+            rules: {
+              max: 81,
+              min: 18,
+              required: true,
+              type: 'number',
+            },
+          },
+          max: 81,
+          message: '大小必须在 18 和 81 之间',
+          min: 18,
+          path: 'age',
+          required: true,
+          type: 'number',
+        },
+      ],
+    });
+
+    const result = await validator.validate({ name: 'Jack', age: 12 });
+    expect(result).toEqual({
+      errors: [
+        {
+          data: {
+            message: 'validate.number.must-be-between-the-range-of-numbers',
+            rules: {
+              max: 81,
+              min: 18,
+              required: true,
+              type: 'number',
+            },
+          },
+          field: 'age',
+          fieldValue: 12,
+          message: '大小必须在 18 和 81 之间',
+          model: 'Base',
+        },
+      ],
+      success: false,
+      values: {
+        age: 12,
+        name: 'Jack',
+      },
+    });
+
+    validator.mergeSettings({ name: { disabled: false }, age: { disabled: true } });
+    const result2 = await validator.validate({ age: 12 });
+    expect(result2).toEqual({
+      errors: [
+        {
+          data: {
+            message: 'validate.default.field-is-required',
+            rules: {
+              required: true,
+              type: 'string',
+            },
+          },
+          field: 'name',
+          fieldValue: undefined,
+          message: '字段不能为空',
+          model: 'Base',
+        },
+      ],
+      success: false,
+      values: {
+        age: 12,
+      },
+    });
+  });
 });
 
 describe('direction', () => {
@@ -982,6 +1076,129 @@ describe('validateUtil.filterRules()', () => {
       values: {
         name: 'Jack',
       },
+    });
+  });
+});
+
+describe('validateUtil.getRules()', () => {
+  test('成功: 获取校验规则', async () => {
+    const rulesOptions: ValidateRules = {
+      name: { required: true },
+      student: {
+        type: 'object',
+        fields: {
+          name: { required: true },
+        },
+      },
+      users: {
+        type: 'array',
+        defaultField: {
+          type: 'object',
+          fields: {
+            name: { required: true },
+            age: { min: 18 },
+          },
+        },
+      },
+    };
+
+    const rules = validateUtil.getRules(rulesOptions);
+
+    expect(rules).toEqual({
+      name: [
+        {
+          message: 'json:{"rules":{"required":true},"message":"validate.default.field-is-required"}',
+          path: 'name',
+          required: true,
+          type: 'string',
+        },
+      ],
+      student: [
+        {
+          fields: {
+            name: [
+              {
+                message: 'json:{"rules":{"required":true},"message":"validate.default.field-is-required"}',
+                path: 'student.name',
+                required: true,
+                type: 'string',
+              },
+            ],
+          },
+          message: undefined,
+          path: 'student',
+          type: 'object',
+        },
+      ],
+      users: [
+        {
+          defaultField: {
+            fields: {
+              age: [
+                {
+                  message: 'json:{"rules":{"min":18},"message":"validate.string.must-be-at-least-characters"}',
+                  min: 18,
+                  path: 'users.age',
+                  type: 'string',
+                },
+              ],
+              name: [
+                {
+                  message: 'json:{"rules":{"required":true},"message":"validate.default.field-is-required"}',
+                  path: 'users.name',
+                  required: true,
+                  type: 'string',
+                },
+              ],
+            },
+            path: 'users',
+            type: 'object',
+          },
+          message: undefined,
+          path: 'users',
+          type: 'array',
+        },
+      ],
+    });
+
+    const rules2 = validateUtil.getRules(rulesOptions, {
+      settings: {
+        name: { disabled: true },
+        'student.name': { disabled: true },
+        'users.name': { disabled: true },
+      },
+    });
+
+    expect(rules2).toEqual({
+      student: [
+        {
+          fields: {},
+          message: undefined,
+          path: 'student',
+          type: 'object',
+        },
+      ],
+      users: [
+        {
+          defaultField: {
+            fields: {
+              age: [
+                {
+                  message: 'json:{"rules":{"min":18},"message":"validate.string.must-be-at-least-characters"}',
+                  min: 18,
+                  path: 'users.age',
+                  type: 'string',
+                },
+              ],
+            },
+            path: 'users',
+            type: 'object',
+          },
+          message: undefined,
+          path: 'users',
+          type: 'array',
+        },
+      ],
     });
   });
 });

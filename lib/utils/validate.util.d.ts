@@ -198,6 +198,13 @@ declare const validateUtil: {
     /**
      * 获取校验规则
      * @param rules 校验规则
+     * @param options 选项
+     * @returns 校验规则
+     */
+    getRules: (rules: ValidateRules, options?: GetRulesOptions) => ValidateRules;
+    /**
+     * 获取校验规则
+     * @param rules 校验规则
      * @param initialRules 初始校验规则
      * @param options 选项
      * @returns 校验规则
@@ -291,6 +298,7 @@ export declare class Validator {
      * @returns 校验规则
      */
     getLocaleRules(options?: GetLocaleRulesOptions): ValidateRules;
+    getRules(options?: GetRulesOptions): ValidateRules;
     /**
      * 合并设置
      * @param settings 设置
