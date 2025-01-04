@@ -3,13 +3,17 @@ import { I18n } from '../i18n/index';
 export declare type ValidateTrigger = 'blur' | 'change' | Array<'change' | 'blur'>;
 export declare type ValidateTransform = (value: ValidateValue) => ValidateValue;
 export declare type ValidateTransformer = 'toDate' | 'toBoolean' | 'trim' | 'trimLeft' | 'trimRight' | 'trimStart' | 'trimEnd' | 'toLower' | 'toUpper' | 'toNumber' | 'firstLetterUpper' | 'firstLetterLower' | 'capitalize' | 'camelize' | 'dasherize' | 'underscore' | 'pluralize' | 'singularize' | 'humanize';
-export interface GetRulesOptions {
+export interface ParseRulesOptions {
     /**
      * 方向:
      * - prefix: 前缀
      * - suffix: 后缀(默认)
      */
     direction?: 'prefix' | 'suffix';
+}
+export interface ValidateOptionSetting {
+    /** 禁用字段: 默认都是false */
+    disabled?: boolean;
 }
 export interface ValidateOption extends OriginalValidateOption {
     /** 模型 */
@@ -24,10 +28,8 @@ export interface ValidateOption extends OriginalValidateOption {
      * - en-US
      */
     lang?: string;
-    /** 忽略的字段 */
-    omitKeys?: string[];
-    /** 选择字段 */
-    pickKeys?: string[];
+    /** 字段设置 */
+    settings?: Record<string, ValidateOptionSetting>;
 }
 export interface WrapRulesOptions extends ValidateOption {
     /** 覆盖规则: 默认为false */
@@ -95,7 +97,11 @@ export interface ValidateOptionRule extends Omit<ValidateRuleItem, 'fields'> {
     /** 触发时机 */
     trigger?: ValidateTrigger;
 }
-export interface GetLocaleRulesOptions {
+export interface GetRulesOptions {
+    /** 字段设置 */
+    settings?: Record<string, ValidateOptionSetting>;
+}
+export interface GetLocaleRulesOptions extends GetRulesOptions {
     /** 国际化 */
     i18n?: I18n;
     /** 语言 */
@@ -194,7 +200,7 @@ declare const validateUtil: {
      * @param options 选项
      * @returns 校验规则
      */
-    getRules: (rules: ValidateOptionRules, initialRules?: ValidateRules, options?: GetRulesOptions | undefined) => ValidateRules;
+    parseRules: (rules: ValidateOptionRules, initialRules?: ValidateRules, options?: ParseRulesOptions | undefined) => ValidateRules;
     /**
      * 解析校验规则
      * @param opts 校验规则
@@ -206,7 +212,7 @@ declare const validateUtil: {
      * @param options 校验规则
      * @returns 校验规则
      */
-    getRule(options: ValidateOptionRule): ValidateRuleItem;
+    parseRule(options: ValidateOptionRule): ValidateRuleItem;
     /**
      * 获取错误信息
      * @param error 错误信息
@@ -247,7 +253,8 @@ declare const validateUtil: {
      * @param rules 校验规则
      * @returns 校验规则
      */
-    normalizeRules: (rules: ValidateRules) => ValidateRules;
+    normalizeRules: (rules: ValidateRules, options?: GetRulesOptions | undefined) => ValidateRules;
+    filterRules: (rules: ValidateRules, settings: Record<string, ValidateOptionSetting>, parentPath?: string) => ValidateRules;
 };
 export default validateUtil;
 /**
@@ -257,6 +264,7 @@ export interface ValidatorOptions {
     action: string;
     rules: Record<string, ValidateOptionRule | ValidateOptionRule[]>;
     model?: string;
+    settings?: Record<string, ValidateOptionSetting>;
 }
 /**
  * 校验器
@@ -265,6 +273,7 @@ export declare class Validator {
     action: string;
     rules: ValidateRules;
     model: string;
+    settings: Record<string, ValidateOptionSetting>;
     constructor(options: ValidatorOptions);
     /**
      * 校验数据
@@ -280,6 +289,12 @@ export declare class Validator {
      * @returns 校验规则
      */
     getLocaleRules(options?: GetLocaleRulesOptions): ValidateRules;
+    /**
+     * 合并设置
+     * @param settings 设置
+     * @returns 校验器
+     */
+    mergeSettings(settings?: Record<string, ValidateOptionSetting>): this;
     /**
      * 包装规则
      * @param options 选项

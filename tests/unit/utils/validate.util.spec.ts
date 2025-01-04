@@ -609,7 +609,7 @@ describe('validator', () => {
 
 describe('direction', () => {
   test('成功: 方向, 前缀prefix', async () => {
-    const result = validateUtil.getRules({ name: { min: 12 } }, { name: { min: 10 } }, { direction: 'prefix' });
+    const result = validateUtil.parseRules({ name: { min: 12 } }, { name: { min: 10 } }, { direction: 'prefix' });
     expect(result).toEqual({
       name: [
         {
@@ -629,7 +629,7 @@ describe('direction', () => {
   });
 
   test('成功: 方向, 后缀suffix', async () => {
-    const result = validateUtil.getRules({ name: { min: 12 } }, { name: { min: 10 } }, { direction: 'suffix' });
+    const result = validateUtil.parseRules({ name: { min: 12 } }, { name: { min: 10 } }, { direction: 'suffix' });
     expect(result).toEqual({
       name: [
         {
@@ -810,13 +810,13 @@ describe('transform: array', () => {
   });
 });
 
-describe('validateUtil.getRules()', () => {
+describe('validateUtil.parseRules()', () => {
   test('成功: 一层/规则拆分/required', async () => {
     const rules = {
       name: { required: true },
     };
 
-    const newRules = await validateUtil.getRules(rules);
+    const newRules = await validateUtil.parseRules(rules);
 
     expect(newRules).toEqual({
       name: [
@@ -839,7 +839,7 @@ describe('validateUtil.getRules()', () => {
       },
     };
 
-    const newRules = await validateUtil.getRules(rules);
+    const newRules = await validateUtil.parseRules(rules);
 
     expect(newRules).toEqual({
       name: [
@@ -863,41 +863,41 @@ describe('validateUtil.getRules()', () => {
   });
 });
 
-describe('validateUtil.validate() with omitKeys', () => {
-  test('成功: 一层/必须', async () => {
-    const rules = {
-      name: { required: true },
-    };
+// describe('validateUtil.validate() with omitKeys', () => {
+//   test('成功: 一层/必须', async () => {
+//     const rules = {
+//       name: { required: true },
+//     };
 
-    const result = await validateUtil.validate(rules, { name: 'Jack', age: 12 }, { omitKeys: ['age'] });
+//     const result = await validateUtil.validate(rules, { name: 'Jack', age: 12 }, { omitKeys: ['age'] });
 
-    expect(result).toEqual({
-      success: true,
-      values: {
-        name: 'Jack',
-      },
-    });
-  });
-});
+//     expect(result).toEqual({
+//       success: true,
+//       values: {
+//         name: 'Jack',
+//       },
+//     });
+//   });
+// });
 
-describe('validateUtil.validate() with pickKeys', () => {
-  test('成功: 一层/必须', async () => {
-    const rules = {
-      name: { required: true },
-    };
+// describe('validateUtil.validate() with pickKeys', () => {
+//   test('成功: 一层/必须', async () => {
+//     const rules = {
+//       name: { required: true },
+//     };
 
-    const result = await validateUtil.validate(rules, { name: 'Jack', age: 12 }, { pickKeys: ['name'] });
+//     const result = await validateUtil.validate(rules, { name: 'Jack', age: 12 }, { pickKeys: ['name'] });
 
-    expect(result).toEqual({
-      success: true,
-      values: {
-        name: 'Jack',
-      },
-    });
-  });
-});
+//     expect(result).toEqual({
+//       success: true,
+//       values: {
+//         name: 'Jack',
+//       },
+//     });
+//   });
+// });
 
-describe('validateUtil.getRule()', () => {
+describe('validateUtil.parseRule()', () => {
   test('成功: 转换', async () => {
     const rules: ValidateOptionRules = { name: { transformers: ['trim', 'firstLetterUpper'], max: 4 } };
     const result = await validateUtil.validate(rules, { name: '  jck1' });
@@ -911,9 +911,9 @@ describe('validateUtil.getRule()', () => {
   });
 });
 
-describe('validateUtil.getRule() trigger', () => {
+describe('validateUtil.parseRule() trigger', () => {
   test('成功: 转换', async () => {
-    const rules = await validateUtil.getRules({ name: { trigger: 'change' } });
+    const rules = await validateUtil.parseRules({ name: { trigger: 'change' } });
 
     expect(rules).toEqual({
       name: [
@@ -924,6 +924,67 @@ describe('validateUtil.getRule() trigger', () => {
           type: 'string',
         },
       ],
+    });
+  });
+});
+
+describe('validateUtil.filterRules()', () => {
+  test('成功: 过滤', async () => {
+    const rules: ValidateRules = {
+      name: [
+        {
+          required: true,
+        },
+      ],
+      student: [
+        {
+          required: true,
+          fields: {
+            name: {
+              required: true,
+            },
+          },
+        },
+      ],
+      users: {
+        type: 'array',
+        defaultField: {
+          type: 'object',
+          fields: {
+            name: [
+              {
+                type: 'string',
+                required: true,
+              },
+            ],
+          },
+        },
+      },
+    };
+
+    const result = await validateUtil.validate(
+      rules,
+      {
+        name: 'Jack',
+        // student: { name: 'Tom' },
+        // users: [{ name: 'John' }, { name: 'Jane' }],
+        // users: [{}, { name: '' }],
+      },
+      {
+        settings: {
+          name: { disabled: true },
+          student: { disabled: true },
+          // 'student.name': { disabled: true },
+          // 'users.name': { disabled: true },
+        },
+      },
+    );
+
+    expect(result).toEqual({
+      success: true,
+      values: {
+        name: 'Jack',
+      },
     });
   });
 });

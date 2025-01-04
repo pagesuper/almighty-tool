@@ -44,13 +44,18 @@ export type ValidateTransformer =
   | 'singularize'
   | 'humanize';
 
-export interface GetRulesOptions {
+export interface ParseRulesOptions {
   /**
    * 方向:
    * - prefix: 前缀
    * - suffix: 后缀(默认)
    */
   direction?: 'prefix' | 'suffix';
+}
+
+export interface ValidateOptionSetting {
+  /** 禁用字段: 默认都是false */
+  disabled?: boolean;
 }
 
 export interface ValidateOption extends OriginalValidateOption {
@@ -66,10 +71,8 @@ export interface ValidateOption extends OriginalValidateOption {
    * - en-US
    */
   lang?: string;
-  /** 忽略的字段 */
-  omitKeys?: string[];
-  /** 选择字段 */
-  pickKeys?: string[];
+  /** 字段设置 */
+  settings?: Record<string, ValidateOptionSetting>;
 }
 
 export interface WrapRulesOptions extends ValidateOption {
@@ -144,7 +147,12 @@ export interface ValidateOptionRule extends Omit<ValidateRuleItem, 'fields'> {
   trigger?: ValidateTrigger;
 }
 
-export interface GetLocaleRulesOptions {
+export interface GetRulesOptions {
+  /** 字段设置 */
+  settings?: Record<string, ValidateOptionSetting>;
+}
+
+export interface GetLocaleRulesOptions extends GetRulesOptions {
   /** 国际化 */
   i18n?: I18n;
   /** 语言 */
@@ -256,9 +264,10 @@ const validateUtil = {
    * @returns 校验器
    */
   getSchema: (rules: ValidateOptionRules, options?: ValidateOption) => {
-    return new ValidateSchema(
-      validateUtil.normalizeRules(validateUtil.getRules(options?.rules ?? {}, validateUtil.getRules(rules, {}))),
-    );
+    const optionsRules = options?.rules ?? {};
+    const initialRules = validateUtil.parseRules(rules, {});
+    const settings = options?.settings ?? {};
+    return new ValidateSchema(validateUtil.normalizeRules(validateUtil.parseRules(optionsRules, initialRules), { settings }));
   },
 
   /**
@@ -394,7 +403,7 @@ const validateUtil = {
     let transformedValues: ValidateValues = values;
 
     try {
-      const usingValues = _.omit(options?.pickKeys ? _.pick(values, options.pickKeys) : values, options?.omitKeys ?? []);
+      const usingValues = _.cloneDeep(values);
       const schema = validateUtil.getSchema(rules, options);
       transformedValues = validateUtil.transform(usingValues, schema.rules);
       await schema.validate(usingValues, deepmerge({ messages: defaultMessages }, options ?? {}), callback);
@@ -452,9 +461,7 @@ const validateUtil = {
    * @returns 校验规则
    */
   getLocaleRules: (rules: ValidateRules, options: GetLocaleRulesOptions = {}) => {
-    const i18n = options?.i18n ?? i18nConfig.i18n;
-    const lang = options?.lang ?? i18nConfig.defaultLang;
-    return validateUtil.recursiveGetLocaleRules(_.cloneDeep(validateUtil.getRules(rules)), { i18n, lang });
+    return validateUtil.recursiveGetLocaleRules(validateUtil.parseRules(rules, {}), options);
   },
 
   /**
@@ -464,7 +471,7 @@ const validateUtil = {
    * @param options 选项
    * @returns 校验规则
    */
-  getRules: (rules: ValidateOptionRules, initialRules: ValidateRules = {}, options?: GetRulesOptions): ValidateRules => {
+  parseRules: (rules: ValidateOptionRules, initialRules: ValidateRules = {}, options?: ParseRulesOptions): ValidateRules => {
     const mergedRules = _.reduce(
       rules,
       (result, rule, fieldKey) => {
@@ -490,7 +497,7 @@ const validateUtil = {
         Reflect.set(result, fieldKey, storedRules);
         return result;
       },
-      _.isEmpty(initialRules) ? {} : validateUtil.getRules(initialRules, {}),
+      _.isEmpty(initialRules) ? {} : validateUtil.parseRules(initialRules, {}),
     );
 
     return mergedRules;
@@ -506,57 +513,57 @@ const validateUtil = {
     const options = _.cloneDeep(opts);
 
     if (options.message) {
-      rules.push(validateUtil.getRule(options));
+      rules.push(validateUtil.parseRule(options));
       delete options.message;
     } else {
       if (isPresent(options.regexpKey)) {
-        rules.push(validateUtil.getRule({ ...options }));
+        rules.push(validateUtil.parseRule({ ...options }));
         delete options.regexpKey;
       }
 
       if (isPresent(options.enum)) {
-        rules.push(validateUtil.getRule({ ...options }));
+        rules.push(validateUtil.parseRule({ ...options }));
         delete options.enum;
       }
 
       if (isPresent(options.len)) {
-        rules.push(validateUtil.getRule({ ...options }));
+        rules.push(validateUtil.parseRule({ ...options }));
         delete options.len;
       }
 
       if (isPresent(options.min) && isPresent(options.max)) {
-        rules.push(validateUtil.getRule({ ...options }));
+        rules.push(validateUtil.parseRule({ ...options }));
         delete options.min;
         delete options.max;
       }
 
       if (isPresent(options.min)) {
-        rules.push(validateUtil.getRule({ ...options }));
+        rules.push(validateUtil.parseRule({ ...options }));
         delete options.min;
       }
 
       if (isPresent(options.max)) {
-        rules.push(validateUtil.getRule({ ...options }));
+        rules.push(validateUtil.parseRule({ ...options }));
         delete options.max;
       }
 
       if (isPresent(options.pattern)) {
-        rules.push(validateUtil.getRule({ ...options }));
+        rules.push(validateUtil.parseRule({ ...options }));
         delete options.pattern;
       }
 
       if (isPresent(options.whitespace)) {
-        rules.push(validateUtil.getRule({ ...options }));
+        rules.push(validateUtil.parseRule({ ...options }));
         delete options.whitespace;
       }
 
       if (isPresent(options.required)) {
-        rules.unshift(validateUtil.getRule({ ...options }));
+        rules.unshift(validateUtil.parseRule({ ...options }));
         delete options.required;
       }
 
       if (!_.isEmpty(_.omit(options, ['path', 'data', 'type']))) {
-        rules.push(validateUtil.getRule(options));
+        rules.push(validateUtil.parseRule(options));
       }
     }
 
@@ -568,7 +575,7 @@ const validateUtil = {
    * @param options 校验规则
    * @returns 校验规则
    */
-  getRule(options: ValidateOptionRule): ValidateRuleItem {
+  parseRule(options: ValidateOptionRule): ValidateRuleItem {
     const path = options?.path ?? '';
     const regexpKey = options?.regexpKey;
     const regexp = options?.pattern ?? (regexpKey ? Reflect.get(regExps, regexpKey) : undefined);
@@ -1006,11 +1013,44 @@ const validateUtil = {
    * @param rules 校验规则
    * @returns 校验规则
    */
-  normalizeRules: (rules: ValidateRules) => {
+  normalizeRules: (rules: ValidateRules, options?: GetRulesOptions) => {
+    const settings = options?.settings ?? {};
     const pureRules = _.cloneDeep(rules);
     const requires = validateUtil.collectRulesRequired(pureRules, {}, '');
     validateUtil.collectRulesRequiredAssign(requires, pureRules);
-    return pureRules;
+    return validateUtil.filterRules(pureRules, settings);
+  },
+
+  filterRules: (rules: ValidateRules, settings: Record<string, ValidateOptionSetting>, parentPath = '') => {
+    Object.keys(rules ?? {}).forEach((fieldKey) => {
+      const fieldRules = rules[fieldKey];
+      (Array.isArray(fieldRules) ? fieldRules : [fieldRules]).forEach((fieldRule) => {
+        const path = `${parentPath ? `${parentPath}.` : ''}${fieldKey}`;
+        const disabled = settings[path]?.disabled ?? false;
+
+        if (disabled) {
+          delete rules[fieldKey];
+        } else {
+          if (fieldRule.fields) {
+            validateUtil.filterRules(fieldRule.fields, settings, path);
+          }
+
+          if (fieldRule.defaultField) {
+            (Array.isArray(fieldRule.defaultField) ? fieldRule.defaultField : [fieldRule.defaultField]).forEach(
+              (defaultFieldRule) => {
+                if (defaultFieldRule?.fields) {
+                  if (defaultFieldRule.type === 'object') {
+                    validateUtil.filterRules(defaultFieldRule.fields, settings, path);
+                  }
+                }
+              },
+            );
+          }
+        }
+      });
+    });
+
+    return rules;
   },
 };
 
@@ -1023,6 +1063,7 @@ export interface ValidatorOptions {
   action: string;
   rules: Record<string, ValidateOptionRule | ValidateOptionRule[]>;
   model?: string;
+  settings?: Record<string, ValidateOptionSetting>;
 }
 
 /**
@@ -1032,11 +1073,13 @@ export class Validator {
   public action!: string;
   public rules: ValidateRules = {};
   public model = 'Base';
+  public settings: Record<string, ValidateOptionSetting> = {};
 
   constructor(options: ValidatorOptions) {
     this.action = options.action;
-    this.rules = validateUtil.getRules(options.rules ?? {}, this.rules);
+    this.rules = validateUtil.parseRules(options.rules ?? {}, this.rules);
     this.model = options.model ?? this.model;
+    this.settings = options.settings ?? {};
   }
 
   /**
@@ -1047,7 +1090,8 @@ export class Validator {
    * @returns 校验结果
    */
   public validate(data: ValidateValues, options?: ValidateOption, callback?: ValidateCallback) {
-    return validateUtil.validate(this.rules, data, { model: this.model, ...options }, callback);
+    const settings = deepmerge(this.settings, options?.settings ?? {});
+    return validateUtil.validate(this.rules, data, { model: this.model, ...options, settings }, callback);
   }
 
   /**
@@ -1056,7 +1100,18 @@ export class Validator {
    * @returns 校验规则
    */
   public getLocaleRules(options?: GetLocaleRulesOptions) {
-    return validateUtil.getLocaleRules(this.rules, options);
+    const settings = deepmerge(this.settings, options?.settings ?? {});
+    return validateUtil.getLocaleRules(this.rules, { ...options, settings });
+  }
+
+  /**
+   * 合并设置
+   * @param settings 设置
+   * @returns 校验器
+   */
+  public mergeSettings(settings: Record<string, ValidateOptionSetting> = {}) {
+    this.settings = deepmerge(this.settings, settings);
+    return this;
   }
 
   /**
@@ -1067,7 +1122,7 @@ export class Validator {
   public wrapRules(options: WrapRulesOptions) {
     const override = options.override ?? false;
     const validator = override ? this : _.cloneDeep(this);
-    validator.rules = validateUtil.getRules(options.rules ?? {}, validator.rules, { direction: options.direction });
+    validator.rules = validateUtil.parseRules(options.rules ?? {}, validator.rules, { direction: options.direction });
     return validator;
   }
 

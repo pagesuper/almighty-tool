@@ -6,6 +6,7 @@ describe('codeUtil.getGenerateData()', () => {
       FirstLowerModelName: 'authCollection',
       FirstLowerModelsName: 'authCollections',
       ModulePath: 'service-forum/src/modules/auth',
+      ModuleName: 'auth',
       ModelName: 'AuthCollection',
       ModelsName: 'AuthCollections',
       KebabCaseModelName: 'auth-collection',
