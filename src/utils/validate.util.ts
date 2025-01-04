@@ -51,6 +51,8 @@ export interface ParseRulesOptions {
    * - suffix: 后缀(默认)
    */
   direction?: 'prefix' | 'suffix';
+  /** 设置 */
+  settings?: Record<string, ValidateOptionSetting>;
 }
 
 export interface ValidateOptionSetting {
@@ -500,7 +502,7 @@ const validateUtil = {
       _.isEmpty(initialRules) ? {} : validateUtil.parseRules(initialRules, {}),
     );
 
-    return mergedRules;
+    return validateUtil.normalizeRules(mergedRules, { settings: options?.settings });
   },
 
   /**

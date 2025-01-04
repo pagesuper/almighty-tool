@@ -10,6 +10,8 @@ export interface ParseRulesOptions {
      * - suffix: 后缀(默认)
      */
     direction?: 'prefix' | 'suffix';
+    /** 设置 */
+    settings?: Record<string, ValidateOptionSetting>;
 }
 export interface ValidateOptionSetting {
     /** 禁用字段: 默认都是false */
