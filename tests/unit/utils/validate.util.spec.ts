@@ -70,6 +70,7 @@ describe('validateUtil.validate()', () => {
           message: '大小必须在 18 和 81 之间',
           min: 18,
           path: 'age',
+          required: true,
           type: 'number',
         },
       ],
@@ -947,6 +948,7 @@ describe('validateUtil.parseRules()', () => {
             'json:{"rules":{"min":4,"max":20,"required":true},"message":"validate.string.must-be-between-the-range-of-characters"}',
           min: 4,
           path: 'name',
+          required: true,
           type: 'string',
         },
       ],
@@ -954,39 +956,82 @@ describe('validateUtil.parseRules()', () => {
   });
 });
 
-// describe('validateUtil.validate() with omitKeys', () => {
-//   test('成功: 一层/必须', async () => {
-//     const rules = {
-//       name: { required: true },
-//     };
+describe('validateUtil.validate() with omitKeys', () => {
+  test('成功: 一层/必须', async () => {
+    const rules: ValidateOptionRules = {
+      name: { required: true },
+      age: { required: true },
+      student: {
+        type: 'object',
+        fields: {
+          name: { required: true },
+        },
+      },
+    };
 
-//     const result = await validateUtil.validate(rules, { name: 'Jack', age: 12 }, { omitKeys: ['age'] });
+    const result = await validateUtil.validate(rules, { name: 'Jack', age: 12 }, { omitKeys: ['age'] });
 
-//     expect(result).toEqual({
-//       success: true,
-//       values: {
-//         name: 'Jack',
-//       },
-//     });
-//   });
-// });
+    expect(result).toEqual({
+      errors: [
+        {
+          data: {
+            message: 'validate.default.field-is-required',
+            rules: {
+              required: true,
+            },
+          },
+          field: 'age',
+          fieldValue: undefined,
+          message: '字段不能为空',
+          model: 'Base',
+        },
+      ],
+      success: false,
+      values: {
+        name: 'Jack',
+      },
+    });
+  });
+});
 
-// describe('validateUtil.validate() with pickKeys', () => {
-//   test('成功: 一层/必须', async () => {
-//     const rules = {
-//       name: { required: true },
-//     };
+describe('validateUtil.validate() with pickKeys', () => {
+  test('成功: 一层/必须', async () => {
+    const rules: ValidateOptionRules = {
+      name: { required: true },
+      age: { required: true },
+      student: {
+        type: 'object',
+        fields: {
+          name: { required: true },
+          age: { required: true, type: 'number' },
+        },
+      },
+    };
 
-//     const result = await validateUtil.validate(rules, { name: 'Jack', age: 12 }, { pickKeys: ['name'] });
+    const result = await validateUtil.validate(rules, { name: 'Jack', age: 12 }, { pickKeys: ['name'] });
 
-//     expect(result).toEqual({
-//       success: true,
-//       values: {
-//         name: 'Jack',
-//       },
-//     });
-//   });
-// });
+    expect(result).toEqual({
+      errors: [
+        {
+          data: {
+            message: 'validate.default.field-is-required',
+            rules: {
+              required: true,
+            },
+          },
+          field: 'age',
+          fieldValue: undefined,
+          message: '字段不能为空',
+          model: 'Base',
+        },
+      ],
+      success: false,
+      values: {
+        name: 'Jack',
+      },
+    });
+  });
+});
 
 describe('validateUtil.parseRule()', () => {
   test('成功: 转换', async () => {

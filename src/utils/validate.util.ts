@@ -75,6 +75,10 @@ export interface ValidateOption extends OriginalValidateOption {
   lang?: string;
   /** 字段设置 */
   settings?: Record<string, ValidateOptionSetting>;
+  /** 忽略的字段 */
+  omitKeys?: string[];
+  /** 选取的字段 */
+  pickKeys?: string[];
 }
 
 export interface WrapRulesOptions extends ValidateOption {
@@ -405,7 +409,7 @@ const validateUtil = {
     let transformedValues: ValidateValues = values;
 
     try {
-      const usingValues = _.cloneDeep(values);
+      const usingValues = _.omit(options?.pickKeys ? _.pick(values, options.pickKeys) : values, options?.omitKeys ?? []);
       const schema = validateUtil.getSchema(rules, options);
       transformedValues = validateUtil.transform(usingValues, schema.rules);
       await schema.validate(usingValues, deepmerge({ messages: defaultMessages }, options ?? {}), callback);

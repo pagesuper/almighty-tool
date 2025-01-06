@@ -32,6 +32,10 @@ export interface ValidateOption extends OriginalValidateOption {
     lang?: string;
     /** 字段设置 */
     settings?: Record<string, ValidateOptionSetting>;
+    /** 忽略的字段 */
+    omitKeys?: string[];
+    /** 选取的字段 */
+    pickKeys?: string[];
 }
 export interface WrapRulesOptions extends ValidateOption {
     /** 覆盖规则: 默认为false */
