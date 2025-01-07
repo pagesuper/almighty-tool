@@ -23,8 +23,9 @@ export interface LikeTreeObject<T> {
     children?: T[] | null;
 }
 declare const basicUtil: {
+    isPromise<T = any>(obj: any): obj is Promise<T>;
     /** 树遍历 */
-    treeErgodic<T extends LikeTreeObject<T>>(treeChildren: T[], callFn?: ((linkTreeObject: T) => void) | undefined): void;
+    treeErgodic<T_1 extends LikeTreeObject<T_1>>(treeChildren: T_1[], callFn?: ((linkTreeObject: T_1) => void) | undefined): void;
     /** 过滤html标签 */
     escapeHTML(str: string): string;
     /** 将css样式对象转为字符串 */

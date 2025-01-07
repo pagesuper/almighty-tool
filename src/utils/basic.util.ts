@@ -33,6 +33,12 @@ export interface LikeTreeObject<T> {
 }
 
 const basicUtil = {
+  isPromise<T = any>(obj: any): obj is Promise<T> {
+    return (
+      obj instanceof Promise || (typeof obj === 'object' && typeof obj.then === 'function' && typeof obj.catch === 'function')
+    );
+  },
+
   /** 树遍历 */
   treeErgodic<T extends LikeTreeObject<T>>(treeChildren: T[], callFn?: (linkTreeObject: T) => void) {
     treeChildren.forEach((linkTreeObject) => {
