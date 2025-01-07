@@ -540,6 +540,7 @@ const validateUtil = {
       if (isPresent(options.enum)) {
         rules.push(validateUtil.parseRule({ ...options }));
         delete options.enum;
+        delete options.required;
       }
 
       if (isPresent(options.len)) {

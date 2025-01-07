@@ -1250,7 +1250,7 @@ describe('validateUtil.getRules()', () => {
 
 describe('validateUtil.validate()', () => {
   test('成功: 获取校验规则 with enum', async () => {
-    const rules = await validateUtil.validate({ type: { type: 'enum', enum: [1, 2, 3] } }, { type: 34 });
+    const rules = await validateUtil.validate({ type: { type: 'enum', enum: [1, 2, 3], required: true } }, { type: 34 });
     expect(rules).toEqual({
       errors: [
         {
@@ -1258,6 +1258,7 @@ describe('validateUtil.validate()', () => {
             message: 'validate.default.field-must-be-enum',
             rules: {
               enum: [1, 2, 3],
+              required: true,
               type: 'enum',
             },
           },
