@@ -1247,3 +1247,30 @@ describe('validateUtil.getRules()', () => {
     });
   });
 });
+
+describe('validateUtil.validate()', () => {
+  test('成功: 获取校验规则 with enum', async () => {
+    const rules = await validateUtil.validate({ type: { type: 'enum', enum: [1, 2, 3] } }, { type: 34 });
+    expect(rules).toEqual({
+      errors: [
+        {
+          data: {
+            message: 'validate.default.field-must-be-enum',
+            rules: {
+              enum: [1, 2, 3],
+              type: 'enum',
+            },
+          },
+          field: 'type',
+          fieldValue: 34,
+          message: '字段必须为列表中的值',
+          model: 'Base',
+        },
+      ],
+      success: false,
+      values: {
+        type: 34,
+      },
+    });
+  });
+});
