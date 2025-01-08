@@ -136,6 +136,20 @@ export interface ValidateResponse {
     /** 数据 */
     values?: ValidateValues;
 }
+export declare class ValidateResponseInstance implements ValidateResponse {
+    /** 是否成功 */
+    success: boolean;
+    /** 错误信息 */
+    errors?: ValidateError[];
+    /** 数据 */
+    values?: ValidateValues;
+    constructor(options: ValidateResponse);
+    /**
+     * 添加错误
+     * @param error 错误
+     */
+    addError(error: ValidateError): void;
+}
 export interface ErrorDataJSON {
     rules: Partial<ValidateOptionRule>;
     message: any;
@@ -184,7 +198,7 @@ declare const validateUtil: {
      * @param data 数据
      * @returns 校验结果
      */
-    validate: (rules: ValidateOptionRules, values: ValidateValues, options?: ValidateOption | undefined, callback?: ValidateCallback | undefined) => Promise<ValidateResponse>;
+    validate: (rules: ValidateOptionRules, values: ValidateValues, options?: ValidateOption | undefined, callback?: ValidateCallback | undefined) => Promise<ValidateResponseInstance>;
     /**
      * 递归获取国际化规则
      * @param rules 校验规则
@@ -295,7 +309,7 @@ export declare class Validator {
      * @param callback 回调
      * @returns 校验结果
      */
-    validate(data: ValidateValues, options?: ValidateOption, callback?: ValidateCallback): Promise<ValidateResponse>;
+    validate(data: ValidateValues, options?: ValidateOption, callback?: ValidateCallback): Promise<ValidateResponseInstance>;
     /**
      * 获取国际化规则
      * @param options 选项

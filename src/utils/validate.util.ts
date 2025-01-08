@@ -192,6 +192,30 @@ export interface ValidateResponse {
   values?: ValidateValues;
 }
 
+export class ValidateResponseInstance implements ValidateResponse {
+  /** 是否成功 */
+  success = true;
+  /** 错误信息 */
+  errors?: ValidateError[];
+  /** 数据 */
+  values?: ValidateValues;
+
+  constructor(options: ValidateResponse) {
+    this.success = options.success;
+    this.errors = options.errors;
+    this.values = options.values;
+  }
+
+  /**
+   * 添加错误
+   * @param error 错误
+   */
+  addError(error: ValidateError) {
+    (this.errors ||= []).push(error);
+    this.success = false;
+  }
+}
+
 export interface ErrorDataJSON {
   rules: Partial<ValidateOptionRule>;
   message: any;
@@ -404,7 +428,7 @@ const validateUtil = {
     values: ValidateValues,
     options?: ValidateOption,
     callback?: ValidateCallback,
-  ): Promise<ValidateResponse> => {
+  ): Promise<ValidateResponseInstance> => {
     const model = options?.model ?? 'Base';
     let transformedValues: ValidateValues = values;
 
@@ -414,16 +438,16 @@ const validateUtil = {
       transformedValues = validateUtil.transform(usingValues, schema.rules);
       await schema.validate(usingValues, deepmerge({ messages: defaultMessages }, options ?? {}), callback);
 
-      return {
+      return new ValidateResponseInstance({
         success: true,
         values: transformedValues,
-      };
+      });
     } catch (error) {
-      return {
+      return new ValidateResponseInstance({
         success: false,
         values: transformedValues,
         errors: validateUtil.getErrors(error, { model, i18n: options?.i18n ?? i18nConfig.i18n, lang: options?.lang }),
-      };
+      });
     }
   },
 
