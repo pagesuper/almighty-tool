@@ -1275,3 +1275,35 @@ describe('validateUtil.validate()', () => {
     });
   });
 });
+
+describe('validateUtil', () => {
+  test('获取values: null', async () => {
+    const validateResponse = await validateUtil.validate(
+      { name: { required: true }, address: { required: true }, age: { type: 'number', required: true } },
+      { name: null, address: 'Beijing', age: 18 },
+    );
+
+    expect(validateResponse).toEqual({
+      errors: [
+        {
+          data: {
+            message: 'validate.default.field-is-required',
+            rules: {
+              required: true,
+            },
+          },
+          field: 'name',
+          fieldValue: null,
+          message: '字段不能为空',
+          model: 'Base',
+        },
+      ],
+      success: false,
+      values: {
+        address: 'Beijing',
+        age: 18,
+        name: null,
+      },
+    });
+  });
+});

@@ -380,7 +380,7 @@ const validateUtil = {
           const path = `${parentPath ? `${parentPath}.` : ''}${key}`;
           const transform = transforms[path];
 
-          if (typeof value === 'object') {
+          if (typeof value === 'object' && value !== null) {
             if (Array.isArray(value)) {
               result[key] = value.map((item) => {
                 if (transform?.length) {
