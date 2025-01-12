@@ -192,18 +192,18 @@ export interface ValidateResponse {
   values?: ValidateValues;
 }
 
-export class ValidateResponseInstance implements ValidateResponse {
+export class ValidateResponseInstance<T extends ValidateValues = ValidateValues> implements ValidateResponse {
   /** 是否成功 */
   success = true;
   /** 错误信息 */
   errors?: ValidateError[];
   /** 数据 */
-  values?: ValidateValues;
+  values?: T;
 
   constructor(options: ValidateResponse) {
     this.success = options.success;
     this.errors = options.errors;
-    this.values = options.values;
+    this.values = options.values as T;
   }
 
   /**
@@ -423,12 +423,12 @@ const validateUtil = {
    * @param data 数据
    * @returns 校验结果
    */
-  validate: async (
+  async validate<T extends ValidateValues = ValidateValues>(
     rules: ValidateOptionRules,
-    values: ValidateValues,
+    values: T,
     options?: ValidateOption,
     callback?: ValidateCallback,
-  ): Promise<ValidateResponseInstance> => {
+  ): Promise<ValidateResponseInstance<T>> {
     const model = options?.model ?? 'Base';
     let transformedValues: ValidateValues = values;
 
@@ -1130,9 +1130,13 @@ export class Validator {
    * @param callback 回调
    * @returns 校验结果
    */
-  public validate(data: ValidateValues, options?: ValidateOption, callback?: ValidateCallback) {
+  public validate<T extends ValidateValues = ValidateValues>(
+    data: T,
+    options?: ValidateOption,
+    callback?: ValidateCallback,
+  ): Promise<ValidateResponseInstance<T>> {
     const settings = deepmerge(this.settings, options?.settings ?? {});
-    return validateUtil.validate(this.rules, data, { model: this.model, ...options, settings }, callback);
+    return validateUtil.validate<T>(this.rules, data, { model: this.model, ...options, settings }, callback);
   }
 
   /**

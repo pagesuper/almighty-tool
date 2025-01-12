@@ -136,13 +136,13 @@ export interface ValidateResponse {
     /** 数据 */
     values?: ValidateValues;
 }
-export declare class ValidateResponseInstance implements ValidateResponse {
+export declare class ValidateResponseInstance<T extends ValidateValues = ValidateValues> implements ValidateResponse {
     /** 是否成功 */
     success: boolean;
     /** 错误信息 */
     errors?: ValidateError[];
     /** 数据 */
-    values?: ValidateValues;
+    values?: T;
     constructor(options: ValidateResponse);
     /**
      * 添加错误
@@ -198,7 +198,7 @@ declare const validateUtil: {
      * @param data 数据
      * @returns 校验结果
      */
-    validate: (rules: ValidateOptionRules, values: ValidateValues, options?: ValidateOption | undefined, callback?: ValidateCallback | undefined) => Promise<ValidateResponseInstance>;
+    validate<T extends ValidateValues = ValidateValues>(rules: ValidateOptionRules, values: T, options?: ValidateOption | undefined, callback?: ValidateCallback | undefined): Promise<ValidateResponseInstance<T>>;
     /**
      * 递归获取国际化规则
      * @param rules 校验规则
@@ -309,7 +309,7 @@ export declare class Validator {
      * @param callback 回调
      * @returns 校验结果
      */
-    validate(data: ValidateValues, options?: ValidateOption, callback?: ValidateCallback): Promise<ValidateResponseInstance>;
+    validate<T extends ValidateValues = ValidateValues>(data: T, options?: ValidateOption, callback?: ValidateCallback): Promise<ValidateResponseInstance<T>>;
     /**
      * 获取国际化规则
      * @param options 选项
