@@ -63,7 +63,7 @@ export interface ValidateRuleItem extends Omit<OriginalValidateRuleItem, 'fields
     /** 消息数据 */
     data?: ErrorDataJSON;
     /** 默认字段 */
-    defaultField?: ValidateRule;
+    defaultField?: ValidateRuleItem;
     /** 触发时机 */
     trigger?: ValidateTrigger;
 }

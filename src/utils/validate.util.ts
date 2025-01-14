@@ -110,7 +110,7 @@ export interface ValidateRuleItem extends Omit<OriginalValidateRuleItem, 'fields
   /** 消息数据 */
   data?: ErrorDataJSON;
   /** 默认字段 */
-  defaultField?: ValidateRule;
+  defaultField?: ValidateRuleItem;
   /** 触发时机 */
   trigger?: ValidateTrigger;
 }
@@ -435,7 +435,7 @@ const validateUtil = {
     try {
       const usingValues = _.omit(options?.pickKeys ? _.pick(values, options.pickKeys) : values, options?.omitKeys ?? []);
       const schema = validateUtil.getSchema(rules, options);
-      transformedValues = validateUtil.transform(usingValues, schema.rules);
+      transformedValues = validateUtil.transform(usingValues, schema.rules as ValidateOptionRules);
       await schema.validate(usingValues, deepmerge({ messages: defaultMessages }, options ?? {}), callback);
 
       return new ValidateResponseInstance({
@@ -477,6 +477,8 @@ const validateUtil = {
 
         if (rule.fields) {
           validateUtil.recursiveGetLocaleRules(rule.fields, { i18n, lang });
+        } else if (rule.defaultField?.fields) {
+          validateUtil.recursiveGetLocaleRules(rule.defaultField.fields, { i18n, lang });
         }
       });
     });

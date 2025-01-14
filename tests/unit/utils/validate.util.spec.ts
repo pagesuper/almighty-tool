@@ -1307,3 +1307,101 @@ describe('validateUtil', () => {
     });
   });
 });
+
+describe('validateUtil.getLocaleRules()', () => {
+  test('成功, getLocaleRules, 复杂嵌套场景: 对象数组', async () => {
+    const validator = new Validator({
+      rules: {
+        orderName: { required: true },
+        users: {
+          type: 'array',
+          defaultField: {
+            type: 'object',
+            required: true,
+            fields: {
+              name: { type: 'string', required: true },
+              age: { type: 'number', required: true, min: 18 },
+            },
+          },
+        },
+      },
+      action: 'create',
+    });
+
+    expect(validator.getLocaleRules()).toEqual({
+      orderName: [
+        {
+          path: 'orderName',
+          required: true,
+          type: 'string',
+          message: '字段不能为空',
+          data: {
+            rules: {
+              required: true,
+            },
+            message: 'validate.default.field-is-required',
+          },
+        },
+      ],
+      users: [
+        {
+          path: 'users',
+          type: 'array',
+          defaultField: {
+            type: 'object',
+            required: true,
+            fields: {
+              name: [
+                {
+                  path: 'users.name',
+                  type: 'string',
+                  required: true,
+                  message: '字段不能为空',
+                  data: {
+                    rules: {
+                      type: 'string',
+                      required: true,
+                    },
+                    message: 'validate.default.field-is-required',
+                  },
+                },
+              ],
+              age: [
+                {
+                  path: 'users.age',
+                  type: 'number',
+                  required: true,
+                  message: '字段不能为空',
+                  data: {
+                    rules: {
+                      type: 'number',
+                      required: true,
+                    },
+                    message: 'validate.default.field-is-required',
+                  },
+                },
+                {
+                  path: 'users.age',
+                  type: 'number',
+                  required: true,
+                  min: 18,
+                  message: '不能小于 18',
+                  data: {
+                    rules: {
+                      min: 18,
+                      type: 'number',
+                      required: true,
+                    },
+                    message: 'validate.number.cannot-be-less-than',
+                  },
+                },
+              ],
+            },
+            path: 'users',
+          },
+          message: undefined,
+        },
+      ],
+    });
+  });
+});
