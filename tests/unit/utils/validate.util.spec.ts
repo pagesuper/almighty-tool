@@ -1313,8 +1313,18 @@ describe('validateUtil.getLocaleRules()', () => {
     const validator = new Validator({
       rules: {
         orderName: { required: true },
+        school: {
+          type: 'object',
+          required: true,
+          fields: {
+            name: { type: 'string', required: true },
+            years: { type: 'number', required: true, min: 2008 },
+          },
+        },
         users: {
           type: 'array',
+          required: true,
+          min: 1,
           defaultField: {
             type: 'object',
             required: true,
@@ -1328,80 +1338,475 @@ describe('validateUtil.getLocaleRules()', () => {
       action: 'create',
     });
 
-    expect(validator.getLocaleRules()).toEqual({
+    expect(validator.getLocaleRules({ flat: true })).toEqual({
       orderName: [
         {
-          path: 'orderName',
-          required: true,
-          type: 'string',
-          message: '字段不能为空',
           data: {
+            message: 'validate.default.field-is-required',
             rules: {
               required: true,
             },
-            message: 'validate.default.field-is-required',
           },
+          message: '字段不能为空',
+          path: 'orderName',
+          required: true,
+          type: 'string',
+        },
+      ],
+      school: [
+        {
+          data: {
+            message: 'validate.default.field-is-required',
+            rules: {
+              required: true,
+              type: 'object',
+            },
+          },
+          message: '字段不能为空',
+          path: 'school',
+          required: true,
+          type: 'object',
+        },
+        {
+          message: undefined,
+          path: 'school',
+          type: 'object',
+        },
+      ],
+      'school.name': [
+        {
+          data: {
+            message: 'validate.default.field-is-required',
+            rules: {
+              required: true,
+              type: 'string',
+            },
+          },
+          message: '字段不能为空',
+          path: 'school.name',
+          required: true,
+          type: 'string',
+        },
+      ],
+      'school.years': [
+        {
+          data: {
+            message: 'validate.default.field-is-required',
+            rules: {
+              required: true,
+              type: 'number',
+            },
+          },
+          message: '字段不能为空',
+          path: 'school.years',
+          required: true,
+          type: 'number',
+        },
+        {
+          data: {
+            message: 'validate.number.cannot-be-less-than',
+            rules: {
+              min: 2008,
+              required: true,
+              type: 'number',
+            },
+          },
+          message: '不能小于 2008',
+          min: 2008,
+          path: 'school.years',
+          required: true,
+          type: 'number',
         },
       ],
       users: [
         {
+          data: {
+            message: 'validate.default.field-is-required',
+            rules: {
+              required: true,
+              type: 'array',
+            },
+          },
+          message: '字段不能为空',
+          path: 'users',
+          required: true,
+          type: 'array',
+        },
+        {
+          data: {
+            message: 'validate.array.cannot-be-less-than-array-length',
+            rules: {
+              min: 1,
+              required: true,
+              type: 'array',
+            },
+          },
+          message: '数组长度不能小于 1',
+          min: 1,
+          path: 'users',
+          required: true,
+          type: 'array',
+        },
+        {
+          message: undefined,
           path: 'users',
           type: 'array',
-          defaultField: {
-            type: 'object',
-            required: true,
-            fields: {
-              name: [
-                {
-                  path: 'users.name',
-                  type: 'string',
-                  required: true,
-                  message: '字段不能为空',
-                  data: {
-                    rules: {
-                      type: 'string',
-                      required: true,
-                    },
-                    message: 'validate.default.field-is-required',
+        },
+      ],
+      'users.age': [
+        {
+          data: {
+            message: 'validate.default.field-is-required',
+            rules: {
+              required: true,
+              type: 'number',
+            },
+          },
+          message: '字段不能为空',
+          path: 'users.age',
+          required: true,
+          type: 'number',
+        },
+        {
+          data: {
+            message: 'validate.number.cannot-be-less-than',
+            rules: {
+              min: 18,
+              required: true,
+              type: 'number',
+            },
+          },
+          message: '不能小于 18',
+          min: 18,
+          path: 'users.age',
+          required: true,
+          type: 'number',
+        },
+      ],
+      'users.name': [
+        {
+          data: {
+            message: 'validate.default.field-is-required',
+            rules: {
+              required: true,
+              type: 'string',
+            },
+          },
+          message: '字段不能为空',
+          path: 'users.name',
+          required: true,
+          type: 'string',
+        },
+      ],
+    });
+
+    expect(validator.getLocaleRules()).toEqual({
+      orderName: [
+        {
+          data: {
+            message: 'validate.default.field-is-required',
+            rules: {
+              required: true,
+            },
+          },
+          message: '字段不能为空',
+          path: 'orderName',
+          required: true,
+          type: 'string',
+        },
+      ],
+      school: [
+        {
+          data: {
+            message: 'validate.default.field-is-required',
+            rules: {
+              required: true,
+              type: 'object',
+            },
+          },
+          message: '字段不能为空',
+          path: 'school',
+          required: true,
+          type: 'object',
+        },
+        {
+          fields: {
+            name: [
+              {
+                data: {
+                  message: 'validate.default.field-is-required',
+                  rules: {
+                    required: true,
+                    type: 'string',
                   },
                 },
-              ],
+                message: '字段不能为空',
+                path: 'school.name',
+                required: true,
+                type: 'string',
+              },
+            ],
+            years: [
+              {
+                data: {
+                  message: 'validate.default.field-is-required',
+                  rules: {
+                    required: true,
+                    type: 'number',
+                  },
+                },
+                message: '字段不能为空',
+                path: 'school.years',
+                required: true,
+                type: 'number',
+              },
+              {
+                data: {
+                  message: 'validate.number.cannot-be-less-than',
+                  rules: {
+                    min: 2008,
+                    required: true,
+                    type: 'number',
+                  },
+                },
+                message: '不能小于 2008',
+                min: 2008,
+                path: 'school.years',
+                required: true,
+                type: 'number',
+              },
+            ],
+          },
+          message: undefined,
+          path: 'school',
+          type: 'object',
+        },
+      ],
+      users: [
+        {
+          data: {
+            message: 'validate.default.field-is-required',
+            rules: {
+              required: true,
+              type: 'array',
+            },
+          },
+          message: '字段不能为空',
+          path: 'users',
+          required: true,
+          type: 'array',
+        },
+        {
+          data: {
+            message: 'validate.array.cannot-be-less-than-array-length',
+            rules: {
+              min: 1,
+              required: true,
+              type: 'array',
+            },
+          },
+          message: '数组长度不能小于 1',
+          min: 1,
+          path: 'users',
+          required: true,
+          type: 'array',
+        },
+        {
+          defaultField: {
+            fields: {
               age: [
                 {
-                  path: 'users.age',
-                  type: 'number',
-                  required: true,
-                  message: '字段不能为空',
                   data: {
-                    rules: {
-                      type: 'number',
-                      required: true,
-                    },
                     message: 'validate.default.field-is-required',
+                    rules: {
+                      required: true,
+                      type: 'number',
+                    },
                   },
+                  message: '字段不能为空',
+                  path: 'users.age',
+                  required: true,
+                  type: 'number',
                 },
                 {
-                  path: 'users.age',
-                  type: 'number',
-                  required: true,
-                  min: 18,
-                  message: '不能小于 18',
                   data: {
+                    message: 'validate.number.cannot-be-less-than',
                     rules: {
                       min: 18,
-                      type: 'number',
                       required: true,
+                      type: 'number',
                     },
-                    message: 'validate.number.cannot-be-less-than',
                   },
+                  message: '不能小于 18',
+                  min: 18,
+                  path: 'users.age',
+                  required: true,
+                  type: 'number',
+                },
+              ],
+              name: [
+                {
+                  data: {
+                    message: 'validate.default.field-is-required',
+                    rules: {
+                      required: true,
+                      type: 'string',
+                    },
+                  },
+                  message: '字段不能为空',
+                  path: 'users.name',
+                  required: true,
+                  type: 'string',
                 },
               ],
             },
             path: 'users',
+            required: true,
+            type: 'object',
           },
           message: undefined,
+          path: 'users',
+          type: 'array',
         },
       ],
+    });
+
+    expect(
+      await validator.validate({
+        orderName: 'Jack',
+        school: { name: 'Beijing', years: 2008 },
+        users: [
+          { name: 'John', age: 18 },
+          { name: 'Jane', age: 18 },
+        ],
+      }),
+    ).toEqual({
+      success: true,
+      values: {
+        orderName: 'Jack',
+        school: { name: 'Beijing', years: 2008 },
+        users: [
+          { name: 'John', age: 18 },
+          { name: 'Jane', age: 18 },
+        ],
+      },
+    });
+
+    expect(
+      await validator.validate({
+        orderName: '',
+        school: { name: '', years: 2001 },
+        users: [
+          { name: '', age: 16 },
+          { name: 'Jane', age: 18 },
+          { name: 'Jack', age: 16 },
+        ],
+      }),
+    ).toEqual({
+      errors: [
+        {
+          data: {
+            message: 'validate.default.field-is-required',
+            rules: {
+              required: true,
+            },
+          },
+          field: 'orderName',
+          fieldValue: '',
+          message: '字段不能为空',
+          model: 'Base',
+        },
+        {
+          data: {
+            message: 'validate.default.field-is-required',
+            rules: {
+              required: true,
+              type: 'string',
+            },
+          },
+          field: 'school.name',
+          fieldValue: '',
+          message: '字段不能为空',
+          model: 'Base',
+        },
+        {
+          data: {
+            message: 'validate.number.cannot-be-less-than',
+            rules: {
+              min: 2008,
+              required: true,
+              type: 'number',
+            },
+          },
+          field: 'school.years',
+          fieldValue: 2001,
+          message: '不能小于 2008',
+          model: 'Base',
+        },
+        {
+          data: {
+            message: 'validate.default.field-is-required',
+            rules: {
+              required: true,
+              type: 'string',
+            },
+          },
+          field: 'users.0.name',
+          fieldValue: undefined,
+          message: '字段不能为空',
+          model: 'Base',
+        },
+        {
+          data: {
+            message: 'validate.number.cannot-be-less-than',
+            rules: {
+              min: 18,
+              required: true,
+              type: 'number',
+            },
+          },
+          field: 'users.0.age',
+          fieldValue: undefined,
+          message: '不能小于 18',
+          model: 'Base',
+        },
+        {
+          data: {
+            message: 'validate.number.cannot-be-less-than',
+            rules: {
+              min: 18,
+              required: true,
+              type: 'number',
+            },
+          },
+          field: 'users.2.age',
+          fieldValue: undefined,
+          message: '不能小于 18',
+          model: 'Base',
+        },
+      ],
+      success: false,
+      values: {
+        orderName: '',
+        school: {
+          name: '',
+          years: 2001,
+        },
+        users: [
+          {
+            age: 16,
+            name: '',
+          },
+          {
+            age: 18,
+            name: 'Jane',
+          },
+          {
+            age: 16,
+            name: 'Jack',
+          },
+        ],
+      },
     });
   });
 });

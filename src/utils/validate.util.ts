@@ -163,6 +163,12 @@ export interface GetLocaleRulesOptions extends GetRulesOptions {
   i18n?: I18n;
   /** 语言 */
   lang?: string;
+  /**
+   * 是否扁平化
+   * - true: 扁平化  eg. { user: { name: 'jack } } => { user.name: 'jack' }
+   * - false: 不扁平化(默认)
+   */
+  flat?: boolean;
 }
 
 export type ValidateOptionRules = Record<string, ValidateOptionRule | ValidateOptionRule[]>;
@@ -454,10 +460,11 @@ const validateUtil = {
   /**
    * 递归获取国际化规则
    * @param rules 校验规则
+   * @param flatRules 扁平化校验规则
    * @param options 选项
    * @returns 校验规则
    */
-  recursiveGetLocaleRules: (rules: ValidateRules, options: GetLocaleRulesOptions = {}) => {
+  recursiveGetLocaleRules: (rules: ValidateRules, flatRules: ValidateRules, options: GetLocaleRulesOptions = {}) => {
     const i18n = options?.i18n ?? i18nConfig.i18n;
     const lang = options?.lang ?? i18nConfig.defaultLang;
 
@@ -476,9 +483,19 @@ const validateUtil = {
         }
 
         if (rule.fields) {
-          validateUtil.recursiveGetLocaleRules(rule.fields, { i18n, lang });
+          validateUtil.recursiveGetLocaleRules(rule.fields, flatRules, options);
         } else if (rule.defaultField?.fields) {
-          validateUtil.recursiveGetLocaleRules(rule.defaultField.fields, { i18n, lang });
+          validateUtil.recursiveGetLocaleRules(rule.defaultField.fields, flatRules, options);
+        }
+
+        if (rule.path) {
+          const flatRule = _.cloneDeep(rule);
+          delete flatRule.fields;
+          delete flatRule.defaultField;
+          const flatValidateItem = Reflect.get(flatRules, rule.path) ?? [];
+          const flatValidateItems = Array.isArray(flatValidateItem) ? flatValidateItem : [flatValidateItem];
+          flatValidateItems.push(flatRule);
+          Reflect.set(flatRules, rule.path, flatValidateItems);
         }
       });
     });
@@ -493,7 +510,16 @@ const validateUtil = {
    * @returns 校验规则
    */
   getLocaleRules: (rules: ValidateRules, options: GetLocaleRulesOptions = {}) => {
-    return validateUtil.recursiveGetLocaleRules(validateUtil.parseRules(rules, {}, options));
+    const parsedRules = validateUtil.parseRules(rules, {}, options);
+    const flatRules: ValidateRules = {};
+    const localeRules = validateUtil.recursiveGetLocaleRules(parsedRules, flatRules, options);
+    const flat = options.flat ?? false;
+
+    if (flat) {
+      return flatRules;
+    }
+
+    return localeRules;
   },
 
   /**
@@ -559,49 +585,76 @@ const validateUtil = {
       delete options.message;
     } else {
       if (isPresent(options.regexpKey)) {
-        rules.push(validateUtil.parseRule({ ...options }));
+        const ruleRegexpKey = _.cloneDeep(options);
+        delete ruleRegexpKey.fields;
+        delete ruleRegexpKey.defaultField;
+        rules.push(validateUtil.parseRule(ruleRegexpKey));
         delete options.regexpKey;
       }
 
       if (isPresent(options.enum)) {
-        rules.push(validateUtil.parseRule({ ...options }));
+        const ruleEnum = _.cloneDeep(options);
+        delete ruleEnum.fields;
+        delete ruleEnum.defaultField;
+        rules.push(validateUtil.parseRule(ruleEnum));
         delete options.enum;
         delete options.required;
       }
 
       if (isPresent(options.len)) {
-        rules.push(validateUtil.parseRule({ ...options }));
+        const ruleLen = _.cloneDeep(options);
+        delete ruleLen.fields;
+        delete ruleLen.defaultField;
+        rules.push(validateUtil.parseRule(ruleLen));
         delete options.len;
       }
 
       if (isPresent(options.min) && isPresent(options.max)) {
-        rules.push(validateUtil.parseRule({ ...options }));
+        const ruleMinMax = _.cloneDeep(options);
+        delete ruleMinMax.fields;
+        delete ruleMinMax.defaultField;
+        rules.push(validateUtil.parseRule(ruleMinMax));
         delete options.min;
         delete options.max;
       }
 
       if (isPresent(options.min)) {
-        rules.push(validateUtil.parseRule({ ...options }));
+        const ruleMin = _.cloneDeep(options);
+        delete ruleMin.fields;
+        delete ruleMin.defaultField;
+        rules.push(validateUtil.parseRule(ruleMin));
         delete options.min;
       }
 
       if (isPresent(options.max)) {
-        rules.push(validateUtil.parseRule({ ...options }));
+        const ruleMax = _.cloneDeep(options);
+        delete ruleMax.fields;
+        delete ruleMax.defaultField;
+        rules.push(validateUtil.parseRule(ruleMax));
         delete options.max;
       }
 
       if (isPresent(options.pattern)) {
-        rules.push(validateUtil.parseRule({ ...options }));
+        const rulePattern = _.cloneDeep(options);
+        delete rulePattern.fields;
+        delete rulePattern.defaultField;
+        rules.push(validateUtil.parseRule(rulePattern));
         delete options.pattern;
       }
 
       if (isPresent(options.whitespace)) {
-        rules.push(validateUtil.parseRule({ ...options }));
+        const ruleWhitespace = _.cloneDeep(options);
+        delete ruleWhitespace.fields;
+        delete ruleWhitespace.defaultField;
+        rules.push(validateUtil.parseRule(ruleWhitespace));
         delete options.whitespace;
       }
 
       if (isPresent(options.required)) {
-        rules.unshift(validateUtil.parseRule({ ...options }));
+        const ruleRequired = _.cloneDeep(options);
+        delete ruleRequired.fields;
+        delete ruleRequired.defaultField;
+        rules.unshift(validateUtil.parseRule(ruleRequired));
         delete options.required;
       }
 

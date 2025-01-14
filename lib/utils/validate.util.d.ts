@@ -112,6 +112,12 @@ export interface GetLocaleRulesOptions extends GetRulesOptions {
     i18n?: I18n;
     /** 语言 */
     lang?: string;
+    /**
+     * 是否扁平化
+     * - true: 扁平化  eg. { user: { name: 'jack } } => { user.name: 'jack' }
+     * - false: 不扁平化(默认)
+     */
+    flat?: boolean;
 }
 export declare type ValidateOptionRules = Record<string, ValidateOptionRule | ValidateOptionRule[]>;
 export interface GetErrorsOptions extends GetLocaleRulesOptions {
@@ -202,10 +208,11 @@ declare const validateUtil: {
     /**
      * 递归获取国际化规则
      * @param rules 校验规则
+     * @param flatRules 扁平化校验规则
      * @param options 选项
      * @returns 校验规则
      */
-    recursiveGetLocaleRules: (rules: ValidateRules, options?: GetLocaleRulesOptions) => ValidateRules;
+    recursiveGetLocaleRules: (rules: ValidateRules, flatRules: ValidateRules, options?: GetLocaleRulesOptions) => ValidateRules;
     /**
      * 获取国际化规则
      * @param rules 校验规则
