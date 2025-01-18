@@ -383,9 +383,20 @@ const validateUtil = {
       return _.transform(
         values,
         (result: ValidateValues, value: ValidateValue, key: string) => {
-          const path = `${parentPath ? `${parentPath}.` : ''}${key}`;
-          const transform = transforms[path];
+          const isSimpleArray =
+            typeof value === 'object' &&
+            value !== null &&
+            Array.isArray(value) &&
+            typeof value[0] !== 'object' &&
+            !Array.isArray(value[0]);
 
+          let path = `${parentPath ? `${parentPath}.` : ''}${key}`;
+
+          if (isSimpleArray) {
+            path = `${path}.items`;
+          }
+
+          const transform = transforms[path];
           if (typeof value === 'object' && value !== null) {
             if (Array.isArray(value)) {
               result[key] = value.map((item) => {
@@ -956,27 +967,23 @@ const validateUtil = {
 
       if (defaultFieldType === 'object') {
         defaultFields.forEach((defaultField) => {
-          if (defaultField.type === 'object') {
-            defaultField.path = path;
+          defaultField.path = path;
 
-            if (defaultField.fields) {
-              defaultField.fields = _.reduce(
-                defaultField.fields,
-                (result: ValidateRules, field, fieldKey) => {
-                  const fields: ValidateRuleItem[] = [];
-                  (Array.isArray(field) ? field : [field]).forEach((field) => {
-                    fields.push(...validateUtil.parseToRules({ path: `${path}.${fieldKey}`, ...field }));
-                  });
-                  Reflect.set(result, fieldKey, fields);
-                  return result;
-                },
-                {},
-              );
-            }
+          if (defaultField.fields) {
+            defaultField.fields = _.reduce(
+              defaultField.fields,
+              (result: ValidateRules, field, fieldKey) => {
+                const fields: ValidateRuleItem[] = [];
+                (Array.isArray(field) ? field : [field]).forEach((field) => {
+                  fields.push(...validateUtil.parseToRules({ path: `${path}.${fieldKey}`, ...field }));
+                });
+                Reflect.set(result, fieldKey, fields);
+                return result;
+              },
+              {},
+            );
           }
         });
-      } else if (defaultFieldType === 'array') {
-        console.log('defaultFieldType is array: ...', defaultFields);
       } else {
         rule.defaultField = _.reduce(
           defaultFields,

@@ -802,7 +802,7 @@ describe('transform', () => {
 });
 
 describe('transform: array', () => {
-  test('成功: 转换', async () => {
+  test('成功: 转换, 字符串数组', async () => {
     const validator = new Validator({
       rules: {
         names: { type: 'array' },
@@ -1309,7 +1309,7 @@ describe('validateUtil', () => {
 });
 
 describe('validateUtil.getLocaleRules()', () => {
-  test('成功, getLocaleRules, 复杂嵌套场景: 对象数组', async () => {
+  test('成功: 获取校验规则 with  字符串数组', async () => {
     const validator = new Validator({
       rules: {
         orderName: { required: true },
@@ -1810,7 +1810,7 @@ describe('validateUtil.getLocaleRules()', () => {
     });
   });
 
-  test('成功: 获取校验规则 with array: string', async () => {
+  test('成功: 获取校验规则 with  字符串数组', async () => {
     const rules: ValidateRules = {
       names: {
         type: 'array',
@@ -1872,6 +1872,85 @@ describe('validateUtil.getLocaleRules()', () => {
       success: false,
       values: {
         names: ['', 'J', 'Jane'],
+      },
+    });
+  });
+
+  test('成功: 获取校验规则 with 二维数组', async () => {
+    const rules: ValidateRules = {
+      names: {
+        type: 'array',
+        required: true,
+        defaultField: {
+          type: 'array',
+          required: true,
+          defaultField: {
+            type: 'string',
+            required: true,
+            min: 2,
+          },
+        },
+      },
+    };
+
+    const values = { names: [['', 'J', 'Jane'], ['Rose']] };
+
+    expect(await validateUtil.validate(rules, values)).toEqual({
+      errors: [
+        {
+          data: {
+            message: 'validate.default.field-is-required',
+            rules: {
+              required: true,
+              type: 'string',
+            },
+          },
+          field: 'names.0.0',
+          fieldValue: undefined,
+          message: '字段不能为空',
+          model: 'Base',
+        },
+        {
+          data: {
+            message: 'validate.string.must-be-at-least-characters',
+            rules: {
+              min: 2,
+              required: true,
+              type: 'string',
+            },
+          },
+          field: 'names.0.0',
+          fieldValue: undefined,
+          message: '长度至少为 2 个字符',
+          model: 'Base',
+        },
+        {
+          data: {
+            message: 'validate.string.must-be-at-least-characters',
+            rules: {
+              min: 2,
+              required: true,
+              type: 'string',
+            },
+          },
+          field: 'names.0.1',
+          fieldValue: undefined,
+          message: '长度至少为 2 个字符',
+          model: 'Base',
+        },
+      ],
+      success: false,
+      values: {
+        names: [
+          {
+            '0': '',
+            '1': 'J',
+            '2': 'Jane',
+          },
+          {
+            '0': 'Rose',
+          },
+        ],
       },
     });
   });
