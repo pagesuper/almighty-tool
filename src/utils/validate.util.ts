@@ -509,10 +509,24 @@ const validateUtil = {
 
         if (rule.fields) {
           validateUtil.recursiveGetLocaleRules(rule.fields, flatRules, options);
-        } else if (rule.defaultField) {
-          (Array.isArray(rule.defaultField) ? rule.defaultField : [rule.defaultField]).forEach((defaultField) => {
-            if (defaultField.fields) {
-              validateUtil.recursiveGetLocaleRules(defaultField.fields, flatRules, options);
+        } else if (rule.type === 'array') {
+          const defaultFields = Array.isArray(rule.defaultField) ? rule.defaultField : [rule.defaultField];
+
+          defaultFields.forEach((defaultField) => {
+            if (defaultField) {
+              if (defaultField.type === 'object' && defaultField.fields) {
+                validateUtil.recursiveGetLocaleRules(defaultField.fields, flatRules, options);
+              } else {
+                if (defaultField.path) {
+                  validateUtil.recursiveGetLocaleRules(
+                    {
+                      [defaultField.path]: defaultField,
+                    },
+                    flatRules,
+                    options,
+                  );
+                }
+              }
             }
           });
         }

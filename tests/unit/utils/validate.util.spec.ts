@@ -1309,7 +1309,7 @@ describe('validateUtil', () => {
 });
 
 describe('validateUtil.getLocaleRules()', () => {
-  test('成功: 获取校验规则 with  字符串数组', async () => {
+  test('成功: 获取校验规则 with 字符串数组', async () => {
     const validator = new Validator({
       rules: {
         orderName: { required: true },
@@ -1810,7 +1810,7 @@ describe('validateUtil.getLocaleRules()', () => {
     });
   });
 
-  test('成功: 获取校验规则 with  字符串数组', async () => {
+  test('成功: 获取校验规则 with 字符串数组 simple', async () => {
     const rules: ValidateRules = {
       names: {
         type: 'array',
@@ -1873,6 +1873,112 @@ describe('validateUtil.getLocaleRules()', () => {
       values: {
         names: ['', 'J', 'Jane'],
       },
+    });
+
+    expect(validateUtil.getLocaleRules(rules, { flat: true })).toEqual({
+      names: [
+        {
+          data: {
+            message: 'validate.default.field-is-required',
+            rules: {
+              required: true,
+              type: 'array',
+            },
+          },
+          message: '字段不能为空',
+          path: 'names',
+          required: true,
+          type: 'array',
+        },
+        {
+          message: undefined,
+          path: 'names',
+          type: 'array',
+        },
+      ],
+      'names.items': [
+        {
+          data: {
+            message: 'validate.default.field-is-required',
+            rules: {
+              required: true,
+              type: 'string',
+            },
+          },
+          message: '字段不能为空',
+          path: 'names.items',
+          required: true,
+          type: 'string',
+        },
+        {
+          data: {
+            message: 'validate.string.must-be-at-least-characters',
+            rules: {
+              min: 2,
+              required: true,
+              type: 'string',
+            },
+          },
+          message: '长度至少为 2 个字符',
+          min: 2,
+          path: 'names.items',
+          required: true,
+          type: 'string',
+        },
+      ],
+    });
+
+    expect(validateUtil.getLocaleRules(rules, { flat: false })).toEqual({
+      names: [
+        {
+          data: {
+            message: 'validate.default.field-is-required',
+            rules: {
+              required: true,
+              type: 'array',
+            },
+          },
+          message: '字段不能为空',
+          path: 'names',
+          required: true,
+          type: 'array',
+        },
+        {
+          defaultField: [
+            {
+              data: {
+                message: 'validate.default.field-is-required',
+                rules: {
+                  required: true,
+                  type: 'string',
+                },
+              },
+              message: '字段不能为空',
+              path: 'names.items',
+              required: true,
+              type: 'string',
+            },
+            {
+              data: {
+                message: 'validate.string.must-be-at-least-characters',
+                rules: {
+                  min: 2,
+                  required: true,
+                  type: 'string',
+                },
+              },
+              message: '长度至少为 2 个字符',
+              min: 2,
+              path: 'names.items',
+              required: true,
+              type: 'string',
+            },
+          ],
+          message: undefined,
+          path: 'names',
+          type: 'array',
+        },
+      ],
     });
   });
 
