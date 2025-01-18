@@ -110,7 +110,7 @@ export interface ValidateRuleItem extends Omit<OriginalValidateRuleItem, 'fields
   /** 消息数据 */
   data?: ErrorDataJSON;
   /** 默认字段 */
-  defaultField?: ValidateRuleItem;
+  defaultField?: ValidateRule;
   /** 触发时机 */
   trigger?: ValidateTrigger;
 }
@@ -484,8 +484,12 @@ const validateUtil = {
 
         if (rule.fields) {
           validateUtil.recursiveGetLocaleRules(rule.fields, flatRules, options);
-        } else if (rule.defaultField?.fields) {
-          validateUtil.recursiveGetLocaleRules(rule.defaultField.fields, flatRules, options);
+        } else if (rule.defaultField) {
+          (Array.isArray(rule.defaultField) ? rule.defaultField : [rule.defaultField]).forEach((defaultField) => {
+            if (defaultField.fields) {
+              validateUtil.recursiveGetLocaleRules(defaultField.fields, flatRules, options);
+            }
+          });
         }
 
         if (rule.path) {
@@ -947,24 +951,43 @@ const validateUtil = {
     }
 
     if (rule.defaultField) {
-      (Array.isArray(rule.defaultField) ? rule.defaultField : [rule.defaultField]).forEach((defaultField) => {
-        defaultField.path = path;
+      const defaultFields = Array.isArray(rule.defaultField) ? rule.defaultField : [rule.defaultField];
+      const defaultFieldType = defaultFields[0].type;
 
-        if (defaultField.fields) {
-          defaultField.fields = _.reduce(
-            defaultField.fields,
-            (result: ValidateRules, field, fieldKey) => {
-              const fields: ValidateRuleItem[] = [];
-              (Array.isArray(field) ? field : [field]).forEach((field) => {
-                fields.push(...validateUtil.parseToRules({ path: `${path}.${fieldKey}`, ...field }));
-              });
-              Reflect.set(result, fieldKey, fields);
-              return result;
-            },
-            {},
-          );
-        }
-      });
+      if (defaultFieldType === 'object') {
+        defaultFields.forEach((defaultField) => {
+          if (defaultField.type === 'object') {
+            defaultField.path = path;
+
+            if (defaultField.fields) {
+              defaultField.fields = _.reduce(
+                defaultField.fields,
+                (result: ValidateRules, field, fieldKey) => {
+                  const fields: ValidateRuleItem[] = [];
+                  (Array.isArray(field) ? field : [field]).forEach((field) => {
+                    fields.push(...validateUtil.parseToRules({ path: `${path}.${fieldKey}`, ...field }));
+                  });
+                  Reflect.set(result, fieldKey, fields);
+                  return result;
+                },
+                {},
+              );
+            }
+          }
+        });
+      } else if (defaultFieldType === 'array') {
+        console.log('defaultFieldType is array: ...', defaultFields);
+      } else {
+        rule.defaultField = _.reduce(
+          defaultFields,
+          (result: ValidateRuleItem[], defaultField) => {
+            defaultField.path = `${path}.items`;
+            result.push(...validateUtil.parseToRules({ path: `${path}.items`, ...defaultField }));
+            return result;
+          },
+          [],
+        );
+      }
     }
 
     if (options.fields) {

@@ -1809,4 +1809,70 @@ describe('validateUtil.getLocaleRules()', () => {
       },
     });
   });
+
+  test('成功: 获取校验规则 with array: string', async () => {
+    const rules: ValidateRules = {
+      names: {
+        type: 'array',
+        required: true,
+        defaultField: {
+          type: 'string',
+          required: true,
+          min: 2,
+        },
+      },
+    };
+
+    const values = { names: ['', 'J', 'Jane'] };
+
+    expect(await validateUtil.validate(rules, values)).toEqual({
+      errors: [
+        {
+          data: {
+            message: 'validate.default.field-is-required',
+            rules: {
+              required: true,
+              type: 'string',
+            },
+          },
+          field: 'names.0',
+          fieldValue: '',
+          message: '字段不能为空',
+          model: 'Base',
+        },
+        {
+          data: {
+            message: 'validate.string.must-be-at-least-characters',
+            rules: {
+              min: 2,
+              required: true,
+              type: 'string',
+            },
+          },
+          field: 'names.0',
+          fieldValue: '',
+          message: '长度至少为 2 个字符',
+          model: 'Base',
+        },
+        {
+          data: {
+            message: 'validate.string.must-be-at-least-characters',
+            rules: {
+              min: 2,
+              required: true,
+              type: 'string',
+            },
+          },
+          field: 'names.1',
+          fieldValue: 'J',
+          message: '长度至少为 2 个字符',
+          model: 'Base',
+        },
+      ],
+      success: false,
+      values: {
+        names: ['', 'J', 'Jane'],
+      },
+    });
+  });
 });
