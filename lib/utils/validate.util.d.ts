@@ -118,6 +118,8 @@ export interface GetLocaleRulesOptions extends GetRulesOptions {
      * - false: 不扁平化(默认)
      */
     flat?: boolean;
+    /** 数据 */
+    values?: ValidateValues;
 }
 export declare type ValidateOptionRules = Record<string, ValidateOptionRule | ValidateOptionRule[]>;
 export interface GetErrorsOptions extends GetLocaleRulesOptions {
@@ -185,11 +187,11 @@ declare const validateUtil: {
      * @returns 错误信息
      */
     getErrors: (error: unknown, options?: GetErrorsOptions | undefined) => ValidateError[] | {
+        field: string | undefined;
+        fieldValue: any;
         data: ErrorDataJSON;
         message: any;
         model: string;
-        field?: string | undefined;
-        fieldValue?: any;
     }[];
     /**
      * 转换数据

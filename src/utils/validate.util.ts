@@ -169,6 +169,8 @@ export interface GetLocaleRulesOptions extends GetRulesOptions {
    * - false: 不扁平化(默认)
    */
   flat?: boolean;
+  /** 数据 */
+  values?: ValidateValues;
 }
 
 export type ValidateOptionRules = Record<string, ValidateOptionRule | ValidateOptionRule[]>;
@@ -347,11 +349,16 @@ const validateUtil = {
    */
   getErrors: (error: unknown, options?: GetErrorsOptions) => {
     const model = options?.model ?? 'Base';
+    const values = options?.values ?? {};
 
     if (typeof error === 'object' && error !== null && 'errors' in error) {
       return (Reflect.get(error, 'errors') as ValidateError[]).map((err) => {
+        const field = _.get(err, 'field');
+        const fieldValue = field ? _.get(values, field) : undefined;
+
         return {
-          ..._.pick(err, ['field', 'fieldValue']),
+          field,
+          fieldValue,
           data: validateUtil.parseErrorDataJSON(err.message),
           message: validateUtil.getErrorMessage(err.message, options),
           model,
@@ -363,8 +370,8 @@ const validateUtil = {
       {
         data: validateUtil.parseErrorDataJSON(error),
         message: validateUtil.getErrorMessage(error, options),
-        fieldValue: options?.fieldValue,
         field: options?.field,
+        fieldValue: options?.fieldValue ?? (options?.field ? _.get(values, options.field) : undefined),
         model,
       },
     ] as ValidateError[];
@@ -380,9 +387,11 @@ const validateUtil = {
     const transforms = validateUtil.collectRulesTransform(rules ?? {}, {});
 
     function doTransform(values: ValidateValues, parentPath: string) {
+      const valuesType = Array.isArray(values) ? 'array' : 'object';
+
       return _.transform(
         values,
-        (result: ValidateValues, value: ValidateValue, key: string) => {
+        (result: ValidateValues, value: ValidateValue, key: string | number) => {
           const isSimpleArray =
             typeof value === 'object' &&
             value !== null &&
@@ -427,7 +436,7 @@ const validateUtil = {
 
           return result[key];
         },
-        {},
+        valuesType === 'array' ? [] : {},
       );
     }
 
@@ -463,7 +472,12 @@ const validateUtil = {
       return new ValidateResponseInstance({
         success: false,
         values: transformedValues,
-        errors: validateUtil.getErrors(error, { model, i18n: options?.i18n ?? i18nConfig.i18n, lang: options?.lang }),
+        errors: validateUtil.getErrors(error, {
+          model,
+          i18n: options?.i18n ?? i18nConfig.i18n,
+          lang: options?.lang,
+          values: transformedValues,
+        }),
       });
     }
   },

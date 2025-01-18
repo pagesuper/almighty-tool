@@ -1752,7 +1752,7 @@ describe('validateUtil.getLocaleRules()', () => {
             },
           },
           field: 'users.0.name',
-          fieldValue: undefined,
+          fieldValue: '',
           message: '字段不能为空',
           model: 'Base',
         },
@@ -1766,7 +1766,7 @@ describe('validateUtil.getLocaleRules()', () => {
             },
           },
           field: 'users.0.age',
-          fieldValue: undefined,
+          fieldValue: 16,
           message: '不能小于 18',
           model: 'Base',
         },
@@ -1780,7 +1780,7 @@ describe('validateUtil.getLocaleRules()', () => {
             },
           },
           field: 'users.2.age',
-          fieldValue: undefined,
+          fieldValue: 16,
           message: '不能小于 18',
           model: 'Base',
         },
@@ -1906,7 +1906,7 @@ describe('validateUtil.getLocaleRules()', () => {
             },
           },
           field: 'names.0.0',
-          fieldValue: undefined,
+          fieldValue: '',
           message: '字段不能为空',
           model: 'Base',
         },
@@ -1920,7 +1920,7 @@ describe('validateUtil.getLocaleRules()', () => {
             },
           },
           field: 'names.0.0',
-          fieldValue: undefined,
+          fieldValue: '',
           message: '长度至少为 2 个字符',
           model: 'Base',
         },
@@ -1934,22 +1934,101 @@ describe('validateUtil.getLocaleRules()', () => {
             },
           },
           field: 'names.0.1',
-          fieldValue: undefined,
+          fieldValue: 'J',
           message: '长度至少为 2 个字符',
           model: 'Base',
         },
       ],
       success: false,
       values: {
+        names: [['', 'J', 'Jane'], ['Rose']],
+      },
+    });
+  });
+
+  test('成功: 获取校验规则 with 复杂嵌套场景', async () => {
+    const rules: ValidateRules = {
+      names: {
+        type: 'array',
+        defaultField: {
+          type: 'array',
+          defaultField: {
+            type: 'array',
+            defaultField: {
+              type: 'object',
+              fields: {
+                name: { type: 'string', min: 2 },
+                addresses: {
+                  type: 'array',
+                  defaultField: {
+                    type: 'string',
+                    required: true,
+                    min: 12,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    };
+
+    const values = {
+      names: [
+        [
+          [
+            {
+              name: 'J',
+              addresses: ['Beijing and Tianjin', 'Shanghai'],
+            },
+          ],
+        ],
+      ],
+    };
+
+    const result = await validateUtil.validate(rules, values);
+
+    expect(result).toEqual({
+      errors: [
+        {
+          data: {
+            message: 'validate.string.must-be-at-least-characters',
+            rules: {
+              min: 2,
+              type: 'string',
+            },
+          },
+          field: 'names.0.0.0.name',
+          fieldValue: 'J',
+          message: '长度至少为 2 个字符',
+          model: 'Base',
+        },
+        {
+          data: {
+            message: 'validate.string.must-be-at-least-characters',
+            rules: {
+              min: 12,
+              required: true,
+              type: 'string',
+            },
+          },
+          field: 'names.0.0.0.addresses.1',
+          fieldValue: 'Shanghai',
+          message: '长度至少为 12 个字符',
+          model: 'Base',
+        },
+      ],
+      success: false,
+      values: {
         names: [
-          {
-            '0': '',
-            '1': 'J',
-            '2': 'Jane',
-          },
-          {
-            '0': 'Rose',
-          },
+          [
+            [
+              {
+                addresses: ['Beijing and Tianjin', 'Shanghai'],
+                name: 'J',
+              },
+            ],
+          ],
         ],
       },
     });
