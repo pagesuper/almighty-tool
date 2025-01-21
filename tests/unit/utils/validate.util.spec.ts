@@ -2140,3 +2140,51 @@ describe('validateUtil.getLocaleRules()', () => {
     });
   });
 });
+
+// describe('validateUtil.test', () => {
+//   test('成功: 校验Test', async () => {
+//     const rules: ValidateOptionRules = {
+//       users: {
+//         type: 'array',
+//         required: true,
+//         defaultField: {
+//           type: 'object',
+//           fields: {
+//             name: { type: 'string', required: true, min: 2 },
+//             age: { type: 'number', required: true, min: 18 },
+//             addresses: {
+//               type: 'array',
+//               defaultField: {
+//                 type: 'string',
+//                 required: true,
+//                 min: 12,
+//                 transform: (value: string) => value.trim().toUpperCase(),
+//                 asyncValidator(rule, value, callback, source, options) {
+//                   if (value === 'TIANJIN') {
+//                     callback(new Error('地址不能为天津'));
+//                   } else {
+//                     callback();
+//                   }
+//                 },
+//               },
+//             },
+//             school: {
+//               type: 'object',
+//               fields: {
+//                 name: { type: 'string', required: true, min: 2 },
+//               },
+//             },
+//           },
+//         },
+//       },
+//     };
+
+//     const values = {
+//       users: [{ name: 'J', age: 18, addresses: ['                         Tianjin', 'Shanghai'], school: { name: 'Beijing' } }],
+//     };
+
+//     const result = await validateUtil.validate(rules, values);
+
+//     expect(result).toEqual({});
+//   });
+// });
