@@ -1430,6 +1430,7 @@ describe('validateUtil.getLocaleRules()', () => {
           message: '字段不能为空',
           path: 'users',
           required: true,
+          subType: 'object',
           type: 'array',
         },
         {
@@ -1445,11 +1446,13 @@ describe('validateUtil.getLocaleRules()', () => {
           min: 1,
           path: 'users',
           required: true,
+          subType: 'object',
           type: 'array',
         },
         {
           message: undefined,
           path: 'users',
+          subType: 'object',
           type: 'array',
         },
       ],
@@ -1594,6 +1597,7 @@ describe('validateUtil.getLocaleRules()', () => {
           message: '字段不能为空',
           path: 'users',
           required: true,
+          subType: 'object',
           type: 'array',
         },
         {
@@ -1609,6 +1613,7 @@ describe('validateUtil.getLocaleRules()', () => {
           min: 1,
           path: 'users',
           required: true,
+          subType: 'object',
           type: 'array',
         },
         {
@@ -1666,6 +1671,7 @@ describe('validateUtil.getLocaleRules()', () => {
           },
           message: undefined,
           path: 'users',
+          subType: 'object',
           type: 'array',
         },
       ],
@@ -1888,15 +1894,17 @@ describe('validateUtil.getLocaleRules()', () => {
           message: '字段不能为空',
           path: 'names',
           required: true,
+          subType: 'string',
           type: 'array',
         },
         {
           message: undefined,
           path: 'names',
+          subType: 'string',
           type: 'array',
         },
       ],
-      'names.items': [
+      'names.__items__': [
         {
           data: {
             message: 'validate.default.field-is-required',
@@ -1906,7 +1914,7 @@ describe('validateUtil.getLocaleRules()', () => {
             },
           },
           message: '字段不能为空',
-          path: 'names.items',
+          path: 'names.__items__',
           required: true,
           type: 'string',
         },
@@ -1921,7 +1929,7 @@ describe('validateUtil.getLocaleRules()', () => {
           },
           message: '长度至少为 2 个字符',
           min: 2,
-          path: 'names.items',
+          path: 'names.__items__',
           required: true,
           type: 'string',
         },
@@ -1941,6 +1949,7 @@ describe('validateUtil.getLocaleRules()', () => {
           message: '字段不能为空',
           path: 'names',
           required: true,
+          subType: 'string',
           type: 'array',
         },
         {
@@ -1954,7 +1963,7 @@ describe('validateUtil.getLocaleRules()', () => {
                 },
               },
               message: '字段不能为空',
-              path: 'names.items',
+              path: 'names.__items__',
               required: true,
               type: 'string',
             },
@@ -1969,13 +1978,14 @@ describe('validateUtil.getLocaleRules()', () => {
               },
               message: '长度至少为 2 个字符',
               min: 2,
-              path: 'names.items',
+              path: 'names.__items__',
               required: true,
               type: 'string',
             },
           ],
           message: undefined,
           path: 'names',
+          subType: 'string',
           type: 'array',
         },
       ],
@@ -2188,3 +2198,341 @@ describe('validateUtil.getLocaleRules()', () => {
 //     expect(result).toEqual({});
 //   });
 // });
+
+describe('validateUtil.getLocaleRules', () => {
+  test('成功: getLocaleRules OK', async () => {
+    const localeRules = validateUtil.getLocaleRules({
+      users: {
+        type: 'array',
+        required: true,
+        defaultField: {
+          type: 'object',
+          fields: {
+            name: { type: 'string', required: true, min: 2 },
+            counts: { type: 'array', defaultField: { type: 'number', required: true, min: 1 } },
+            school: {
+              type: 'object',
+              fields: {
+                name: { type: 'string', required: true, min: 2 },
+                addresses: {
+                  type: 'array',
+                  defaultField: {
+                    type: 'string',
+                    required: true,
+                    min: 12,
+                  },
+                },
+                teachers: {
+                  type: 'array',
+                  defaultField: {
+                    type: 'object',
+                    fields: {
+                      name: { type: 'string', required: true, min: 2 },
+                      age: { type: 'number', required: true, min: 18 },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+      addresses: {
+        type: 'array',
+        defaultField: {
+          type: 'string',
+          required: true,
+          min: 12,
+        },
+      },
+    });
+
+    expect(localeRules).toEqual({
+      addresses: [
+        {
+          defaultField: [
+            {
+              data: {
+                message: 'validate.default.field-is-required',
+                rules: {
+                  required: true,
+                  type: 'string',
+                },
+              },
+              message: '字段不能为空',
+              path: 'addresses.__items__',
+              required: true,
+              type: 'string',
+            },
+            {
+              data: {
+                message: 'validate.string.must-be-at-least-characters',
+                rules: {
+                  min: 12,
+                  required: true,
+                  type: 'string',
+                },
+              },
+              message: '长度至少为 12 个字符',
+              min: 12,
+              path: 'addresses.__items__',
+              required: true,
+              type: 'string',
+            },
+          ],
+          message: undefined,
+          path: 'addresses',
+          subType: 'string',
+          type: 'array',
+        },
+      ],
+      users: [
+        {
+          data: {
+            message: 'validate.default.field-is-required',
+            rules: {
+              required: true,
+              type: 'array',
+            },
+          },
+          message: '字段不能为空',
+          path: 'users',
+          required: true,
+          subType: 'object',
+          type: 'array',
+        },
+        {
+          defaultField: {
+            fields: {
+              counts: [
+                {
+                  defaultField: [
+                    {
+                      data: {
+                        message: 'validate.default.field-is-required',
+                        rules: {
+                          required: true,
+                          type: 'number',
+                        },
+                      },
+                      message: '字段不能为空',
+                      path: 'users.counts.__items__',
+                      required: true,
+                      type: 'number',
+                    },
+                    {
+                      data: {
+                        message: 'validate.number.cannot-be-less-than',
+                        rules: {
+                          min: 1,
+                          required: true,
+                          type: 'number',
+                        },
+                      },
+                      message: '不能小于 1',
+                      min: 1,
+                      path: 'users.counts.__items__',
+                      required: true,
+                      type: 'number',
+                    },
+                  ],
+                  message: undefined,
+                  path: 'users.counts',
+                  subType: 'number',
+                  type: 'array',
+                },
+              ],
+              name: [
+                {
+                  data: {
+                    message: 'validate.default.field-is-required',
+                    rules: {
+                      required: true,
+                      type: 'string',
+                    },
+                  },
+                  message: '字段不能为空',
+                  path: 'users.name',
+                  required: true,
+                  type: 'string',
+                },
+                {
+                  data: {
+                    message: 'validate.string.must-be-at-least-characters',
+                    rules: {
+                      min: 2,
+                      required: true,
+                      type: 'string',
+                    },
+                  },
+                  message: '长度至少为 2 个字符',
+                  min: 2,
+                  path: 'users.name',
+                  required: true,
+                  type: 'string',
+                },
+              ],
+              school: [
+                {
+                  fields: {
+                    addresses: [
+                      {
+                        defaultField: [
+                          {
+                            data: {
+                              message: 'validate.default.field-is-required',
+                              rules: {
+                                required: true,
+                                type: 'string',
+                              },
+                            },
+                            message: '字段不能为空',
+                            path: 'users.school.addresses.__items__',
+                            required: true,
+                            type: 'string',
+                          },
+                          {
+                            data: {
+                              message: 'validate.string.must-be-at-least-characters',
+                              rules: {
+                                min: 12,
+                                required: true,
+                                type: 'string',
+                              },
+                            },
+                            message: '长度至少为 12 个字符',
+                            min: 12,
+                            path: 'users.school.addresses.__items__',
+                            required: true,
+                            type: 'string',
+                          },
+                        ],
+                        message: undefined,
+                        path: 'users.school.addresses',
+                        subType: 'string',
+                        type: 'array',
+                      },
+                    ],
+                    name: [
+                      {
+                        data: {
+                          message: 'validate.default.field-is-required',
+                          rules: {
+                            required: true,
+                            type: 'string',
+                          },
+                        },
+                        message: '字段不能为空',
+                        path: 'users.school.name',
+                        required: true,
+                        type: 'string',
+                      },
+                      {
+                        data: {
+                          message: 'validate.string.must-be-at-least-characters',
+                          rules: {
+                            min: 2,
+                            required: true,
+                            type: 'string',
+                          },
+                        },
+                        message: '长度至少为 2 个字符',
+                        min: 2,
+                        path: 'users.school.name',
+                        required: true,
+                        type: 'string',
+                      },
+                    ],
+                    teachers: [
+                      {
+                        defaultField: {
+                          fields: {
+                            age: [
+                              {
+                                data: {
+                                  message: 'validate.default.field-is-required',
+                                  rules: {
+                                    required: true,
+                                    type: 'number',
+                                  },
+                                },
+                                message: '字段不能为空',
+                                path: 'users.school.teachers.age',
+                                required: true,
+                                type: 'number',
+                              },
+                              {
+                                data: {
+                                  message: 'validate.number.cannot-be-less-than',
+                                  rules: {
+                                    min: 18,
+                                    required: true,
+                                    type: 'number',
+                                  },
+                                },
+                                message: '不能小于 18',
+                                min: 18,
+                                path: 'users.school.teachers.age',
+                                required: true,
+                                type: 'number',
+                              },
+                            ],
+                            name: [
+                              {
+                                data: {
+                                  message: 'validate.default.field-is-required',
+                                  rules: {
+                                    required: true,
+                                    type: 'string',
+                                  },
+                                },
+                                message: '字段不能为空',
+                                path: 'users.school.teachers.name',
+                                required: true,
+                                type: 'string',
+                              },
+                              {
+                                data: {
+                                  message: 'validate.string.must-be-at-least-characters',
+                                  rules: {
+                                    min: 2,
+                                    required: true,
+                                    type: 'string',
+                                  },
+                                },
+                                message: '长度至少为 2 个字符',
+                                min: 2,
+                                path: 'users.school.teachers.name',
+                                required: true,
+                                type: 'string',
+                              },
+                            ],
+                          },
+                          path: 'users.school.teachers',
+                          type: 'object',
+                        },
+                        message: undefined,
+                        path: 'users.school.teachers',
+                        subType: 'object',
+                        type: 'array',
+                      },
+                    ],
+                  },
+                  message: undefined,
+                  path: 'users.school',
+                  type: 'object',
+                },
+              ],
+            },
+            path: 'users',
+            type: 'object',
+          },
+          message: undefined,
+          path: 'users',
+          subType: 'object',
+          type: 'array',
+        },
+      ],
+    });
+  });
+});

@@ -56,6 +56,8 @@ export interface ValidateRuleItemRequiredFnOptions {
     item: ValidateRuleItem;
 }
 export interface ValidateRuleItem extends Omit<OriginalValidateRuleItem, 'fields'> {
+    /** 子类型 */
+    subType?: string;
     /** 路径 */
     path?: string;
     /** 子规则 */
@@ -118,6 +120,8 @@ export interface GetLocaleRulesOptions extends GetRulesOptions {
      * - false: 不扁平化(默认)
      */
     flat?: boolean;
+    /** 对象数组项是否转换 */
+    objectArrayItemsTransform?: boolean;
     /** 数据 */
     values?: ValidateValues;
 }
@@ -162,6 +166,7 @@ export interface ErrorDataJSON {
     rules: Partial<ValidateOptionRule>;
     message: any;
 }
+export declare const ARRAY_ITEMS_BASIC_TYPE_KEY = "__items__";
 export { ValidateSchema };
 export type { ValidateCallback, ValidateExecuteRule, ValidateExecuteValidator, ValidateFieldsError, ValidateInternalRuleItem, ValidateInternalValidateMessages, ValidateMessages, ValidateResult, ValidateRuleType, ValidateRuleValuePackage, ValidateValue, ValidateValues, };
 declare function getErrorDataJSON(messageJSON: ErrorDataJSON): string;

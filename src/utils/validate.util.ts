@@ -103,6 +103,8 @@ export interface ValidateRuleItemRequiredFnOptions {
 }
 
 export interface ValidateRuleItem extends Omit<OriginalValidateRuleItem, 'fields'> {
+  /** 子类型 */
+  subType?: string;
   /** 路径 */
   path?: string;
   /** 子规则 */
@@ -169,6 +171,8 @@ export interface GetLocaleRulesOptions extends GetRulesOptions {
    * - false: 不扁平化(默认)
    */
   flat?: boolean;
+  /** 对象数组项是否转换 */
+  objectArrayItemsTransform?: boolean;
   /** 数据 */
   values?: ValidateValues;
 }
@@ -228,6 +232,8 @@ export interface ErrorDataJSON {
   rules: Partial<ValidateOptionRule>;
   message: any;
 }
+
+export const ARRAY_ITEMS_BASIC_TYPE_KEY = '__items__';
 
 export { ValidateSchema };
 
@@ -392,6 +398,8 @@ const validateUtil = {
       return _.transform(
         values,
         (result: ValidateValues, value: ValidateValue, key: string | number) => {
+          let path = `${parentPath ? `${parentPath}.` : ''}${key}`;
+
           const isSimpleArray =
             typeof value === 'object' &&
             value !== null &&
@@ -399,10 +407,8 @@ const validateUtil = {
             typeof value[0] !== 'object' &&
             !Array.isArray(value[0]);
 
-          let path = `${parentPath ? `${parentPath}.` : ''}${key}`;
-
           if (isSimpleArray) {
-            path = `${path}.items`;
+            path = `${path}.${ARRAY_ITEMS_BASIC_TYPE_KEY}`;
           }
 
           const transform = transforms[path];
@@ -494,9 +500,32 @@ const validateUtil = {
     const lang = options?.lang ?? i18nConfig.defaultLang;
 
     Object.keys(rules).forEach((fieldKey) => {
-      const fieldRules = rules[fieldKey];
+      const fieldRule = rules[fieldKey];
+      const fieldRules = Array.isArray(fieldRule) ? fieldRule : [fieldRule];
 
-      (Array.isArray(fieldRules) ? fieldRules : [fieldRules]).forEach((rule) => {
+      const defaultFields = _.reduce(
+        fieldRules,
+        (result: ValidateRuleItem[], rule) => {
+          if (rule.type === 'array' && rule.defaultField) {
+            if (Array.isArray(rule.defaultField)) {
+              result.push(...rule.defaultField);
+            } else {
+              result.push(rule.defaultField);
+            }
+          }
+
+          return result;
+        },
+        [],
+      );
+
+      const defaultFieldType = defaultFields[0]?.type ?? undefined;
+
+      fieldRules.forEach((rule) => {
+        if (defaultFieldType) {
+          rule.subType = defaultFieldType;
+        }
+
         if (i18n && typeof i18n.t === 'function' && typeof rule.message === 'string') {
           const messageJSON = validateUtil.parseErrorDataJSON(rule.message);
           rule.data = messageJSON;
@@ -1016,8 +1045,8 @@ const validateUtil = {
         rule.defaultField = _.reduce(
           defaultFields,
           (result: ValidateRuleItem[], defaultField) => {
-            defaultField.path = `${path}.items`;
-            result.push(...validateUtil.parseToRules({ path: `${path}.items`, ...defaultField }));
+            defaultField.path = `${path}.${ARRAY_ITEMS_BASIC_TYPE_KEY}`;
+            result.push(...validateUtil.parseToRules({ path: `${path}.${ARRAY_ITEMS_BASIC_TYPE_KEY}`, ...defaultField }));
             return result;
           },
           [],
