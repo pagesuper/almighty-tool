@@ -37,3 +37,60 @@ describe('basicUtil.sortKeys()', () => {
     assert.equal(JSON.stringify(basicUtil.sortKeys({ b: 1, a: 2 })), '{"a":2,"b":1}');
   });
 });
+
+describe('basicUtil.getDifferences()', () => {
+  test('basicUtil.getDifferences OK v1', async () => {
+    expect(basicUtil.getDifferences({ a: 1, b: 2 }, { a: 1, b: 3 })).toEqual(['b']);
+  });
+
+  test('basicUtil.getDifferences OK v2', async () => {
+    const value1 = {
+      name: '',
+      informations: ['Jack is a good boy'],
+      address: '',
+      region: [],
+      date1: undefined,
+      delivery: false,
+      type: [],
+      resource: '',
+      desc: '',
+      school: {
+        name: '',
+        years: '2001',
+      },
+      users: [
+        {
+          name: '',
+          address: '',
+          age: '0',
+        },
+      ],
+    };
+
+    const value2 = {
+      name: '',
+      informations: ['Jack is a good boy'],
+      address: '',
+      region: [],
+      date1: undefined,
+      delivery: false,
+      type: [],
+      resource: '',
+      desc: '',
+      school: {
+        name: '',
+        years: 2001,
+      },
+      users: [
+        {
+          name: '',
+          address: '',
+          age: 0,
+        },
+      ],
+    };
+
+    expect(basicUtil.getDifferences(value1, value2, { noStrict: true })).toEqual([]);
+    expect(basicUtil.getDifferences(value1, value2, {})).toEqual(['school.years', 'users.0.age']);
+  });
+});

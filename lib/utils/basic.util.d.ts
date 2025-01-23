@@ -90,6 +90,8 @@ declare const basicUtil: {
         compare?: ((a: string, b: string) => number) | undefined;
     }): AnyObject;
     /** 获取两个对象的差异 */
-    getDifferences(obj1: any, obj2: any, path?: string[]): string[];
+    getDifferences(obj1: any, obj2: any, options?: {
+        noStrict?: boolean;
+    }): string[];
 };
 export default basicUtil;

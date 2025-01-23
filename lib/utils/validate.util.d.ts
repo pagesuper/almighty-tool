@@ -295,6 +295,7 @@ declare const validateUtil: {
      * @returns 校验规则
      */
     normalizeRules: (rules: ValidateRules, options?: GetRulesOptions | undefined) => ValidateRules;
+    /** 过滤规则 */
     filterRules: (rules: ValidateRules, settings: Record<string, ValidateOptionSetting>, parentPath?: string) => ValidateRules;
 };
 export default validateUtil;

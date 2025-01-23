@@ -391,39 +391,52 @@ const basicUtil = {
   },
 
   /** 获取两个对象的差异 */
-  getDifferences(obj1: any, obj2: any, path: string[] = []): string[] {
+  getDifferences(obj1: any, obj2: any, options: { noStrict?: boolean } = {}): string[] {
     function areEqual(value1: any, value2: any): boolean {
-      if (typeof value1 === 'number' || typeof value2 === 'number') {
-        return String(value1) === String(value2);
+      if (options.noStrict) {
+        if (typeof value1 === 'number' || typeof value2 === 'number') {
+          return String(value1) === String(value2);
+        }
+
+        if (typeof value1 === 'boolean' || typeof value2 === 'boolean') {
+          return String(value1) === String(value2);
+        }
+
+        if (typeof value1 === 'string' || typeof value2 === 'string') {
+          return String(value1) === String(value2);
+        }
+      }
+
+      if (typeof value1 !== typeof value2) {
+        return false;
       }
 
       return value1 === value2;
     }
 
-    let differences: string[] = [];
+    function implGetDifferences(obj1: any, obj2: any, path: string[] = []): string[] {
+      let differences: string[] = [];
 
-    if (typeof obj1 !== typeof obj2) {
-      differences.push(path.join('.'));
+      if (Array.isArray(obj1) && Array.isArray(obj2)) {
+        const maxLength = Math.max(obj1.length, obj2.length);
+        for (let i = 0; i < maxLength; i++) {
+          if (i >= obj1.length || i >= obj2.length || !areEqual(obj1[i], obj2[i])) {
+            differences = differences.concat(implGetDifferences(obj1[i], obj2[i], [...path, i.toString()]));
+          }
+        }
+      } else if (typeof obj1 === 'object' && obj1 !== null && typeof obj2 === 'object' && obj2 !== null) {
+        const keys = new Set([...Object.keys(obj1), ...Object.keys(obj2)]);
+        for (const key of Array.from(keys)) {
+          differences = differences.concat(implGetDifferences(obj1[key], obj2[key], [...path, key]));
+        }
+      } else if (!areEqual(obj1, obj2)) {
+        differences.push(path.join('.'));
+      }
+
       return differences;
     }
 
-    if (Array.isArray(obj1) && Array.isArray(obj2)) {
-      const maxLength = Math.max(obj1.length, obj2.length);
-      for (let i = 0; i < maxLength; i++) {
-        if (i >= obj1.length || i >= obj2.length || !areEqual(obj1[i], obj2[i])) {
-          differences = differences.concat(basicUtil.getDifferences(obj1[i], obj2[i], [...path, i.toString()]));
-        }
-      }
-    } else if (typeof obj1 === 'object' && obj1 !== null && typeof obj2 === 'object' && obj2 !== null) {
-      const keys = new Set([...Object.keys(obj1), ...Object.keys(obj2)]);
-      for (const key of Array.from(keys)) {
-        differences = differences.concat(basicUtil.getDifferences(obj1[key], obj2[key], [...path, key]));
-      }
-    } else if (!areEqual(obj1, obj2)) {
-      differences.push(path.join('.'));
-    }
-
-    return differences;
+    return implGetDifferences(obj1, obj2, []);
   },
 };
 

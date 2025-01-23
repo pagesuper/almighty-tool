@@ -539,7 +539,11 @@ const validateUtil = {
         if (rule.fields) {
           validateUtil.recursiveGetLocaleRules(rule.fields, flatRules, options);
         } else if (rule.type === 'array') {
-          const defaultFields = Array.isArray(rule.defaultField) ? rule.defaultField : [rule.defaultField];
+          const defaultFields = Array.isArray(rule.defaultField)
+            ? rule.defaultField
+            : rule.defaultField
+            ? [rule.defaultField]
+            : [];
 
           defaultFields.forEach((defaultField) => {
             if (defaultField) {
@@ -585,9 +589,8 @@ const validateUtil = {
     const parsedRules = validateUtil.parseRules(rules, {}, options);
     const flatRules: ValidateRules = {};
     const localeRules = validateUtil.recursiveGetLocaleRules(parsedRules, flatRules, options);
-    const flat = options.flat ?? false;
 
-    if (flat) {
+    if (options.flat ?? false) {
       return flatRules;
     }
 
@@ -730,7 +733,7 @@ const validateUtil = {
         delete options.required;
       }
 
-      if (!_.isEmpty(_.omit(options, ['path', 'data', 'type']))) {
+      if (!_.isEmpty(_.omit(options, ['path', 'data', 'type', 'subType']))) {
         rules.push(validateUtil.parseRule(options));
       }
     }
@@ -1019,8 +1022,8 @@ const validateUtil = {
     }
 
     if (rule.defaultField) {
-      const defaultFields = Array.isArray(rule.defaultField) ? rule.defaultField : [rule.defaultField];
-      const defaultFieldType = defaultFields[0].type;
+      const defaultFields = Array.isArray(rule.defaultField) ? rule.defaultField : rule.defaultField ? [rule.defaultField] : [];
+      const defaultFieldType = defaultFields[0]?.type;
 
       if (defaultFieldType === 'object') {
         defaultFields.forEach((defaultField) => {
@@ -1196,7 +1199,7 @@ const validateUtil = {
    * @param rules 校验规则
    * @returns 校验规则
    */
-  normalizeRules: (rules: ValidateRules, options?: GetRulesOptions) => {
+  normalizeRules: (rules: ValidateRules, options?: GetRulesOptions): ValidateRules => {
     const settings = options?.settings ?? {};
     const pureRules = _.cloneDeep(rules);
     const requires = validateUtil.collectRulesRequired(pureRules, {}, '');
@@ -1204,7 +1207,8 @@ const validateUtil = {
     return validateUtil.filterRules(pureRules, settings);
   },
 
-  filterRules: (rules: ValidateRules, settings: Record<string, ValidateOptionSetting>, parentPath = '') => {
+  /** 过滤规则 */
+  filterRules: (rules: ValidateRules, settings: Record<string, ValidateOptionSetting>, parentPath = ''): ValidateRules => {
     Object.keys(rules ?? {}).forEach((fieldKey) => {
       const fieldRules = rules[fieldKey];
       (Array.isArray(fieldRules) ? fieldRules : [fieldRules]).forEach((fieldRule) => {
