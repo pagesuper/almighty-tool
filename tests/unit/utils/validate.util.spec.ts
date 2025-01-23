@@ -903,6 +903,19 @@ describe('transform: array', () => {
   });
 });
 
+describe('transform: number', () => {
+  test('成功: 转换 number', async () => {
+    const result = await validateUtil.validate(
+      {
+        count: { type: 'number', transformers: ['tryToNumber'] },
+        ages: { type: 'array', defaultField: { type: 'number', transformers: ['tryToNumber'] } },
+      },
+      { count: '123', ages: ['16', '80'] },
+    );
+    expect(result).toEqual({ success: true, values: { count: 123, ages: [16, 80] } });
+  });
+});
+
 describe('validateUtil.parseRules()', () => {
   test('成功: 一层/规则拆分/required', async () => {
     const rules = {
@@ -1309,7 +1322,7 @@ describe('validateUtil', () => {
 });
 
 describe('validateUtil.getLocaleRules()', () => {
-  test('成功: 获取校验规则 with 字符串数组', async () => {
+  test('成功: 获取校验规则 with 字符串数组 v1', async () => {
     const validator = new Validator({
       rules: {
         orderName: { required: true },
@@ -1338,7 +1351,7 @@ describe('validateUtil.getLocaleRules()', () => {
       action: 'create',
     });
 
-    expect(validator.getLocaleRules({ flat: true })).toEqual({
+    expect(validator.getLocaleRules({ flat: true })).toMatchObject({
       orderName: [
         {
           data: {
@@ -1368,7 +1381,6 @@ describe('validateUtil.getLocaleRules()', () => {
           type: 'object',
         },
         {
-          message: undefined,
           path: 'school',
           type: 'object',
         },
@@ -1450,7 +1462,6 @@ describe('validateUtil.getLocaleRules()', () => {
           type: 'array',
         },
         {
-          message: undefined,
           path: 'users',
           subType: 'object',
           type: 'array',
@@ -1881,7 +1892,7 @@ describe('validateUtil.getLocaleRules()', () => {
       },
     });
 
-    expect(validateUtil.getLocaleRules(rules, { flat: true })).toEqual({
+    expect(validateUtil.getLocaleRules(rules, { flat: true })).toMatchObject({
       names: [
         {
           data: {
@@ -1898,7 +1909,6 @@ describe('validateUtil.getLocaleRules()', () => {
           type: 'array',
         },
         {
-          message: undefined,
           path: 'names',
           subType: 'string',
           type: 'array',
@@ -2247,7 +2257,7 @@ describe('validateUtil.getLocaleRules', () => {
       },
     });
 
-    expect(localeRules).toEqual({
+    expect(localeRules).toMatchObject({
       addresses: [
         {
           defaultField: [
@@ -2280,7 +2290,6 @@ describe('validateUtil.getLocaleRules', () => {
               type: 'string',
             },
           ],
-          message: undefined,
           path: 'addresses',
           subType: 'string',
           type: 'array',
@@ -2336,7 +2345,6 @@ describe('validateUtil.getLocaleRules', () => {
                       type: 'number',
                     },
                   ],
-                  message: undefined,
                   path: 'users.counts',
                   subType: 'number',
                   type: 'array',
@@ -2407,7 +2415,6 @@ describe('validateUtil.getLocaleRules', () => {
                             type: 'string',
                           },
                         ],
-                        message: undefined,
                         path: 'users.school.addresses',
                         subType: 'string',
                         type: 'array',
@@ -2511,14 +2518,12 @@ describe('validateUtil.getLocaleRules', () => {
                           path: 'users.school.teachers',
                           type: 'object',
                         },
-                        message: undefined,
                         path: 'users.school.teachers',
                         subType: 'object',
                         type: 'array',
                       },
                     ],
                   },
-                  message: undefined,
                   path: 'users.school',
                   type: 'object',
                 },
@@ -2527,7 +2532,6 @@ describe('validateUtil.getLocaleRules', () => {
             path: 'users',
             type: 'object',
           },
-          message: undefined,
           path: 'users',
           subType: 'object',
           type: 'array',

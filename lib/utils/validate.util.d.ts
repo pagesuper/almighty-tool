@@ -2,7 +2,7 @@ import ValidateSchema, { ValidateError as OriginalValidateError, ValidateOption 
 import { I18n } from '../i18n/index';
 export declare type ValidateTrigger = 'blur' | 'change' | Array<'change' | 'blur'>;
 export declare type ValidateTransform = (value: ValidateValue) => ValidateValue;
-export declare type ValidateTransformer = 'toDate' | 'toBoolean' | 'trim' | 'trimLeft' | 'trimRight' | 'trimStart' | 'trimEnd' | 'toLower' | 'toUpper' | 'toNumber' | 'firstLetterUpper' | 'firstLetterLower' | 'capitalize' | 'camelize' | 'dasherize' | 'underscore' | 'pluralize' | 'singularize' | 'humanize';
+export declare type ValidateTransformer = 'toDate' | 'toBoolean' | 'trim' | 'trimLeft' | 'trimRight' | 'trimStart' | 'trimEnd' | 'toLower' | 'toUpper' | 'tryToNumber' | 'toNumber' | 'firstLetterUpper' | 'firstLetterLower' | 'capitalize' | 'camelize' | 'dasherize' | 'underscore' | 'pluralize' | 'singularize' | 'humanize';
 export interface ParseRulesOptions {
     /**
      * 方向:
@@ -68,12 +68,6 @@ export interface ValidateRuleItem extends Omit<OriginalValidateRuleItem, 'fields
     defaultField?: ValidateRule;
     /** 触发时机 */
     trigger?: ValidateTrigger;
-}
-export declare type ValidateRule = ValidateRuleItem | ValidateRuleItem[];
-export declare type ValidateRules = Record<string, ValidateRule>;
-export interface ValidateOptionRule extends Omit<ValidateRuleItem, 'fields'> {
-    /** 子规则 */
-    fields?: Record<string, ValidateOptionRule | ValidateOptionRule[]>;
     /** 正则表达式的key */
     regexpKey?: string;
     /** 相反 */
@@ -102,8 +96,20 @@ export interface ValidateOptionRule extends Omit<ValidateRuleItem, 'fields'> {
      * - humanize 人类化
      */
     transformers?: ValidateTransformer[];
-    /** 触发时机 */
-    trigger?: ValidateTrigger;
+}
+export declare type ValidateRule = ValidateRuleItem | ValidateRuleItem[];
+export declare type ValidateRules = Record<string, ValidateRule>;
+export interface ValidateOptionRule extends Omit<ValidateRuleItem, 'fields'> {
+    /** 子规则 */
+    fields?: Record<string, ValidateOptionRule | ValidateOptionRule[]>;
+}
+export interface ParseRuleOptions {
+    /** 是否解析转换器: 默认false */
+    parseTransformers?: boolean;
+    /** 是否解析异步校验器: 默认false */
+    parseAsyncValidator?: boolean;
+    /** 是否解析子字段: 默认false */
+    parseSubFields?: boolean;
 }
 export interface GetRulesOptions {
     /** 字段设置 */
@@ -253,7 +259,7 @@ declare const validateUtil: {
      * @param options 校验规则
      * @returns 校验规则
      */
-    parseRule(options: ValidateOptionRule): ValidateRuleItem;
+    parseRule(options: ValidateOptionRule, parseRuleOptions?: ParseRuleOptions): ValidateRuleItem;
     /**
      * 获取错误信息
      * @param error 错误信息

@@ -33,6 +33,7 @@ export type ValidateTransformer =
   | 'trimEnd'
   | 'toLower'
   | 'toUpper'
+  | 'tryToNumber'
   | 'toNumber'
   | 'firstLetterUpper'
   | 'firstLetterLower'
@@ -115,14 +116,6 @@ export interface ValidateRuleItem extends Omit<OriginalValidateRuleItem, 'fields
   defaultField?: ValidateRule;
   /** 触发时机 */
   trigger?: ValidateTrigger;
-}
-
-export type ValidateRule = ValidateRuleItem | ValidateRuleItem[];
-export type ValidateRules = Record<string, ValidateRule>;
-
-export interface ValidateOptionRule extends Omit<ValidateRuleItem, 'fields'> {
-  /** 子规则 */
-  fields?: Record<string, ValidateOptionRule | ValidateOptionRule[]>;
   /** 正则表达式的key */
   regexpKey?: string;
   /** 相反 */
@@ -151,8 +144,23 @@ export interface ValidateOptionRule extends Omit<ValidateRuleItem, 'fields'> {
    * - humanize 人类化
    */
   transformers?: ValidateTransformer[];
-  /** 触发时机 */
-  trigger?: ValidateTrigger;
+}
+
+export type ValidateRule = ValidateRuleItem | ValidateRuleItem[];
+export type ValidateRules = Record<string, ValidateRule>;
+
+export interface ValidateOptionRule extends Omit<ValidateRuleItem, 'fields'> {
+  /** 子规则 */
+  fields?: Record<string, ValidateOptionRule | ValidateOptionRule[]>;
+}
+
+export interface ParseRuleOptions {
+  /** 是否解析转换器: 默认false */
+  parseTransformers?: boolean;
+  /** 是否解析异步校验器: 默认false */
+  parseAsyncValidator?: boolean;
+  /** 是否解析子字段: 默认false */
+  parseSubFields?: boolean;
 }
 
 export interface GetRulesOptions {
@@ -659,12 +667,15 @@ const validateUtil = {
       rules.push(validateUtil.parseRule(options));
       delete options.message;
     } else {
-      if (isPresent(options.regexpKey)) {
+      if (isPresent(options.regexpKey) || isPresent(options.pattern) || isPresent(options.asyncValidator)) {
         const ruleRegexpKey = _.cloneDeep(options);
         delete ruleRegexpKey.fields;
         delete ruleRegexpKey.defaultField;
-        rules.push(validateUtil.parseRule(ruleRegexpKey));
+        rules.push(validateUtil.parseRule(ruleRegexpKey, { parseAsyncValidator: true }));
         delete options.regexpKey;
+        delete options.pattern;
+        delete options.regexpReversed;
+        delete options.asyncValidator;
       }
 
       if (isPresent(options.enum)) {
@@ -725,16 +736,60 @@ const validateUtil = {
         delete options.whitespace;
       }
 
-      if (isPresent(options.required)) {
+      if (options.defaultField || options.fields) {
+        const ruleFields = _.cloneDeep(options);
+        delete ruleFields.required;
+        rules.push(validateUtil.parseRule(ruleFields, { parseSubFields: true }));
+        delete options.fields;
+        delete options.defaultField;
+      }
+
+      if (options.required) {
         const ruleRequired = _.cloneDeep(options);
         delete ruleRequired.fields;
         delete ruleRequired.defaultField;
         rules.unshift(validateUtil.parseRule(ruleRequired));
         delete options.required;
+      } else {
+        const avaliableKeys = [
+          'type',
+          'required',
+          'pattern',
+          'min',
+          'max',
+          'len',
+          'enum',
+          'whitespace',
+          'fields',
+          'options',
+          'defaultField',
+          'transform',
+          'message',
+          'asyncValidator',
+          'validator',
+          'regexpKey',
+          'regexpReversed',
+          'transformers',
+          'trigger',
+          'subType',
+          'path',
+          'data',
+        ];
+
+        const omitKeys = ['path', 'data', 'type', 'subType'];
+
+        if (!_.isEmpty(_.pick(_.omit(options, omitKeys), avaliableKeys))) {
+          rules.push(validateUtil.parseRule(options));
+        }
       }
 
-      if (!_.isEmpty(_.omit(options, ['path', 'data', 'type', 'subType']))) {
-        rules.push(validateUtil.parseRule(options));
+      if (isPresent(options.transformers) || typeof options.transform === 'function') {
+        const ruleTransformers = _.cloneDeep(options);
+        delete ruleTransformers.fields;
+        delete ruleTransformers.defaultField;
+        rules.unshift(validateUtil.parseRule(ruleTransformers, { parseTransformers: true }));
+        delete options.transformers;
+        delete options.transform;
       }
     }
 
@@ -746,12 +801,15 @@ const validateUtil = {
    * @param options 校验规则
    * @returns 校验规则
    */
-  parseRule(options: ValidateOptionRule): ValidateRuleItem {
+  parseRule(options: ValidateOptionRule, parseRuleOptions: ParseRuleOptions = {}): ValidateRuleItem {
     const path = options?.path ?? '';
-    const regexpKey = options?.regexpKey;
-    const regexp = options?.pattern ?? (regexpKey ? Reflect.get(regExps, regexpKey) : undefined);
     const type = options?.type ?? (options.fields ? 'object' : 'string');
-    const regexpReversed = options?.regexpReversed ?? false;
+
+    const rule: ValidateRuleItem = {
+      ...options,
+      type,
+      path,
+    };
 
     const message = (() => {
       const pickedRules = _.pick(options, SIMPLE_RULE_KEYS);
@@ -768,7 +826,7 @@ const validateUtil = {
         return options.message;
       }
 
-      if (regexpKey) {
+      if (parseRuleOptions.parseAsyncValidator && options.regexpKey) {
         return validateUtil.getErrorDataJSON({
           rules: pickedRules,
           message: `validate.regexp-key.${options.regexpReversed ? 'invalid-reversed' : 'invalid'}:${
@@ -915,161 +973,183 @@ const validateUtil = {
       }
     })();
 
-    const asyncValidator = (() => {
-      if (!regexp && options.asyncValidator === undefined) {
-        return undefined;
-      }
+    if (message) {
+      rule.message = message;
+    }
 
-      return async (
-        rule: ValidateInternalRuleItem,
-        value: ValidateValue,
-        callback: (error?: string | Error) => void,
-        source: ValidateValues,
-        option: ValidateOption,
-      ): Promise<void> => {
-        if (regexp) {
-          if (regexpReversed) {
-            if (regexp.test(value)) {
-              return Promise.reject(message);
-            }
-          } else {
-            if (!regexp.test(value)) {
-              return Promise.reject(message);
-            }
-          }
-        }
-
-        if (typeof options.asyncValidator === 'function') {
-          return await options.asyncValidator(rule, value, callback, source, option);
-        }
-
-        return Promise.resolve();
-      };
-    })();
-
-    const transform = (() => {
-      if ((options.transformers && options.transformers.length) || typeof options.transform === 'function') {
-        return (value: ValidateValue) => {
-          let newValue = (options.transformers ?? []).reduce((val: ValidateValue, transformer) => {
-            switch (transformer) {
-              case 'toBoolean':
-                return Boolean(val);
-              case 'toDate':
-                return new Date(val);
-              case 'trim':
-                return val.trim();
-              case 'trimLeft':
-                return val.trimLeft();
-              case 'trimRight':
-                return val.trimRight();
-              case 'trimStart':
-                return val.trimStart();
-              case 'trimEnd':
-                return val.trimEnd();
-              case 'toLower':
-                return val.toLowerCase();
-              case 'toUpper':
-                return val.toUpperCase();
-              case 'toNumber':
-                return Number(val);
-              case 'firstLetterUpper':
-                return val.charAt(0).toUpperCase() + val.slice(1);
-              case 'firstLetterLower':
-                return val.charAt(0).toLowerCase() + val.slice(1);
-              case 'capitalize':
-                return inflection.capitalize(val);
-              case 'camelize':
-                return inflection.camelize(val);
-              case 'dasherize':
-                return inflection.dasherize(val);
-              case 'underscore':
-                return inflection.underscore(val);
-              case 'pluralize':
-                return inflection.pluralize(val);
-              case 'singularize':
-                return inflection.singularize(val);
-              case 'humanize':
-                return inflection.humanize(val);
-              default:
-                return val;
-            }
-          }, value);
-
-          if (typeof options.transform === 'function') {
-            newValue = options.transform(newValue);
+    if (parseRuleOptions.parseAsyncValidator) {
+      const asyncValidator = (() => {
+        const regexpKey = options?.regexpKey;
+        const regexp = (() => {
+          if (typeof options.pattern === 'string') {
+            return new RegExp(options.pattern);
+          } else if (typeof options.pattern === 'object') {
+            return options.pattern;
           }
 
-          return newValue;
+          return regexpKey ? _.get<Record<string, RegExp>, string>(regExps, regexpKey) : undefined;
+        })();
+        const regexpReversed = options?.regexpReversed ?? false;
+
+        if (!regexp && options.asyncValidator === undefined) {
+          return undefined;
+        }
+
+        return async (
+          rule: ValidateInternalRuleItem,
+          value: ValidateValue,
+          callback: (error?: string | Error) => void,
+          source: ValidateValues,
+          option: ValidateOption,
+        ): Promise<void> => {
+          if (regexp) {
+            if (regexpReversed) {
+              if (regexp.test(value)) {
+                return Promise.reject(message);
+              }
+            } else {
+              if (!regexp.test(value)) {
+                return Promise.reject(message);
+              }
+            }
+          }
+
+          if (typeof options.asyncValidator === 'function') {
+            return await options.asyncValidator(rule, value, callback, source, option);
+          }
+
+          return Promise.resolve();
         };
+      })();
+
+      if (asyncValidator) {
+        rule.asyncValidator = asyncValidator;
+      }
+    }
+
+    if (parseRuleOptions.parseTransformers) {
+      const transform = (() => {
+        if ((options.transformers && options.transformers.length) || typeof options.transform === 'function') {
+          return (value: ValidateValue) => {
+            let newValue = (options.transformers ?? []).reduce((val: ValidateValue, transformer) => {
+              switch (transformer) {
+                case 'toBoolean':
+                  return Boolean(val);
+                case 'toDate':
+                  return new Date(val);
+                case 'trim':
+                  return val.trim();
+                case 'trimLeft':
+                  return val.trimLeft();
+                case 'trimRight':
+                  return val.trimRight();
+                case 'trimStart':
+                  return val.trimStart();
+                case 'trimEnd':
+                  return val.trimEnd();
+                case 'toLower':
+                  return val.toLowerCase();
+                case 'toUpper':
+                  return val.toUpperCase();
+                case 'tryToNumber':
+                  // 如果值为 undefined 或 null，则返回原值
+                  if (typeof val === 'number' || typeof val === 'undefined' || val === null) {
+                    return val;
+                  }
+
+                  return Number(val);
+                case 'toNumber':
+                  return Number(val);
+                case 'firstLetterUpper':
+                  return val.charAt(0).toUpperCase() + val.slice(1);
+                case 'firstLetterLower':
+                  return val.charAt(0).toLowerCase() + val.slice(1);
+                case 'capitalize':
+                  return inflection.capitalize(val);
+                case 'camelize':
+                  return inflection.camelize(val);
+                case 'dasherize':
+                  return inflection.dasherize(val);
+                case 'underscore':
+                  return inflection.underscore(val);
+                case 'pluralize':
+                  return inflection.pluralize(val);
+                case 'singularize':
+                  return inflection.singularize(val);
+                case 'humanize':
+                  return inflection.humanize(val);
+                default:
+                  return val;
+              }
+            }, value);
+
+            if (typeof options.transform === 'function') {
+              newValue = options.transform(newValue);
+            }
+
+            return newValue;
+          };
+        }
+
+        return undefined;
+      })();
+
+      if (transform) {
+        rule.transform = transform;
+      }
+    }
+
+    if (parseRuleOptions.parseSubFields) {
+      if (rule.defaultField) {
+        const defaultFields = Array.isArray(rule.defaultField) ? rule.defaultField : rule.defaultField ? [rule.defaultField] : [];
+        const defaultFieldType = defaultFields[0]?.type;
+
+        if (defaultFieldType === 'object') {
+          defaultFields.forEach((defaultField) => {
+            defaultField.path = path;
+
+            if (defaultField.fields) {
+              defaultField.fields = _.reduce(
+                defaultField.fields,
+                (result: ValidateRules, field, fieldKey) => {
+                  const fields: ValidateRuleItem[] = [];
+                  (Array.isArray(field) ? field : [field]).forEach((field) => {
+                    fields.push(...validateUtil.parseToRules({ path: `${path}.${fieldKey}`, ...field }));
+                  });
+                  Reflect.set(result, fieldKey, fields);
+                  return result;
+                },
+                {},
+              );
+            }
+          });
+        } else {
+          rule.defaultField = _.reduce(
+            defaultFields,
+            (result: ValidateRuleItem[], defaultField) => {
+              defaultField.path = `${path}.${ARRAY_ITEMS_BASIC_TYPE_KEY}`;
+              result.push(...validateUtil.parseToRules({ path: `${path}.${ARRAY_ITEMS_BASIC_TYPE_KEY}`, ...defaultField }));
+              return result;
+            },
+            [],
+          );
+        }
       }
 
-      return undefined;
-    })();
-
-    const rule: ValidateRuleItem = {
-      ...options,
-      type,
-      message,
-      path,
-    };
-
-    if (asyncValidator) {
-      rule.asyncValidator = asyncValidator;
-    }
-
-    if (transform) {
-      rule.transform = transform;
-    }
-
-    if (rule.defaultField) {
-      const defaultFields = Array.isArray(rule.defaultField) ? rule.defaultField : rule.defaultField ? [rule.defaultField] : [];
-      const defaultFieldType = defaultFields[0]?.type;
-
-      if (defaultFieldType === 'object') {
-        defaultFields.forEach((defaultField) => {
-          defaultField.path = path;
-
-          if (defaultField.fields) {
-            defaultField.fields = _.reduce(
-              defaultField.fields,
-              (result: ValidateRules, field, fieldKey) => {
-                const fields: ValidateRuleItem[] = [];
-                (Array.isArray(field) ? field : [field]).forEach((field) => {
-                  fields.push(...validateUtil.parseToRules({ path: `${path}.${fieldKey}`, ...field }));
-                });
-                Reflect.set(result, fieldKey, fields);
-                return result;
-              },
-              {},
-            );
-          }
-        });
-      } else {
-        rule.defaultField = _.reduce(
-          defaultFields,
-          (result: ValidateRuleItem[], defaultField) => {
-            defaultField.path = `${path}.${ARRAY_ITEMS_BASIC_TYPE_KEY}`;
-            result.push(...validateUtil.parseToRules({ path: `${path}.${ARRAY_ITEMS_BASIC_TYPE_KEY}`, ...defaultField }));
+      if (options.fields) {
+        rule.fields = _.reduce(
+          options.fields,
+          (result: ValidateRules, field, fieldKey) => {
+            const fields: ValidateRuleItem[] = [];
+            (Array.isArray(field) ? field : [field]).forEach((field) => {
+              fields.push(...validateUtil.parseToRules({ path: `${path}.${fieldKey}`, ...field }));
+            });
+            Reflect.set(result, fieldKey, fields);
             return result;
           },
-          [],
+          {},
         );
       }
-    }
-
-    if (options.fields) {
-      rule.fields = _.reduce(
-        options.fields,
-        (result: ValidateRules, field, fieldKey) => {
-          const fields: ValidateRuleItem[] = [];
-          (Array.isArray(field) ? field : [field]).forEach((field) => {
-            fields.push(...validateUtil.parseToRules({ path: `${path}.${fieldKey}`, ...field }));
-          });
-          Reflect.set(result, fieldKey, fields);
-          return result;
-        },
-        {},
-      );
     }
 
     return rule;
