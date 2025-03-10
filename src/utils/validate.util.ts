@@ -797,6 +797,20 @@ const validateUtil = {
   },
 
   /**
+   * 尝试将值转换为数字
+   * @param val 值
+   * @returns 数字
+   */
+  tryToNumber(val: string | number): number {
+    // 如果值为 undefined 或 null，则返回原值
+    if (typeof val === 'number' || typeof val === 'undefined' || val === null) {
+      return val;
+    }
+
+    return Number(val);
+  },
+
+  /**
    * 获取规则
    * @param options 校验规则
    * @returns 校验规则
@@ -1052,12 +1066,7 @@ const validateUtil = {
                 case 'toUpper':
                   return val.toUpperCase();
                 case 'tryToNumber':
-                  // 如果值为 undefined 或 null，则返回原值
-                  if (typeof val === 'number' || typeof val === 'undefined' || val === null) {
-                    return val;
-                  }
-
-                  return Number(val);
+                  return validateUtil.tryToNumber(val);
                 case 'toNumber':
                   return Number(val);
                 case 'firstLetterUpper':

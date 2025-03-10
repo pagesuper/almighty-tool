@@ -255,6 +255,12 @@ declare const validateUtil: {
      */
     parseToRules: (opts: ValidateOptionRule) => ValidateRuleItem[];
     /**
+     * 尝试将值转换为数字
+     * @param val 值
+     * @returns 数字
+     */
+    tryToNumber(val: string | number): number;
+    /**
      * 获取规则
      * @param options 校验规则
      * @returns 校验规则
