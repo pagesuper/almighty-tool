@@ -474,6 +474,8 @@ const validateUtil = {
     const schema = validateUtil.getSchema(rules, options);
     const transformedValues = validateUtil.transform(usingValues, schema.rules as ValidateOptionRules);
 
+    console.log('values: ...', values, '    transformedValues: ...', transformedValues);
+
     try {
       await schema.validate(usingValues, deepmerge({ messages: defaultMessages }, options ?? {}), callback);
 
