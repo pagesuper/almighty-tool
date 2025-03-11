@@ -474,8 +474,6 @@ const validateUtil = {
     const schema = validateUtil.getSchema(rules, options);
     const transformedValues = validateUtil.transform(usingValues, schema.rules as ValidateOptionRules);
 
-    console.log('values: ...', values, '    transformedValues: ...', transformedValues);
-
     try {
       await schema.validate(usingValues, deepmerge({ messages: defaultMessages }, options ?? {}), callback);
 
@@ -484,14 +482,16 @@ const validateUtil = {
         values: transformedValues,
       });
     } catch (error) {
+      const mergedValues = deepmerge.all([values, transformedValues]);
+
       return new ValidateResponseInstance({
         success: false,
-        values: transformedValues,
+        values: mergedValues,
         errors: validateUtil.getErrors(error, {
           model,
           i18n: options?.i18n ?? i18nConfig.i18n,
           lang: options?.lang,
-          values: transformedValues,
+          values: mergedValues,
         }),
       });
     }
