@@ -470,12 +470,11 @@ const validateUtil = {
     callback?: ValidateCallback,
   ): Promise<ValidateResponseInstance<T>> {
     const model = options?.model ?? 'Base';
-    let transformedValues: ValidateValues = values;
+    const usingValues = _.omit(options?.pickKeys ? _.pick(values, options.pickKeys) : values, options?.omitKeys ?? []);
+    const schema = validateUtil.getSchema(rules, options);
+    const transformedValues = validateUtil.transform(usingValues, schema.rules as ValidateOptionRules);
 
     try {
-      const usingValues = _.omit(options?.pickKeys ? _.pick(values, options.pickKeys) : values, options?.omitKeys ?? []);
-      const schema = validateUtil.getSchema(rules, options);
-      transformedValues = validateUtil.transform(usingValues, schema.rules as ValidateOptionRules);
       await schema.validate(usingValues, deepmerge({ messages: defaultMessages }, options ?? {}), callback);
 
       return new ValidateResponseInstance({
