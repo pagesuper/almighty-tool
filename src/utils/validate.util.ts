@@ -482,7 +482,7 @@ const validateUtil = {
         values: transformedValues,
       });
     } catch (error) {
-      const mergedValues = deepmerge.all([values, transformedValues]);
+      const mergedValues = usingValues;
 
       return new ValidateResponseInstance({
         success: false,
