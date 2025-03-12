@@ -32,8 +32,9 @@ export interface LikeTreeObject<T> {
   children?: T[] | null;
 }
 
-export interface TreeErgodicOptions {
-  depth?: number;
+export interface TreeErgodicOptions<T> {
+  depth: number;
+  ancestors?: T[];
 }
 
 const basicUtil = {
@@ -46,18 +47,19 @@ const basicUtil = {
   /** 树遍历 */
   treeErgodic<T extends LikeTreeObject<T>>(
     treeChildren: T[],
-    callFn?: (linkTreeObject: T, options: TreeErgodicOptions) => void,
-    options: TreeErgodicOptions = {},
+    callFn?: (linkTreeObject: T, options: TreeErgodicOptions<T>) => void,
+    options: Partial<TreeErgodicOptions<T>> = {},
   ) {
     const depth = options.depth ?? 0;
+    const ancestors = options.ancestors ?? [];
 
     treeChildren.forEach((linkTreeObject) => {
       if (typeof callFn === 'function') {
-        callFn(linkTreeObject, { depth });
+        callFn(linkTreeObject, { depth, ancestors });
       }
 
       if (linkTreeObject.children?.length) {
-        basicUtil.treeErgodic(linkTreeObject.children, callFn, { depth: depth + 1 });
+        basicUtil.treeErgodic(linkTreeObject.children, callFn, { depth: depth + 1, ancestors: [...ancestors, linkTreeObject] });
       }
     });
   },

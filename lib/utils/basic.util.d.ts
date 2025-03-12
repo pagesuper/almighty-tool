@@ -22,13 +22,14 @@ export interface SetClipboardDataOptions {
 export interface LikeTreeObject<T> {
     children?: T[] | null;
 }
-export interface TreeErgodicOptions {
-    depth?: number;
+export interface TreeErgodicOptions<T> {
+    depth: number;
+    ancestors?: T[];
 }
 declare const basicUtil: {
     isPromise<T = any>(obj: any): obj is Promise<T>;
     /** 树遍历 */
-    treeErgodic<T_1 extends LikeTreeObject<T_1>>(treeChildren: T_1[], callFn?: ((linkTreeObject: T_1, options: TreeErgodicOptions) => void) | undefined, options?: TreeErgodicOptions): void;
+    treeErgodic<T_1 extends LikeTreeObject<T_1>>(treeChildren: T_1[], callFn?: ((linkTreeObject: T_1, options: TreeErgodicOptions<T_1>) => void) | undefined, options?: Partial<TreeErgodicOptions<T_1>>): void;
     /** 过滤html标签 */
     escapeHTML(str: string): string;
     /** 将css样式对象转为字符串 */
