@@ -44,16 +44,41 @@ const basicUtil = {
     );
   },
 
+  /**
+   * 获取树的子节点
+   * @param compareFn 比较函数
+   * @param treeChildren 树节点
+   * @returns 子节点
+   */
+  getTreeChildren<T extends LikeTreeObject<T>>(compareFn: (node: T) => boolean, treeChildren: T | T[] = []): T[] {
+    const nodes = Array.isArray(treeChildren) ? treeChildren : [treeChildren];
+
+    for (const node of nodes) {
+      if (compareFn(node)) {
+        return node.children ?? [];
+      }
+
+      if (node.children) {
+        const children = basicUtil.getTreeChildren(compareFn, node.children);
+        if (children && children.length) {
+          return children;
+        }
+      }
+    }
+
+    return [];
+  },
+
   /** 树遍历 */
   treeErgodic<T extends LikeTreeObject<T>>(
-    treeChildren: T[],
+    treeChildren: T | T[],
     callFn?: (linkTreeObject: T, options: TreeErgodicOptions<T>) => void,
     options: Partial<TreeErgodicOptions<T>> = {},
   ) {
     const depth = options.depth ?? 0;
     const ancestors = options.ancestors ?? [];
 
-    treeChildren.forEach((linkTreeObject) => {
+    (Array.isArray(treeChildren) ? treeChildren : [treeChildren]).forEach((linkTreeObject) => {
       if (typeof callFn === 'function') {
         callFn(linkTreeObject, { depth, ancestors });
       }

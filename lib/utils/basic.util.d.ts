@@ -28,8 +28,15 @@ export interface TreeErgodicOptions<T> {
 }
 declare const basicUtil: {
     isPromise<T = any>(obj: any): obj is Promise<T>;
+    /**
+     * 获取树的子节点
+     * @param compareFn 比较函数
+     * @param treeChildren 树节点
+     * @returns 子节点
+     */
+    getTreeChildren<T_1 extends LikeTreeObject<T_1>>(compareFn: (node: T_1) => boolean, treeChildren?: T_1 | T_1[]): T_1[];
     /** 树遍历 */
-    treeErgodic<T_1 extends LikeTreeObject<T_1>>(treeChildren: T_1[], callFn?: ((linkTreeObject: T_1, options: TreeErgodicOptions<T_1>) => void) | undefined, options?: Partial<TreeErgodicOptions<T_1>>): void;
+    treeErgodic<T_2 extends LikeTreeObject<T_2>>(treeChildren: T_2 | T_2[], callFn?: ((linkTreeObject: T_2, options: TreeErgodicOptions<T_2>) => void) | undefined, options?: Partial<TreeErgodicOptions<T_2>>): void;
     /** 过滤html标签 */
     escapeHTML(str: string): string;
     /** 将css样式对象转为字符串 */
