@@ -69,6 +69,37 @@ const basicUtil = {
     return [];
   },
 
+  /**
+   * 获取指定节点的父节点
+   * @param compareFn 比较函数，用于匹配目标节点
+   * @param treeNodes 树节点数组或单个树节点
+   * @returns 父节点，如果未找到则返回 null
+   */
+  getTreeParent<T extends LikeTreeObject<T>>(compareFn: (node: T) => boolean, treeNodes: T | T[] = []): T | null {
+    const nodes = Array.isArray(treeNodes) ? treeNodes : [treeNodes];
+
+    for (const node of nodes) {
+      // 如果当前节点有子节点，检查子节点是否匹配目标节点
+      if (node.children) {
+        for (const child of node.children) {
+          if (compareFn(child)) {
+            // 找到目标节点，返回其父节点
+            return node;
+          }
+        }
+
+        // 递归检查子节点的子节点
+        const parent = this.getTreeParent(compareFn, node.children);
+        if (parent) {
+          // 在子节点中找到目标节点，返回其父节点
+          return parent;
+        }
+      }
+    }
+
+    return null; // 未找到目标节点
+  },
+
   /** 树遍历 */
   treeErgodic<T extends LikeTreeObject<T>>(
     treeChildren: T | T[],

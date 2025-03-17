@@ -35,8 +35,15 @@ declare const basicUtil: {
      * @returns 子节点
      */
     getTreeChildren<T_1 extends LikeTreeObject<T_1>>(compareFn: (node: T_1) => boolean, treeChildren?: T_1 | T_1[]): T_1[];
+    /**
+     * 获取指定节点的父节点
+     * @param compareFn 比较函数，用于匹配目标节点
+     * @param treeNodes 树节点数组或单个树节点
+     * @returns 父节点，如果未找到则返回 null
+     */
+    getTreeParent<T_2 extends LikeTreeObject<T_2>>(compareFn: (node: T_2) => boolean, treeNodes?: T_2 | T_2[]): T_2 | null;
     /** 树遍历 */
-    treeErgodic<T_2 extends LikeTreeObject<T_2>>(treeChildren: T_2 | T_2[], callFn?: ((linkTreeObject: T_2, options: TreeErgodicOptions<T_2>) => void) | undefined, options?: Partial<TreeErgodicOptions<T_2>>): void;
+    treeErgodic<T_3 extends LikeTreeObject<T_3>>(treeChildren: T_3 | T_3[], callFn?: ((linkTreeObject: T_3, options: TreeErgodicOptions<T_3>) => void) | undefined, options?: Partial<TreeErgodicOptions<T_3>>): void;
     /** 过滤html标签 */
     escapeHTML(str: string): string;
     /** 将css样式对象转为字符串 */
