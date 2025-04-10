@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 import 'dayjs/locale/en';
 import 'dayjs/locale/vi';
-import 'dayjs/locale/zh-cn';
+import '../dayjs/locales/zh-cn';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import _ from 'lodash';
 import en from '../locales/en';

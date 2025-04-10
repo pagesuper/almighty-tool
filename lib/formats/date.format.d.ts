@@ -1,6 +1,6 @@
 import 'dayjs/locale/en';
 import 'dayjs/locale/vi';
-import 'dayjs/locale/zh-cn';
+import '../dayjs/locales/zh-cn';
 export declare type I18nValues = any[] | {
     [key: string]: any;
 };
