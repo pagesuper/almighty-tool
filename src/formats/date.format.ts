@@ -17,7 +17,7 @@ const DEFAULT_I18N_KEY = 'almighty-tool/formats/date-format#i18n';
 
 const i18n = {
   t: (key: string, _values?: I18nValues, locale?: string): string => {
-    switch (locale) {
+    switch (locale?.toLowerCase()) {
       case 'vi':
         return _.get(vi, key);
 

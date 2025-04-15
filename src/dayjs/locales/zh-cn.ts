@@ -1,5 +1,5 @@
 // Chinese (China) [zh-cn]
-import dayjs from 'dayjs/index';
+import dayjs from 'dayjs';
 const locale = {
   name: 'zh-cn',
   weekdays: '星期日_星期一_星期二_星期三_星期四_星期五_星期六'.split('_'),
