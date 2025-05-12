@@ -39,5 +39,21 @@ declare const cryptoUtil: {
      * 解密
      */
     aesDecrypt(data: string, key: string, iv: string, algorithm?: forge.cipher.Algorithm): string;
+    /** ========= RSA 实现部分 ========= */
+    generateRsaKeyPair(bits?: number): {
+        publicKey: string;
+        privateKey: string;
+    };
+    publicEncrypt(publicKey: string, data: string): string;
+    privateDecrypt(privateKey: string, encrypted: string): string;
+    /** 长文本混合加密 */
+    longPublicEncrypt(publicKey: string, data: string): {
+        encryptedAesKey: string;
+        encryptedData: string;
+    };
+    longPrivateDecrypt(privateKey: string, encryptedAesKey: string, encryptedData: string): string;
+    /** 辅助方法 */
+    joinStrings(txt1: string, txt2: string): string;
+    splitJoinedStrings(str: string): string[];
 };
 export default cryptoUtil;

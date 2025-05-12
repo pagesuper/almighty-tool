@@ -90,3 +90,61 @@ describe('cryptoUtil.aes', () => {
     }
   });
 });
+
+describe('cryptoUtil.rsa for long text', () => {
+  const longText = `
+    哈哈，😄
+    TypeScript adds additional syntax to JavaScript to support
+    a tighter integration with your editor. Catch errors early in your editor.
+    TypeScript code converts to JavaScript, which runs anywhere JavaScript runs: In a browser, on Node.js or Deno and in your apps.
+    TypeScript understands JavaScript and uses type inference to give you great tooling without additional code.
+
+    TypeScript adds additional syntax to JavaScript to support
+    a tighter integration with your editor. Catch errors early in your editor.
+    TypeScript code converts to JavaScript, which runs anywhere JavaScript runs: In a browser, on Node.js or Deno and in your apps.
+    TypeScript understands JavaScript and uses type inference to give you great tooling without additional code.
+
+    TypeScript adds additional syntax to JavaScript to support
+    a tighter integration with your editor. Catch errors early in your editor.
+    TypeScript code converts to JavaScript, which runs anywhere JavaScript runs: In a browser, on Node.js or Deno and in your apps.
+    TypeScript understands JavaScript and uses type inference to give you great tooling without additional code.
+
+    TypeScript adds additional syntax to JavaScript to support
+    a tighter integration with your editor. Catch errors early in your editor.
+    TypeScript code converts to JavaScript, which runs anywhere JavaScript runs: In a browser, on Node.js or Deno and in your apps.
+    TypeScript understands JavaScript and uses type inference to give you great tooling without additional code.
+
+    TypeScript adds additional syntax to JavaScript to support
+    a tighter integration with your editor. Catch errors early in your editor.
+    TypeScript code converts to JavaScript, which runs anywhere JavaScript runs: In a browser, on Node.js or Deno and in your apps.
+    TypeScript understands JavaScript and uses type inference to give you great tooling without additional code.
+
+    TypeScript adds additional syntax to JavaScript to support
+    a tighter integration with your editor. Catch errors early in your editor.
+    TypeScript code converts to JavaScript, which runs anywhere JavaScript runs: In a browser, on Node.js or Deno and in your apps.
+    TypeScript understands JavaScript and uses type inference to give you great tooling without additional code.
+
+    TypeScript adds additional syntax to JavaScript to support
+    a tighter integration with your editor. Catch errors early in your editor.
+    TypeScript code converts to JavaScript, which runs anywhere JavaScript runs: In a browser, on Node.js or Deno and in your apps.
+    TypeScript understands JavaScript and uses type inference to give you great tooling without additional code.
+
+    TypeScript adds additional syntax to JavaScript to support
+    a tighter integration with your editor. Catch errors early in your editor.
+    TypeScript code converts to JavaScript, which runs anywhere JavaScript runs: In a browser, on Node.js or Deno and in your apps.
+    TypeScript understands JavaScript and uses type inference to give you great tooling without additional code.
+
+    TypeScript adds additional syntax to JavaScript to support
+    a tighter integration with your editor. Catch errors early in your editor.
+    TypeScript code converts to JavaScript, which runs anywhere JavaScript runs: In a browser, on Node.js or Deno and in your apps.
+    TypeScript understands JavaScript and uses type inference to give you great tooling without additional code.
+    `;
+
+  test('成功: 公钥加密，私钥解密', async () => {
+    const { privateKey, publicKey } = cryptoUtil.generateRsaKeyPair();
+    const { encryptedAesKey, encryptedData } = cryptoUtil.longPublicEncrypt(publicKey, longText);
+    // console.log({ encryptedAesKey, encryptedData });
+    const decryptedData = cryptoUtil.longPrivateDecrypt(privateKey, encryptedAesKey, encryptedData);
+    assert.equal(decryptedData, longText);
+  });
+});
