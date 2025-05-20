@@ -107,6 +107,53 @@ const cryptoUtil = {
     decipher.finish();
     return forge.util.decodeUtf8(decipher.output.data);
   },
+
+  /** ========= RSA 实现部分 ========= */
+  // 生成RSA密钥对
+  generateRsaKeyPair(bits = 2048): { publicKey: string; privateKey: string } {
+    const keypair = forge.pki.rsa.generateKeyPair({ bits });
+    return {
+      publicKey: forge.pki.publicKeyToPem(keypair.publicKey),
+      privateKey: forge.pki.privateKeyToPem(keypair.privateKey),
+    };
+  },
+
+  // 公钥加密
+  publicEncrypt(publicKey: string, data: string): string {
+    const key = forge.pki.publicKeyFromPem(publicKey);
+    // return window.btoa(key.encrypt(data, 'RSA-OAEP'));
+    return this.base64Encode(key.encrypt(data, 'RSA-OAEP'));
+  },
+
+  // 私钥解密
+  privateDecrypt(privateKey: string, encrypted: string): string {
+    const key = forge.pki.privateKeyFromPem(privateKey);
+    return key.decrypt(this.base64Decode(encrypted), 'RSA-OAEP');
+  },
+
+  /** 长文本混合加密 */
+  longPublicEncrypt(publicKey: string, data: string) {
+    const { key: aesKey, iv } = this.generateAesKeyAndIV();
+    return {
+      encryptedAesKey: this.publicEncrypt(publicKey, aesKey),
+      encryptedData: this.joinStrings(iv, this.aesEncrypt(data, aesKey, iv)),
+    };
+  },
+
+  longPrivateDecrypt(privateKey: string, encryptedAesKey: string, encryptedData: string) {
+    const aesKey = this.privateDecrypt(privateKey, encryptedAesKey);
+    const [iv, data] = this.splitJoinedStrings(encryptedData);
+    return this.aesDecrypt(data, aesKey, iv);
+  },
+
+  /** 辅助方法 */
+  joinStrings(txt1: string, txt2: string): string {
+    return [txt1, txt2].join('##');
+  },
+  splitJoinedStrings(str: string): string[] {
+    const index = str.indexOf('##');
+    return index !== -1 ? [str.slice(0, index), str.slice(index + 2)] : [str];
+  },
 };
 
 export default cryptoUtil;
