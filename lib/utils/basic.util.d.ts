@@ -111,5 +111,6 @@ declare const basicUtil: {
     getDifferences(obj1: any, obj2: any, options?: {
         noStrict?: boolean;
     }): string[];
+    getTextWidth(text: string): number;
 };
 export default basicUtil;

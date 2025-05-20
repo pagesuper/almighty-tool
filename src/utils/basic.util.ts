@@ -506,6 +506,19 @@ const basicUtil = {
 
     return implGetDifferences(obj1, obj2, []);
   },
+
+  getTextWidth(text: string): number {
+    if (!text) {
+      return 0;
+    }
+
+    // ES5 兼容的正则表达式（使用代理对匹配 Emoji 和全角字符）
+    const regex =
+      // eslint-disable-next-line no-control-regex, no-misleading-character-class
+      /[^\u0000-\u00FF]|[\uD83C-\uD83D][\uDC00-\uDFFF]|[\u20D0-\u20FF\uFE00-\uFE0F]|[\u2600-\u27BF]|[\uD83E\uD83C][\uDD00-\uDDFF]/g;
+
+    return text.replace(regex, 'aa').length;
+  },
 };
 
 export default basicUtil;

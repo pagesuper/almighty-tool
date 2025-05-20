@@ -94,3 +94,35 @@ describe('basicUtil.getDifferences()', () => {
     expect(basicUtil.getDifferences(value1, value2, {})).toEqual(['school.years', 'users.0.age']);
   });
 });
+
+// describe('textUtil.getTextWidth()', () => {
+//   test('空字符串返回0', () => {
+//     assert.equal(basicUtil.getTextWidth(''), 0);
+//   });
+
+//   test('ASCII字符计为1', () => {
+//     assert.equal(basicUtil.getTextWidth('abc123'), 6);
+//     assert.equal(basicUtil.getTextWidth('@#$'), 3);
+//   });
+
+//   test('全角字符计为2', () => {
+//     assert.equal(basicUtil.getTextWidth('你好'), 4);
+//     assert.equal(basicUtil.getTextWidth('ＡＢＣ'), 6);
+//   });
+
+//   test('Emoji计为2', () => {
+//     assert.equal(basicUtil.getTextWidth('🌍'), 2);
+//     assert.equal(basicUtil.getTextWidth('👍🏻'), 2);
+//   });
+
+//   test('混合字符计算', () => {
+//     assert.equal(basicUtil.getTextWidth('a你好🌍'), 5);
+//     assert.equal(basicUtil.getTextWidth('👨‍👩‍👧‍👦'), 4);
+//   });
+
+//   test('边界值测试', () => {
+//     assert.equal(basicUtil.getTextWidth('\x00'), 1); // ASCII最小值
+//     assert.equal(basicUtil.getTextWidth('\xFF'), 1); // ASCII最大值
+//     assert.equal(basicUtil.getTextWidth('\uD83C\uDF00'), 2); // Emoji代理对
+//   });
+// });
