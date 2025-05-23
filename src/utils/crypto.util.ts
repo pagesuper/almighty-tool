@@ -132,7 +132,7 @@ const cryptoUtil = {
 
   /** ========= RSA 实现部分 ========= */
   // 生成RSA密钥对
-  generateRsaKeyPair(bits = 512): { publicKey: string; privateKey: string } {
+  generateRsaKeyPair(bits = 2048): { publicKey: string; privateKey: string } {
     const keypair = forge.pki.rsa.generateKeyPair({ bits });
     return {
       publicKey: forge.pki.publicKeyToPem(keypair.publicKey),
