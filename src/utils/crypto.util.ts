@@ -9,8 +9,16 @@ const DEFAULT_KEY_ENCRYPTION_SCHEME: KeyEncryptionScheme = 'RSA-OAEP';
 const DEFAULT_CIPHER_ALGORITHM: CipherAlgorithm = 'AES-CBC';
 const DEFAULT_JOIN_SEPARATOR = '::';
 
-interface LongEncryptDecryptOptions {
+interface AesEncryptDecryptOptions {
+  algorithm?: CipherAlgorithm;
+}
+
+interface EncryptDecryptOptions {
   algorithm?: KeyEncryptionScheme;
+}
+
+interface LongEncryptDecryptOptions extends EncryptDecryptOptions {
+  aesAlgorithm?: CipherAlgorithm;
   joinSeparator?: string;
 }
 
@@ -101,7 +109,8 @@ const cryptoUtil = {
    *
    * iv-length: 192/8
    */
-  aesEncrypt(data: string, key: string, iv: string, algorithm: CipherAlgorithm = DEFAULT_CIPHER_ALGORITHM): string {
+  aesEncrypt(data: string, key: string, iv: string, options: AesEncryptDecryptOptions = {}): string {
+    const algorithm = options.algorithm ?? DEFAULT_CIPHER_ALGORITHM;
     const cipher = forge.cipher.createCipher(algorithm, key);
     cipher.start({ iv });
     cipher.update(forge.util.createBuffer(forge.util.encodeUtf8(data)));
@@ -112,7 +121,8 @@ const cryptoUtil = {
   /**
    * 解密
    */
-  aesDecrypt(data: string, key: string, iv: string, algorithm: CipherAlgorithm = DEFAULT_CIPHER_ALGORITHM): string {
+  aesDecrypt(data: string, key: string, iv: string, options: AesEncryptDecryptOptions = {}): string {
+    const algorithm = options.algorithm ?? DEFAULT_CIPHER_ALGORITHM;
     const decipher = forge.cipher.createDecipher(algorithm, key);
     decipher.start({ iv });
     decipher.update(forge.util.createBuffer(forge.util.decode64(data)));
@@ -131,30 +141,33 @@ const cryptoUtil = {
   },
 
   // 公钥加密
-  publicEncrypt(publicKey: string, data: string, encryptAlgorithm: KeyEncryptionScheme = DEFAULT_KEY_ENCRYPTION_SCHEME): string {
+  publicEncrypt(publicKey: string, data: string, options: EncryptDecryptOptions = {}): string {
+    const algorithm = options.algorithm ?? DEFAULT_KEY_ENCRYPTION_SCHEME;
     const key = forge.pki.publicKeyFromPem(publicKey);
-    return this.base64Encode(key.encrypt(data, encryptAlgorithm));
+    return this.base64Encode(key.encrypt(data, algorithm));
   },
 
   // 私钥解密
-  privateDecrypt(
-    privateKey: string,
-    encrypted: string,
-    decryptAlgorithm: KeyEncryptionScheme = DEFAULT_KEY_ENCRYPTION_SCHEME,
-  ): string {
+  privateDecrypt(privateKey: string, encrypted: string, options: EncryptDecryptOptions = {}): string {
+    const algorithm = options.algorithm ?? DEFAULT_KEY_ENCRYPTION_SCHEME;
     const key = forge.pki.privateKeyFromPem(privateKey);
-    return key.decrypt(this.base64Decode(encrypted), decryptAlgorithm);
+    return key.decrypt(this.base64Decode(encrypted), algorithm);
   },
 
   /** 长文本混合加密 */
   longPublicEncrypt(publicKey: string, data: string, options: LongEncryptDecryptOptions = {}) {
     const algorithm = options.algorithm ?? DEFAULT_KEY_ENCRYPTION_SCHEME;
+    const aesAlgorithm = options.aesAlgorithm ?? DEFAULT_CIPHER_ALGORITHM;
     const joinSeparator = options.joinSeparator ?? DEFAULT_JOIN_SEPARATOR;
     const { key: aesKey, iv } = this.generateAesKeyAndIV();
 
     return {
-      encryptedAesKey: this.publicEncrypt(publicKey, aesKey, algorithm),
-      encryptedData: this.joinStrings(cryptoUtil.base64Encode(iv), this.aesEncrypt(data, aesKey, iv), joinSeparator),
+      encryptedAesKey: this.publicEncrypt(publicKey, aesKey, { algorithm }),
+      encryptedData: this.joinStrings(
+        cryptoUtil.base64Encode(iv),
+        this.aesEncrypt(data, aesKey, iv, { algorithm: aesAlgorithm }),
+        joinSeparator,
+      ),
     };
   },
 
@@ -164,11 +177,12 @@ const cryptoUtil = {
     encryptedData: string,
     options: LongEncryptDecryptOptions = {},
   ) {
-    const decryptAlgorithm = options.algorithm ?? DEFAULT_KEY_ENCRYPTION_SCHEME;
+    const algorithm = options.algorithm ?? DEFAULT_KEY_ENCRYPTION_SCHEME;
+    const aesAlgorithm = options.aesAlgorithm ?? DEFAULT_CIPHER_ALGORITHM;
     const joinSeparator = options.joinSeparator ?? DEFAULT_JOIN_SEPARATOR;
-    const aesKey = this.privateDecrypt(privateKey, encryptedAesKey, decryptAlgorithm);
+    const aesKey = this.privateDecrypt(privateKey, encryptedAesKey, { algorithm });
     const [iv, data] = this.splitJoinedStrings(encryptedData, joinSeparator);
-    return this.aesDecrypt(data, aesKey, cryptoUtil.base64Decode(iv));
+    return this.aesDecrypt(data, aesKey, cryptoUtil.base64Decode(iv), { algorithm: aesAlgorithm });
   },
 
   /** 辅助方法 */

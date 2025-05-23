@@ -1,8 +1,14 @@
 import forge from 'node-forge';
 declare type KeyEncryptionScheme = 'RSAES-PKCS1-V1_5' | 'RSA-OAEP' | 'RAW' | 'NONE' | null;
 declare type CipherAlgorithm = forge.cipher.Algorithm;
-interface LongEncryptDecryptOptions {
+interface AesEncryptDecryptOptions {
+    algorithm?: CipherAlgorithm;
+}
+interface EncryptDecryptOptions {
     algorithm?: KeyEncryptionScheme;
+}
+interface LongEncryptDecryptOptions extends EncryptDecryptOptions {
+    aesAlgorithm?: CipherAlgorithm;
     joinSeparator?: string;
 }
 declare const cryptoUtil: {
@@ -40,18 +46,18 @@ declare const cryptoUtil: {
      *
      * iv-length: 192/8
      */
-    aesEncrypt(data: string, key: string, iv: string, algorithm?: CipherAlgorithm): string;
+    aesEncrypt(data: string, key: string, iv: string, options?: AesEncryptDecryptOptions): string;
     /**
      * 解密
      */
-    aesDecrypt(data: string, key: string, iv: string, algorithm?: CipherAlgorithm): string;
+    aesDecrypt(data: string, key: string, iv: string, options?: AesEncryptDecryptOptions): string;
     /** ========= RSA 实现部分 ========= */
     generateRsaKeyPair(bits?: number): {
         publicKey: string;
         privateKey: string;
     };
-    publicEncrypt(publicKey: string, data: string, encryptAlgorithm?: KeyEncryptionScheme): string;
-    privateDecrypt(privateKey: string, encrypted: string, decryptAlgorithm?: KeyEncryptionScheme): string;
+    publicEncrypt(publicKey: string, data: string, options?: EncryptDecryptOptions): string;
+    privateDecrypt(privateKey: string, encrypted: string, options?: EncryptDecryptOptions): string;
     /** 长文本混合加密 */
     longPublicEncrypt(publicKey: string, data: string, options?: LongEncryptDecryptOptions): {
         encryptedAesKey: string;
