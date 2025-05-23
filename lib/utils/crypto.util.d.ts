@@ -53,7 +53,7 @@ declare const cryptoUtil: {
     };
     longPrivateDecrypt(privateKey: string, encryptedAesKey: string, encryptedData: string): string;
     /** 辅助方法 */
-    joinStrings(txt1: string, txt2: string): string;
-    splitJoinedStrings(str: string): string[];
+    joinStrings(txt1: string, txt2: string, separator?: string): string;
+    splitJoinedStrings(str: string, separator?: string): string[];
 };
 export default cryptoUtil;

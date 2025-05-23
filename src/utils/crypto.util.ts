@@ -121,7 +121,6 @@ const cryptoUtil = {
   // 公钥加密
   publicEncrypt(publicKey: string, data: string): string {
     const key = forge.pki.publicKeyFromPem(publicKey);
-    // return window.btoa(key.encrypt(data, 'RSA-OAEP'));
     return this.base64Encode(key.encrypt(data, 'RSA-OAEP'));
   },
 
@@ -147,12 +146,12 @@ const cryptoUtil = {
   },
 
   /** 辅助方法 */
-  joinStrings(txt1: string, txt2: string): string {
-    return [txt1, txt2].join('##');
+  joinStrings(txt1: string, txt2: string, separator = '##'): string {
+    return [txt1, txt2].join(separator);
   },
-  splitJoinedStrings(str: string): string[] {
-    const index = str.indexOf('##');
-    return index !== -1 ? [str.slice(0, index), str.slice(index + 2)] : [str];
+  splitJoinedStrings(str: string, separator = '##'): string[] {
+    const index = str.indexOf(separator);
+    return index !== -1 ? [str.slice(0, index), str.slice(index + separator.length)] : [str];
   },
 };
 
