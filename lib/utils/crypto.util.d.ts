@@ -1,4 +1,6 @@
 import forge from 'node-forge';
+declare type KeyEncryptionScheme = 'RSAES-PKCS1-V1_5' | 'RSA-OAEP' | 'RAW' | 'NONE' | null;
+declare type CipherAlgorithm = forge.cipher.Algorithm;
 declare const cryptoUtil: {
     /** 获取 uuid */
     uuid(): string;
@@ -34,24 +36,24 @@ declare const cryptoUtil: {
      *
      * iv-length: 192/8
      */
-    aesEncrypt(data: string, key: string, iv: string, algorithm?: forge.cipher.Algorithm): string;
+    aesEncrypt(data: string, key: string, iv: string, algorithm?: CipherAlgorithm): string;
     /**
      * 解密
      */
-    aesDecrypt(data: string, key: string, iv: string, algorithm?: forge.cipher.Algorithm): string;
+    aesDecrypt(data: string, key: string, iv: string, algorithm?: CipherAlgorithm): string;
     /** ========= RSA 实现部分 ========= */
     generateRsaKeyPair(bits?: number): {
         publicKey: string;
         privateKey: string;
     };
-    publicEncrypt(publicKey: string, data: string): string;
-    privateDecrypt(privateKey: string, encrypted: string): string;
+    publicEncrypt(publicKey: string, data: string, encryptAlgorithm?: KeyEncryptionScheme): string;
+    privateDecrypt(privateKey: string, encrypted: string, decryptAlgorithm?: KeyEncryptionScheme): string;
     /** 长文本混合加密 */
-    longPublicEncrypt(publicKey: string, data: string): {
+    longPublicEncrypt(publicKey: string, data: string, encryptAlgorithm?: KeyEncryptionScheme): {
         encryptedAesKey: string;
         encryptedData: string;
     };
-    longPrivateDecrypt(privateKey: string, encryptedAesKey: string, encryptedData: string): string;
+    longPrivateDecrypt(privateKey: string, encryptedAesKey: string, encryptedData: string, decryptAlgorithm?: KeyEncryptionScheme): string;
     /** 辅助方法 */
     joinStrings(txt1: string, txt2: string, separator?: string): string;
     splitJoinedStrings(str: string, separator?: string): string[];

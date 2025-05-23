@@ -2,6 +2,11 @@ import forge from 'node-forge';
 import { v4 as uuidv4 } from 'uuid';
 import randomUtil from './random.util';
 
+type KeyEncryptionScheme = 'RSAES-PKCS1-V1_5' | 'RSA-OAEP' | 'RAW' | 'NONE' | null;
+const DEFAULT_KEY_ENCRYPTION_SCHEME: KeyEncryptionScheme = 'RSA-OAEP';
+type CipherAlgorithm = forge.cipher.Algorithm;
+const DEFAULT_CIPHER_ALGORITHM: CipherAlgorithm = 'AES-CBC';
+
 const cryptoUtil = {
   /** 获取 uuid */
   uuid(): string {
@@ -89,7 +94,7 @@ const cryptoUtil = {
    *
    * iv-length: 192/8
    */
-  aesEncrypt(data: string, key: string, iv: string, algorithm: forge.cipher.Algorithm = 'AES-CBC'): string {
+  aesEncrypt(data: string, key: string, iv: string, algorithm: CipherAlgorithm = DEFAULT_CIPHER_ALGORITHM): string {
     const cipher = forge.cipher.createCipher(algorithm, key);
     cipher.start({ iv });
     cipher.update(forge.util.createBuffer(forge.util.encodeUtf8(data)));
@@ -100,7 +105,7 @@ const cryptoUtil = {
   /**
    * 解密
    */
-  aesDecrypt(data: string, key: string, iv: string, algorithm: forge.cipher.Algorithm = 'AES-CBC'): string {
+  aesDecrypt(data: string, key: string, iv: string, algorithm: CipherAlgorithm = DEFAULT_CIPHER_ALGORITHM): string {
     const decipher = forge.cipher.createDecipher(algorithm, key);
     decipher.start({ iv });
     decipher.update(forge.util.createBuffer(forge.util.decode64(data)));
@@ -119,28 +124,37 @@ const cryptoUtil = {
   },
 
   // 公钥加密
-  publicEncrypt(publicKey: string, data: string): string {
+  publicEncrypt(publicKey: string, data: string, encryptAlgorithm: KeyEncryptionScheme = DEFAULT_KEY_ENCRYPTION_SCHEME): string {
     const key = forge.pki.publicKeyFromPem(publicKey);
-    return this.base64Encode(key.encrypt(data, 'RSA-OAEP'));
+    return this.base64Encode(key.encrypt(data, encryptAlgorithm));
   },
 
   // 私钥解密
-  privateDecrypt(privateKey: string, encrypted: string): string {
+  privateDecrypt(
+    privateKey: string,
+    encrypted: string,
+    decryptAlgorithm: KeyEncryptionScheme = DEFAULT_KEY_ENCRYPTION_SCHEME,
+  ): string {
     const key = forge.pki.privateKeyFromPem(privateKey);
-    return key.decrypt(this.base64Decode(encrypted), 'RSA-OAEP');
+    return key.decrypt(this.base64Decode(encrypted), decryptAlgorithm);
   },
 
   /** 长文本混合加密 */
-  longPublicEncrypt(publicKey: string, data: string) {
+  longPublicEncrypt(publicKey: string, data: string, encryptAlgorithm: KeyEncryptionScheme = DEFAULT_KEY_ENCRYPTION_SCHEME) {
     const { key: aesKey, iv } = this.generateAesKeyAndIV();
     return {
-      encryptedAesKey: this.publicEncrypt(publicKey, aesKey),
+      encryptedAesKey: this.publicEncrypt(publicKey, aesKey, encryptAlgorithm),
       encryptedData: this.joinStrings(iv, this.aesEncrypt(data, aesKey, iv)),
     };
   },
 
-  longPrivateDecrypt(privateKey: string, encryptedAesKey: string, encryptedData: string) {
-    const aesKey = this.privateDecrypt(privateKey, encryptedAesKey);
+  longPrivateDecrypt(
+    privateKey: string,
+    encryptedAesKey: string,
+    encryptedData: string,
+    decryptAlgorithm: KeyEncryptionScheme = DEFAULT_KEY_ENCRYPTION_SCHEME,
+  ) {
+    const aesKey = this.privateDecrypt(privateKey, encryptedAesKey, decryptAlgorithm);
     const [iv, data] = this.splitJoinedStrings(encryptedData);
     return this.aesDecrypt(data, aesKey, iv);
   },
