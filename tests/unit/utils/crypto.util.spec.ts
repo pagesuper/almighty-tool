@@ -142,6 +142,8 @@ describe('cryptoUtil.rsa for long text', () => {
 
   test('成功: 公钥加密，私钥解密', async () => {
     const { privateKey, publicKey } = cryptoUtil.generateRsaKeyPair();
+    // console.log('publicKey: ', publicKey);
+    // console.log('privateKey: ', privateKey);
     const { encryptedAesKey, encryptedData } = cryptoUtil.longPublicEncrypt(publicKey, longText);
     // console.log({ encryptedAesKey, encryptedData });
     const decryptedData = cryptoUtil.longPrivateDecrypt(privateKey, encryptedAesKey, encryptedData);
@@ -155,48 +157,30 @@ describe('cryptoUtil.rsa for long text', () => {
   test('成功: 公钥加密，私钥解密 Simple', async () => {
     const publicKey = `
 -----BEGIN PUBLIC KEY-----
-MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAv9av2VBPtBwio8iZwP2A
-nrVy6Lj8XF3Bpcocb5J/yOK7ISd6hV/BVgQthJNy1HycosB5r7LFywdes3JqOZiB
-W2k/95W3snXYjxMlIiwBUAUrhIytjiV1/8Fo8NpXlEGQstCqtSbThmE5seEN/rYA
-jz+j+hMqxHO/6FkPELNZECGKMlcbZoT95/0BBfLS1n88jdfjSvQTU2r4IIn33vBF
-33+DXJycYDR56L4GD+jkun/bsX7oXKhurWYwIX9HTcuW6K3rIEcdRax+P/7vpb8C
-v856tL7Tt2/B4lT3XqzOO7wh63OkdHhhkNpXQtizTCkjie16ocKL502zqjycpNlt
-+QIDAQAB
------END PUBLIC KEY-----    
+MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAJxpvpUCcJPlx/5FCmc5X/3aFYFybNEX
+6Zf38weB65klZOxtn/or+kiKp0ONb9X0q/+ZFsgb+vKFIJdtT44exx0CAwEAAQ==
+-----END PUBLIC KEY----- 
     `;
 
     const privateKey = `
 -----BEGIN RSA PRIVATE KEY-----
-MIIEpAIBAAKCAQEAv9av2VBPtBwio8iZwP2AnrVy6Lj8XF3Bpcocb5J/yOK7ISd6
-hV/BVgQthJNy1HycosB5r7LFywdes3JqOZiBW2k/95W3snXYjxMlIiwBUAUrhIyt
-jiV1/8Fo8NpXlEGQstCqtSbThmE5seEN/rYAjz+j+hMqxHO/6FkPELNZECGKMlcb
-ZoT95/0BBfLS1n88jdfjSvQTU2r4IIn33vBF33+DXJycYDR56L4GD+jkun/bsX7o
-XKhurWYwIX9HTcuW6K3rIEcdRax+P/7vpb8Cv856tL7Tt2/B4lT3XqzOO7wh63Ok
-dHhhkNpXQtizTCkjie16ocKL502zqjycpNlt+QIDAQABAoIBAAI3Q565+8Gz1X6Y
-0ZXWF8c9h09C279hYdw9Ymizg4BZhhnS7+pceco5kCEI5vmnWtPSb1VlNj2rHx/p
-gWqa5Vud8pw0gYOxMsgsS3CCm51GAgOs8FBFBIDoxgKKMxrGSxqVqHMhOK5Drzvr
-wpKfnZAKByXbVNIiGCRh6veharTx+RmDbJZzMp6L0zWJSEIsp2RGhMj23QXgXqSM
-ansugCIn1/pfi/SR/LraXfyEEat+pRNt1cGZxPd0dbgNLfgNCZtkNBNFTqfdh3yH
-WoQ1oBbek0QYB1RLb20D0gD3BP1BD4b+6fjVIhFZHv6kqGgO+B69pnEz7zA5LQ91
-r6/NHZECgYEA7oqmmyr4br8Wy6LtxmE9X8sJvIMPzZIMTLL2ndvFyIMhEBdwUVfI
-JW+n7w0YoPQDxyBKmM3HHJtsVVEbYlwaFxSJtNW1J9oWnMlYDFotc1lw6fCwcWYJ
-Nkthg8clTFt9T8J8udsGp+ltU45ei1KFtpcqJBURxXTAjFN8a4fQYa0CgYEAzeEA
-nVu/mbrXaVgIKWMGfWs/a5sIdjPhB8csMpTtLFCKXjrZqrKLrc5GKlOefWm3vqUv
-2hA5ZJgWin4/XUHW0IIHTyfyXS6mq6x55SJDVxhcKr+PbLEvLcMrPpIcUhm39lNs
-83pL4hKQaDko+hQ6MTBjknTkC7huSJp4yXdlPv0CgYEA3AAeNn/EDofIo1kKCOuH
-6kBdI3KQ8ZxgIaDwmJin6g0eQjQLz8mw+u3mqS+f5loG3fDnO9SVbcneeTVLl0Sw
-f1bexlxPLokST9nWjdXhk0ALRodIg92CY4PUVPAncyvx/8y0scjSc6xyuxxUEBS0
-47i5Efwonr7WEtWwq4/f3SUCgYAyPM1hmJnQcX9O/WRAdSGISTtYjqQp887djwSB
-80VMovqgs8uZk6fx6XvFqFHsWHe11akvlPXsThByCwx7PS2mA5S1BBJoGpIhIh08
-hHfaMN+MruHYrAPPLujGg/DVN+FkAkd7wkPyDoWeaRROsdDhX+VsP4nGMmL25HrE
-7pWOIQKBgQDelafPgwpVMcwg5DcrLTicQFNwygzqPsxYIs9b7Td8MnLQn4i5O3iZ
-0wasj5rXpDOBzX0Nm1C5gQnFHTVsvZ/RD/hiAtUuFoB6YdaQHoNQKqLz3dBIJZj2
-57BClUsKFO6KCACjYY8uHRh2dWyaRaJIgNnDV4b97uv/4XIkir5RaA==
------END RSA PRIVATE KEY-----    
+MIIBOwIBAAJBAJxpvpUCcJPlx/5FCmc5X/3aFYFybNEX6Zf38weB65klZOxtn/or
++kiKp0ONb9X0q/+ZFsgb+vKFIJdtT44exx0CAwEAAQJAB8AAkrMMf3OE+Y8TsSIp
+ZLNb2e5gwGqCJ0bAmrhgA1ZAXqR/YLsou6nMCX0t7AbgjU8NGywozhsvN4GzfAhF
+mQIhANXAefWs6A3068Xzlz8UwHDH78s+MidWNi2u29F2dpVFAiEAu1QCzNVpfcXz
+OAJjx4gpkAKx9DrhDtCtDbKXhjGxK/kCIDoy8gIGVhiWuytmq6OtTshmZ8/620UC
+oDXICmn5y0fRAiEApXEU6AKzIDlrDNRPezFuQ5mdwK0fhw4VSDuqRwIsD0ECIQCL
+pB7QrgYwQ0scc/Z+9Olge+Ll7QGdrEe6Ay52mo63mg==
+-----END RSA PRIVATE KEY----- 
     `;
 
+    // let time = new Date().valueOf();
     const { encryptedAesKey, encryptedData } = cryptoUtil.longPublicEncrypt(publicKey, longText);
+    // console.log('t1: ', new Date().valueOf() - time);
+    // console.log({ encryptedAesKey, encryptedData });
+    // time = new Date().valueOf();
     const decryptedData = cryptoUtil.longPrivateDecrypt(privateKey, encryptedAesKey, encryptedData);
+    // console.log('t2: ', new Date().valueOf() - time);
     assert.equal(decryptedData, longText);
   });
 });

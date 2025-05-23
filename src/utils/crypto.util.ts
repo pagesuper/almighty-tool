@@ -3,9 +3,16 @@ import { v4 as uuidv4 } from 'uuid';
 import randomUtil from './random.util';
 
 type KeyEncryptionScheme = 'RSAES-PKCS1-V1_5' | 'RSA-OAEP' | 'RAW' | 'NONE' | null;
-const DEFAULT_KEY_ENCRYPTION_SCHEME: KeyEncryptionScheme = 'RSA-OAEP';
 type CipherAlgorithm = forge.cipher.Algorithm;
+
+const DEFAULT_KEY_ENCRYPTION_SCHEME: KeyEncryptionScheme = 'RSA-OAEP';
 const DEFAULT_CIPHER_ALGORITHM: CipherAlgorithm = 'AES-CBC';
+const DEFAULT_JOIN_SEPARATOR = '::';
+
+interface LongEncryptDecryptOptions {
+  algorithm?: KeyEncryptionScheme;
+  joinSeparator?: string;
+}
 
 const cryptoUtil = {
   /** 获取 uuid */
@@ -115,7 +122,7 @@ const cryptoUtil = {
 
   /** ========= RSA 实现部分 ========= */
   // 生成RSA密钥对
-  generateRsaKeyPair(bits = 2048): { publicKey: string; privateKey: string } {
+  generateRsaKeyPair(bits = 512): { publicKey: string; privateKey: string } {
     const keypair = forge.pki.rsa.generateKeyPair({ bits });
     return {
       publicKey: forge.pki.publicKeyToPem(keypair.publicKey),
@@ -140,11 +147,14 @@ const cryptoUtil = {
   },
 
   /** 长文本混合加密 */
-  longPublicEncrypt(publicKey: string, data: string, encryptAlgorithm: KeyEncryptionScheme = DEFAULT_KEY_ENCRYPTION_SCHEME) {
+  longPublicEncrypt(publicKey: string, data: string, options: LongEncryptDecryptOptions = {}) {
+    const algorithm = options.algorithm ?? DEFAULT_KEY_ENCRYPTION_SCHEME;
+    const joinSeparator = options.joinSeparator ?? DEFAULT_JOIN_SEPARATOR;
     const { key: aesKey, iv } = this.generateAesKeyAndIV();
+
     return {
-      encryptedAesKey: this.publicEncrypt(publicKey, aesKey, encryptAlgorithm),
-      encryptedData: this.joinStrings(iv, this.aesEncrypt(data, aesKey, iv)),
+      encryptedAesKey: this.publicEncrypt(publicKey, aesKey, algorithm),
+      encryptedData: this.joinStrings(cryptoUtil.base64Encode(iv), this.aesEncrypt(data, aesKey, iv), joinSeparator),
     };
   },
 
@@ -152,18 +162,20 @@ const cryptoUtil = {
     privateKey: string,
     encryptedAesKey: string,
     encryptedData: string,
-    decryptAlgorithm: KeyEncryptionScheme = DEFAULT_KEY_ENCRYPTION_SCHEME,
+    options: LongEncryptDecryptOptions = {},
   ) {
+    const decryptAlgorithm = options.algorithm ?? DEFAULT_KEY_ENCRYPTION_SCHEME;
+    const joinSeparator = options.joinSeparator ?? DEFAULT_JOIN_SEPARATOR;
     const aesKey = this.privateDecrypt(privateKey, encryptedAesKey, decryptAlgorithm);
-    const [iv, data] = this.splitJoinedStrings(encryptedData);
-    return this.aesDecrypt(data, aesKey, iv);
+    const [iv, data] = this.splitJoinedStrings(encryptedData, joinSeparator);
+    return this.aesDecrypt(data, aesKey, cryptoUtil.base64Decode(iv));
   },
 
   /** 辅助方法 */
-  joinStrings(txt1: string, txt2: string, separator = '##'): string {
+  joinStrings(txt1: string, txt2: string, separator: string): string {
     return [txt1, txt2].join(separator);
   },
-  splitJoinedStrings(str: string, separator = '##'): string[] {
+  splitJoinedStrings(str: string, separator: string): string[] {
     const index = str.indexOf(separator);
     return index !== -1 ? [str.slice(0, index), str.slice(index + separator.length)] : [str];
   },
