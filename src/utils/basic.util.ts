@@ -521,7 +521,7 @@ const basicUtil = {
   },
 
   /** 空值合并 */
-  nullCoalesce<T>(value: T, defaultValue: T): T {
+  nullCoalesce<T>(value: T | null | undefined, defaultValue: T): T {
     return value !== null && value !== undefined ? value : defaultValue;
   },
 };
