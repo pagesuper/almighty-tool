@@ -519,6 +519,11 @@ const basicUtil = {
 
     return text.replace(regex, 'aa').length;
   },
+
+  /** 空值合并 */
+  nullCoalesce<T>(value: T, defaultValue: T): T {
+    return value !== null && value !== undefined ? value : defaultValue;
+  },
 };
 
 export default basicUtil;

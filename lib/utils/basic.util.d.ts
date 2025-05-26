@@ -112,5 +112,7 @@ declare const basicUtil: {
         noStrict?: boolean;
     }): string[];
     getTextWidth(text: string): number;
+    /** 空值合并 */
+    nullCoalesce<T_4>(value: T_4, defaultValue: T_4): T_4;
 };
 export default basicUtil;
