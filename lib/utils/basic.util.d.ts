@@ -113,6 +113,6 @@ declare const basicUtil: {
     }): string[];
     getTextWidth(text: string): number;
     /** 空值合并 */
-    nullCoalesce<T_4>(value: T_4 | null | undefined, defaultValue: T_4): T_4;
+    nullCoalesce<T_4>(...args: (T_4 | null | undefined)[]): T_4;
 };
 export default basicUtil;

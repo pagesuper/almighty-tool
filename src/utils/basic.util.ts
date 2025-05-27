@@ -521,8 +521,13 @@ const basicUtil = {
   },
 
   /** 空值合并 */
-  nullCoalesce<T>(value: T | null | undefined, defaultValue: T): T {
-    return value !== null && value !== undefined ? value : defaultValue;
+  nullCoalesce<T>(...args: (T | null | undefined)[]): T {
+    for (const arg of args) {
+      if (arg !== null && arg !== undefined) {
+        return arg;
+      }
+    }
+    return args[args.length - 1] as T; // 兜底返回最后一个参数（需断言为 T）
   },
 };
 
