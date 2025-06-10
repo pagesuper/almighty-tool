@@ -436,7 +436,11 @@ const validateUtil = {
                 return item;
               });
             } else {
-              result[key] = doTransform(value, path);
+              if (value instanceof Date) {
+                result[key] = value;
+              } else {
+                result[key] = doTransform(value, path);
+              }
             }
           } else {
             if (transform?.length) {

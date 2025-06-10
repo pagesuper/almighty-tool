@@ -781,11 +781,11 @@ describe('transform', () => {
 
     expect(result2).toEqual({
       success: false,
-      values: { name: 'AB12', user: { name: 'AB45' } },
+      values: { name: '  AB12', user: { name: '  AB45' } },
       errors: [
         {
           field: 'name',
-          fieldValue: 'AB12',
+          fieldValue: '  AB12',
           message: '长度至少为 6 个字符',
           model: 'Base',
           data: {
@@ -2537,6 +2537,21 @@ describe('validateUtil.getLocaleRules', () => {
           type: 'array',
         },
       ],
+    });
+  });
+});
+
+describe('validateUtil.validate', () => {
+  test('成功：校验日期类型的值', async () => {
+    const rules: ValidateRules = {
+      createdAt: { type: 'date', required: true },
+    };
+
+    const values = { createdAt: new Date('2025-01-02 12:00:03') };
+
+    expect(await validateUtil.validate(rules, values)).toEqual({
+      success: true,
+      values,
     });
   });
 });
