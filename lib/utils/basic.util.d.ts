@@ -27,6 +27,8 @@ export interface TreeErgodicOptions<T> {
     ancestors?: T[];
 }
 declare const basicUtil: {
+    isEmpty(value: any): boolean;
+    isPresent(value: any): boolean;
     isPromise<T = any>(obj: any): obj is Promise<T>;
     /**
      * 获取树的子节点

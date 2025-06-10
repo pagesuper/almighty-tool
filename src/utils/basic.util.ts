@@ -38,6 +38,39 @@ export interface TreeErgodicOptions<T> {
 }
 
 const basicUtil = {
+  isEmpty(value: any): boolean {
+    // 处理 null 和 undefined
+    if (value === null || value === undefined) {
+      return true;
+    }
+
+    // 处理字符串
+    if (typeof value === 'string') {
+      return value.trim().length === 0;
+    }
+
+    // 处理数组
+    if (Array.isArray(value)) {
+      return value.length === 0;
+    }
+
+    // 处理 Set/Map
+    switch (Object.prototype.toString.call(value)) {
+      case '[object Set]':
+      case '[object Map]':
+        return value.size === 0;
+      case '[object Object]':
+        return Object.keys(value).length === 0;
+    }
+
+    // 其他类型（number, boolean, symbol, function 等）均不为空
+    return false;
+  },
+
+  isPresent(value: any): boolean {
+    return !basicUtil.isEmpty(value);
+  },
+
   isPromise<T = any>(obj: any): obj is Promise<T> {
     return (
       obj instanceof Promise || (typeof obj === 'object' && typeof obj.then === 'function' && typeof obj.catch === 'function')

@@ -126,3 +126,59 @@ describe('basicUtil.getDifferences()', () => {
 //     assert.equal(basicUtil.getTextWidth('\uD83C\uDF00'), 2); // Emoji代理对
 //   });
 // });
+
+describe('basicUtil.isEmpty()', () => {
+  test('成功', async () => {
+    expect(basicUtil.isEmpty(null)).toBe(true);
+    expect(basicUtil.isEmpty(undefined)).toBe(true);
+    expect(basicUtil.isEmpty('')).toBe(true);
+    expect(basicUtil.isEmpty([])).toBe(true);
+    expect(basicUtil.isEmpty({})).toBe(true);
+    expect(basicUtil.isEmpty(new Set())).toBe(true);
+    expect(basicUtil.isEmpty(new Map())).toBe(true);
+    expect(basicUtil.isEmpty(new Set([1, 2, 3]))).toBe(false);
+    expect(
+      basicUtil.isEmpty(
+        new Map([
+          ['a', 1],
+          ['b', 2],
+        ]),
+      ),
+    ).toBe(false);
+    expect(basicUtil.isEmpty(0)).toBe(false);
+    expect(basicUtil.isEmpty(false)).toBe(false);
+    expect(basicUtil.isEmpty(NaN)).toBe(false);
+    expect(basicUtil.isEmpty(function () {})).toBe(false);
+    // eslint-disable-next-line symbol-description
+    expect(basicUtil.isEmpty(Symbol())).toBe(false);
+    expect(basicUtil.isEmpty(BigInt(0))).toBe(false);
+  });
+});
+
+describe('basicUtil.isPresent()', () => {
+  test('成功', async () => {
+    expect(basicUtil.isPresent(null)).toBe(false);
+    expect(basicUtil.isPresent(undefined)).toBe(false);
+    expect(basicUtil.isPresent('')).toBe(false);
+    expect(basicUtil.isPresent([])).toBe(false);
+    expect(basicUtil.isPresent({})).toBe(false);
+    expect(basicUtil.isPresent(new Set())).toBe(false);
+    expect(basicUtil.isPresent(new Map())).toBe(false);
+    expect(basicUtil.isPresent(new Set([1, 2, 3]))).toBe(true);
+    expect(
+      basicUtil.isPresent(
+        new Map([
+          ['a', 1],
+          ['b', 2],
+        ]),
+      ),
+    ).toBe(true);
+    expect(basicUtil.isPresent(0)).toBe(true);
+    expect(basicUtil.isPresent(false)).toBe(true);
+    expect(basicUtil.isPresent(NaN)).toBe(true);
+    expect(basicUtil.isPresent(function () {})).toBe(true);
+    // eslint-disable-next-line symbol-description
+    expect(basicUtil.isPresent(Symbol())).toBe(true);
+    expect(basicUtil.isPresent(BigInt(0))).toBe(true);
+  });
+});
