@@ -61,5 +61,7 @@ declare const _default: {
     toHumpName(value: string): string;
     /** 将对象类型的css样式转化为字符串 */
     cssStyleObjectToString(style: Record<string, string>): string;
+    /** 格式化字节 */
+    formatBytes(bytes: number, decimals?: number): string;
 };
 export default _default;
