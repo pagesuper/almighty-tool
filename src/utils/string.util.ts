@@ -28,11 +28,17 @@ const stringUtil = {
    * 4. 优化单词保留逻辑：使用indexOf替代split
    */
   truncate: (str: string, options: StringTruncateOptions): string => {
-    // 快速返回路径：字符串本身已满足长度要求
-    if (str.length <= options.length) return str;
+    const length = options.length;
 
-    // 解构配置项并设置默认值
-    const { length, position = 'end', endChars = 4, omission = '...', preserveWord = false } = options;
+    // 快速返回路径：字符串本身已满足长度要求
+    if (str.length <= length) {
+      return str;
+    }
+
+    const position = options.position ?? 'end';
+    const endChars = options.endChars ?? 4;
+    const omission = options.omission ?? '...';
+    const preserveWord = options.preserveWord ?? false;
 
     // 计算实际可保留的最大长度（减去省略符长度）
     const omissionLength = omission.length;
