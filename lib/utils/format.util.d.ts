@@ -38,6 +38,12 @@ export declare const regExps: {
     /** 日期时间 */
     'date-time-format': RegExp;
 };
+export interface FormatBytesOptions {
+    /** 小数位数 */
+    decimals?: number;
+    /** 分割符 */
+    separator?: string;
+}
 declare const _default: {
     isChinaMobileNumber(mobileNumber: string): boolean;
     isMobileNumber(mobileNumber: string, region?: string): boolean;
@@ -62,6 +68,6 @@ declare const _default: {
     /** 将对象类型的css样式转化为字符串 */
     cssStyleObjectToString(style: Record<string, string>): string;
     /** 格式化字节 */
-    formatBytes(bytes: number, decimals?: number): string;
+    formatBytes(bytes: number, options?: FormatBytesOptions): string;
 };
 export default _default;

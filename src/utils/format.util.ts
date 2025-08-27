@@ -45,6 +45,13 @@ export const regExps = {
   'date-time-format': /^\d{4}-\d{1,2}-\d{1,2} \d{2}:\d{2}:\d{2}$/,
 };
 
+export interface FormatBytesOptions {
+  /** 小数位数 */
+  decimals?: number;
+  /** 分割符 */
+  separator?: string;
+}
+
 export default {
   isChinaMobileNumber(mobileNumber: string): boolean {
     return regExps['mobile-number-china'].test(mobileNumber);
@@ -130,15 +137,18 @@ export default {
   },
 
   /** 格式化字节 */
-  formatBytes(bytes: number, decimals = 2): string {
+  formatBytes(bytes: number, options: FormatBytesOptions = {}): string {
+    const separator = options.separator ?? ' ';
+    const decimals = options.decimals ?? 2;
+
     if (bytes === 0) {
-      return '0B';
+      return '0' + separator + 'B';
     }
 
     const k = 1024;
     const sizes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
 
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(decimals)) + '' + sizes[i];
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(decimals)) + separator + sizes[i];
   },
 };
