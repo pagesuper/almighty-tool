@@ -37,7 +37,39 @@ export interface TreeErgodicOptions<T> {
   ancestors?: T[];
 }
 
+export interface UniqueArrayByFieldOptions<T> {
+  field: keyof T;
+  uniqueType?: 'keepFirst' | 'keepLast';
+}
+
 const basicUtil = {
+  uniqueArrayByField<T>(arr: T[], options: UniqueArrayByFieldOptions<T>): T[] {
+    const field = options.field;
+    const uniqueType = options.uniqueType ?? 'keepFirst';
+    const uniqueMap = new Map<string, T>();
+    const keys: string[] = [];
+
+    for (const item of arr) {
+      const key = String(item[field]);
+
+      if (uniqueType === 'keepLast') {
+        const index = keys.indexOf(key);
+        if (index !== -1) {
+          keys.splice(index, 1);
+        }
+        uniqueMap.set(key, item);
+        keys.push(key);
+      } else {
+        if (!uniqueMap.has(key)) {
+          uniqueMap.set(key, item);
+          keys.push(key);
+        }
+      }
+    }
+
+    return keys.map((key) => uniqueMap.get(key) as T);
+  },
+
   isEmpty(value: any): boolean {
     // 处理 null 和 undefined
     if (value === null || value === undefined) {

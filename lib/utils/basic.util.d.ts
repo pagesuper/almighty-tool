@@ -26,26 +26,31 @@ export interface TreeErgodicOptions<T> {
     depth: number;
     ancestors?: T[];
 }
+export interface UniqueArrayByFieldOptions<T> {
+    field: keyof T;
+    uniqueType?: 'keepFirst' | 'keepLast';
+}
 declare const basicUtil: {
+    uniqueArrayByField<T>(arr: T[], options: UniqueArrayByFieldOptions<T>): T[];
     isEmpty(value: any): boolean;
     isPresent(value: any): boolean;
-    isPromise<T = any>(obj: any): obj is Promise<T>;
+    isPromise<T_1 = any>(obj: any): obj is Promise<T_1>;
     /**
      * 获取树的子节点
      * @param compareFn 比较函数
      * @param treeChildren 树节点
      * @returns 子节点
      */
-    getTreeChildren<T_1 extends LikeTreeObject<T_1>>(compareFn: (node: T_1) => boolean, treeChildren?: T_1 | T_1[]): T_1[];
+    getTreeChildren<T_2 extends LikeTreeObject<T_2>>(compareFn: (node: T_2) => boolean, treeChildren?: T_2 | T_2[]): T_2[];
     /**
      * 获取指定节点的父节点
      * @param compareFn 比较函数，用于匹配目标节点
      * @param treeNodes 树节点数组或单个树节点
      * @returns 父节点，如果未找到则返回 null
      */
-    getTreeParent<T_2 extends LikeTreeObject<T_2>>(compareFn: (node: T_2) => boolean, treeNodes?: T_2 | T_2[]): T_2 | null;
+    getTreeParent<T_3 extends LikeTreeObject<T_3>>(compareFn: (node: T_3) => boolean, treeNodes?: T_3 | T_3[]): T_3 | null;
     /** 树遍历 */
-    treeErgodic<T_3 extends LikeTreeObject<T_3>>(treeChildren: T_3 | T_3[], callFn?: ((linkTreeObject: T_3, options: TreeErgodicOptions<T_3>) => void) | undefined, options?: Partial<TreeErgodicOptions<T_3>>): void;
+    treeErgodic<T_4 extends LikeTreeObject<T_4>>(treeChildren: T_4 | T_4[], callFn?: ((linkTreeObject: T_4, options: TreeErgodicOptions<T_4>) => void) | undefined, options?: Partial<TreeErgodicOptions<T_4>>): void;
     /** 过滤html标签 */
     escapeHTML(str: string): string;
     /** 将css样式对象转为字符串 */
@@ -115,6 +120,6 @@ declare const basicUtil: {
     }): string[];
     getTextWidth(text: string): number;
     /** 空值合并 */
-    nullCoalesce<T_4>(...args: (T_4 | null | undefined)[]): T_4;
+    nullCoalesce<T_5>(...args: (T_5 | null | undefined)[]): T_5;
 };
 export default basicUtil;
