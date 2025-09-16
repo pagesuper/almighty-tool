@@ -1,4 +1,4 @@
-import _ from 'lodash-es';
+import { reduce as _reduce } from 'lodash-es';
 import { I18n, i18nConfig } from '../i18n/index';
 
 export interface IEnumObjectTranslate {
@@ -76,7 +76,7 @@ export class EnumObject<T extends Record<string, string | number>> {
         map.set(key, {
           key,
           value,
-          translate: _.reduce(
+          translate: _reduce(
             this.langs,
             (acc, lang) => {
               Reflect.set(acc, lang, this.getI18n().t(`enum.types.${this.name}.options.${key}`, { lang }));
@@ -139,7 +139,7 @@ export class EnumObject<T extends Record<string, string | number>> {
       return this.translate;
     }
 
-    this.translate = _.reduce(
+    this.translate = _reduce(
       this.langs,
       (acc, lang) => {
         Reflect.set(acc, lang, this.getI18n().t(`enum.types.${this.name}.name`, { lang }));

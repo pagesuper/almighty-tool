@@ -3,7 +3,7 @@ import 'dayjs/locale/en';
 import 'dayjs/locale/vi';
 import '../dayjs/locales/zh-cn';
 import relativeTime from 'dayjs/plugin/relativeTime';
-import _ from 'lodash-es';
+import { get as _get } from 'lodash-es';
 import en from '../locales/en';
 import vi from '../locales/vi';
 import zhCN from '../locales/zh-cn';
@@ -19,14 +19,14 @@ const i18n = {
   t: (key: string, _values?: I18nValues, locale?: string): string => {
     switch (locale?.toLowerCase()) {
       case 'vi':
-        return _.get(vi, key);
+        return _get(vi, key);
 
       case 'en':
-        return _.get(en, key);
+        return _get(en, key);
 
       case 'zh-cn':
       default:
-        return _.get(zhCN, key);
+        return _get(zhCN, key);
     }
   },
 };

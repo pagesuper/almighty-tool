@@ -1,7 +1,5 @@
 // flow
-import capitalize from 'lodash/capitalize';
-import forEach from 'lodash/forEach';
-import isArray from 'lodash/isArray';
+import { capitalize as _capitalize, forEach as _forEach, isArray as _isArray } from 'lodash-es';
 // import debug from 'debug';
 import general from '../common/general';
 
@@ -86,7 +84,7 @@ export default function parse(locale?: string) {
   const script = parts.pop();
 
   if (script) {
-    retVar.script = capitalize(script.toLowerCase());
+    retVar.script = _capitalize(script.toLowerCase());
   }
 
   return retVar;
@@ -146,7 +144,7 @@ export function normalizeAcceptLanguage(acceptLanguage: string) {
   }
 
   const items = acceptLanguage.match(splitAcceptLanguageRegEx) || [];
-  forEach(items, (acceptLanguageItem) => {
+  _forEach(items, (acceptLanguageItem) => {
     const matches = acceptLanguageItem.match(acceptLanguageItemRegEx) || [];
     const locale = normalize(matches[0] ?? '');
     if (locale) {
@@ -160,7 +158,7 @@ export function normalizeAcceptLanguage(acceptLanguage: string) {
 export function prepareSupported(supported: string[] | string) {
   const lgs = {};
 
-  forEach(supported, (supportedLocale) => {
+  _forEach(supported, (supportedLocale) => {
     const parsed = parse(supportedLocale);
 
     if (parsed) {
@@ -203,7 +201,7 @@ export function getBest(
   defaultLocale?: string | null,
   getAnyCountry?: boolean,
 ): string | null | undefined {
-  const lgs = isArray(supported) ? prepareSupported(supported) : supported;
+  const lgs = _isArray(supported) ? prepareSupported(supported) : supported;
 
   // return defaultLocale if current locale is undefined
   if (!locale && defaultLocale) {

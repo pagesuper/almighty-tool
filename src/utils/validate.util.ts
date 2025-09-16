@@ -17,7 +17,16 @@ import ValidateSchema, {
 } from 'async-validator';
 import deepmerge from 'deepmerge';
 import inflection from 'inflection';
-import _ from 'lodash-es';
+import {
+  cloneDeep as _cloneDeep,
+  get as _get,
+  last as _last,
+  omit as _omit,
+  reduce as _reduce,
+  transform as _transform,
+  pick as _pick,
+  isEmpty as _isEmpty,
+} from 'lodash-es';
 import { I18n, i18nConfig } from '../i18n/index';
 import { regExps } from './format.util';
 
@@ -367,8 +376,8 @@ const validateUtil = {
 
     if (typeof error === 'object' && error !== null && 'errors' in error) {
       return (Reflect.get(error, 'errors') as ValidateError[]).map((err) => {
-        const field = _.get(err, 'field');
-        const fieldValue = field ? _.get(values, field) : undefined;
+        const field = _get(err, 'field');
+        const fieldValue = field ? _get(values, field) : undefined;
 
         return {
           field,
@@ -385,7 +394,7 @@ const validateUtil = {
         data: validateUtil.parseErrorDataJSON(error),
         message: validateUtil.getErrorMessage(error, options),
         field: options?.field,
-        fieldValue: options?.fieldValue ?? (options?.field ? _.get(values, options.field) : undefined),
+        fieldValue: options?.fieldValue ?? (options?.field ? _get(values, options.field) : undefined),
         model,
       },
     ] as ValidateError[];
@@ -403,7 +412,7 @@ const validateUtil = {
     function doTransform(values: ValidateValues, parentPath: string) {
       const valuesType = Array.isArray(values) ? 'array' : 'object';
 
-      return _.transform(
+      return _transform(
         values,
         (result: ValidateValues, value: ValidateValue, key: string | number) => {
           let path = `${parentPath ? `${parentPath}.` : ''}${key}`;
@@ -474,7 +483,7 @@ const validateUtil = {
     callback?: ValidateCallback,
   ): Promise<ValidateResponseInstance<T>> {
     const model = options?.model ?? 'Base';
-    const usingValues = _.omit(options?.pickKeys ? _.pick(values, options.pickKeys) : values, options?.omitKeys ?? []);
+    const usingValues = _omit(options?.pickKeys ? _pick(values, options.pickKeys) : values, options?.omitKeys ?? []);
     const schema = validateUtil.getSchema(rules, options);
     const transformedValues = validateUtil.transform(usingValues, schema.rules as ValidateOptionRules);
 
@@ -516,7 +525,7 @@ const validateUtil = {
       const fieldRule = rules[fieldKey];
       const fieldRules = Array.isArray(fieldRule) ? fieldRule : [fieldRule];
 
-      const defaultFields = _.reduce(
+      const defaultFields = _reduce(
         fieldRules,
         (result: ValidateRuleItem[], rule) => {
           if (rule.type === 'array' && rule.defaultField) {
@@ -578,7 +587,7 @@ const validateUtil = {
         }
 
         if (rule.path) {
-          const flatRule = _.cloneDeep(rule);
+          const flatRule = _cloneDeep(rule);
           delete flatRule.fields;
           delete flatRule.defaultField;
           const flatValidateItem = Reflect.get(flatRules, rule.path) ?? [];
@@ -628,7 +637,7 @@ const validateUtil = {
    * @returns 校验规则
    */
   parseRules: (rules: ValidateOptionRules, initialRules: ValidateRules = {}, options?: ParseRulesOptions): ValidateRules => {
-    const mergedRules = _.reduce(
+    const mergedRules = _reduce(
       rules,
       (result, rule, fieldKey) => {
         const loadedRules: ValidateRuleItem[] = [];
@@ -653,7 +662,7 @@ const validateUtil = {
         Reflect.set(result, fieldKey, storedRules);
         return result;
       },
-      _.isEmpty(initialRules) ? {} : validateUtil.parseRules(initialRules, {}),
+      _isEmpty(initialRules) ? {} : validateUtil.parseRules(initialRules, {}),
     );
 
     return validateUtil.filterRules(mergedRules, options?.settings ?? {});
@@ -666,14 +675,14 @@ const validateUtil = {
    */
   parseToRules: (opts: ValidateOptionRule): ValidateRuleItem[] => {
     const rules: ValidateRuleItem[] = [];
-    const options = _.cloneDeep(opts);
+    const options = _cloneDeep(opts);
 
     if (options.message) {
       rules.push(validateUtil.parseRule(options));
       delete options.message;
     } else {
       if (isPresent(options.regexpKey) || isPresent(options.pattern) || isPresent(options.asyncValidator)) {
-        const ruleRegexpKey = _.cloneDeep(options);
+        const ruleRegexpKey = _cloneDeep(options);
         delete ruleRegexpKey.fields;
         delete ruleRegexpKey.defaultField;
         rules.push(validateUtil.parseRule(ruleRegexpKey, { parseAsyncValidator: true }));
@@ -684,7 +693,7 @@ const validateUtil = {
       }
 
       if (isPresent(options.enum)) {
-        const ruleEnum = _.cloneDeep(options);
+        const ruleEnum = _cloneDeep(options);
         delete ruleEnum.fields;
         delete ruleEnum.defaultField;
         rules.push(validateUtil.parseRule(ruleEnum));
@@ -693,7 +702,7 @@ const validateUtil = {
       }
 
       if (isPresent(options.len)) {
-        const ruleLen = _.cloneDeep(options);
+        const ruleLen = _cloneDeep(options);
         delete ruleLen.fields;
         delete ruleLen.defaultField;
         rules.push(validateUtil.parseRule(ruleLen));
@@ -701,7 +710,7 @@ const validateUtil = {
       }
 
       if (isPresent(options.min) && isPresent(options.max)) {
-        const ruleMinMax = _.cloneDeep(options);
+        const ruleMinMax = _cloneDeep(options);
         delete ruleMinMax.fields;
         delete ruleMinMax.defaultField;
         rules.push(validateUtil.parseRule(ruleMinMax));
@@ -710,7 +719,7 @@ const validateUtil = {
       }
 
       if (isPresent(options.min)) {
-        const ruleMin = _.cloneDeep(options);
+        const ruleMin = _cloneDeep(options);
         delete ruleMin.fields;
         delete ruleMin.defaultField;
         rules.push(validateUtil.parseRule(ruleMin));
@@ -718,7 +727,7 @@ const validateUtil = {
       }
 
       if (isPresent(options.max)) {
-        const ruleMax = _.cloneDeep(options);
+        const ruleMax = _cloneDeep(options);
         delete ruleMax.fields;
         delete ruleMax.defaultField;
         rules.push(validateUtil.parseRule(ruleMax));
@@ -726,7 +735,7 @@ const validateUtil = {
       }
 
       if (isPresent(options.pattern)) {
-        const rulePattern = _.cloneDeep(options);
+        const rulePattern = _cloneDeep(options);
         delete rulePattern.fields;
         delete rulePattern.defaultField;
         rules.push(validateUtil.parseRule(rulePattern));
@@ -734,7 +743,7 @@ const validateUtil = {
       }
 
       if (isPresent(options.whitespace)) {
-        const ruleWhitespace = _.cloneDeep(options);
+        const ruleWhitespace = _cloneDeep(options);
         delete ruleWhitespace.fields;
         delete ruleWhitespace.defaultField;
         rules.push(validateUtil.parseRule(ruleWhitespace));
@@ -742,7 +751,7 @@ const validateUtil = {
       }
 
       if (options.defaultField || options.fields) {
-        const ruleFields = _.cloneDeep(options);
+        const ruleFields = _cloneDeep(options);
         delete ruleFields.required;
         rules.push(validateUtil.parseRule(ruleFields, { parseSubFields: true }));
         delete options.fields;
@@ -750,7 +759,7 @@ const validateUtil = {
       }
 
       if (options.required) {
-        const ruleRequired = _.cloneDeep(options);
+        const ruleRequired = _cloneDeep(options);
         delete ruleRequired.fields;
         delete ruleRequired.defaultField;
         rules.unshift(validateUtil.parseRule(ruleRequired));
@@ -783,13 +792,13 @@ const validateUtil = {
 
         const omitKeys = ['path', 'data', 'type', 'subType'];
 
-        if (!_.isEmpty(_.pick(_.omit(options, omitKeys), avaliableKeys))) {
+        if (!_isEmpty(_pick(_omit(options, omitKeys), avaliableKeys))) {
           rules.push(validateUtil.parseRule(options));
         }
       }
 
       if (isPresent(options.transformers) || typeof options.transform === 'function') {
-        const ruleTransformers = _.cloneDeep(options);
+        const ruleTransformers = _cloneDeep(options);
         delete ruleTransformers.fields;
         delete ruleTransformers.defaultField;
         rules.unshift(validateUtil.parseRule(ruleTransformers, { parseTransformers: true }));
@@ -831,7 +840,7 @@ const validateUtil = {
     };
 
     const message = (() => {
-      const pickedRules = _.pick(options, SIMPLE_RULE_KEYS);
+      const pickedRules = _pick(options, SIMPLE_RULE_KEYS);
 
       if (pickedRules.pattern) {
         pickedRules.pattern = pickedRules.pattern.toString();
@@ -1006,7 +1015,7 @@ const validateUtil = {
             return options.pattern;
           }
 
-          return regexpKey ? _.get<Record<string, RegExp>, string>(regExps, regexpKey) : undefined;
+          return regexpKey ? _get<Record<string, RegExp>, string>(regExps, regexpKey) : undefined;
         })();
         const regexpReversed = options?.regexpReversed ?? false;
 
@@ -1123,7 +1132,7 @@ const validateUtil = {
             defaultField.path = path;
 
             if (defaultField.fields) {
-              defaultField.fields = _.reduce(
+              defaultField.fields = _reduce(
                 defaultField.fields,
                 (result: ValidateRules, field, fieldKey) => {
                   const fields: ValidateRuleItem[] = [];
@@ -1138,7 +1147,7 @@ const validateUtil = {
             }
           });
         } else {
-          rule.defaultField = _.reduce(
+          rule.defaultField = _reduce(
             defaultFields,
             (result: ValidateRuleItem[], defaultField) => {
               defaultField.path = `${path}.${ARRAY_ITEMS_BASIC_TYPE_KEY}`;
@@ -1151,7 +1160,7 @@ const validateUtil = {
       }
 
       if (options.fields) {
-        rule.fields = _.reduce(
+        rule.fields = _reduce(
           options.fields,
           (result: ValidateRules, field, fieldKey) => {
             const fields: ValidateRuleItem[] = [];
@@ -1274,7 +1283,7 @@ const validateUtil = {
       const fieldRules = (Array.isArray(rules[fieldKey]) ? rules[fieldKey] : [rules[fieldKey]]) as ValidateRuleItem[];
 
       fieldRules.forEach((rule, ruleIndex) => {
-        if (ruleIndex === 0 && rule.path && _.last(requires[rule.path] ?? [])) {
+        if (ruleIndex === 0 && rule.path && _last(requires[rule.path] ?? [])) {
           rule.required = true;
           delete requires[rule.path];
         } else {
@@ -1295,7 +1304,7 @@ const validateUtil = {
    */
   normalizeRules: (rules: ValidateRules, options?: GetRulesOptions): ValidateRules => {
     const settings = options?.settings ?? {};
-    const pureRules = _.cloneDeep(rules);
+    const pureRules = _cloneDeep(rules);
     const requires = validateUtil.collectRulesRequired(pureRules, {}, '');
     validateUtil.collectRulesRequiredAssign(requires, pureRules);
     return validateUtil.filterRules(pureRules, settings);
@@ -1411,7 +1420,7 @@ export class Validator {
    */
   public wrapRules(options: WrapRulesOptions) {
     const override = options.override ?? false;
-    const validator = override ? this : _.cloneDeep(this);
+    const validator = override ? this : _cloneDeep(this);
     validator.rules = validateUtil.parseRules(options.rules ?? {}, validator.rules, { direction: options.direction });
     return validator;
   }
@@ -1423,8 +1432,8 @@ export class Validator {
    */
   public omitRules(options: OmitRulesOptions) {
     const override = options.override ?? false;
-    const validator = override ? this : _.cloneDeep(this);
-    validator.rules = _.omit(validator.rules, options.fieldKeys);
+    const validator = override ? this : _cloneDeep(this);
+    validator.rules = _omit(validator.rules, options.fieldKeys);
     return validator;
   }
 }

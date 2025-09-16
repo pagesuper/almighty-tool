@@ -1,5 +1,5 @@
 import deepmerge from 'deepmerge';
-import _ from 'lodash-es';
+import { get as _get } from 'lodash-es';
 import mustache from 'mustache';
 import enUSMessages from './en-US/index';
 import zhCNMessages from './zh-CN/index';
@@ -74,7 +74,7 @@ export class I18n {
     const lang = options?.lang ?? options?.locale ?? this.lang;
     const fallbackLang = options?.fallbackLang ?? options?.fallbackLocale ?? this.fallbackLang;
     const path = key.split('.');
-    const template = _.get(this.messages, [lang, ...path]) ?? _.get(this.messages, [fallbackLang, ...path]);
+    const template = _get(this.messages, [lang, ...path]) ?? _get(this.messages, [fallbackLang, ...path]);
 
     if (template && typeof template === 'string') {
       return mustache.render(template, options?.args ?? {}, {}, { tags: ['{', '}'] });

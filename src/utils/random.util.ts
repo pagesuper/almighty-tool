@@ -1,4 +1,4 @@
-import _ from 'lodash-es';
+import { padStart as _padStart, uniq as _uniq, reduce as _reduce, sample as _sample } from 'lodash-es';
 
 export const DEFINED_RANDOM_CHARS = {
   /** 小写字母 */
@@ -17,8 +17,8 @@ function getCharsByRanges(ranges: RANDOM_CHARS_RANGE_KEY | RANDOM_CHARS_RANGE_KE
   if (typeof ranges === 'string') {
     return DEFINED_RANDOM_CHARS[ranges] ?? [];
   } else if (typeof ranges === 'object' && ranges.length) {
-    return _.uniq(
-      _.reduce(
+    return _uniq(
+      _reduce(
         ranges,
         (result: string[], rangeKey) => {
           const chars = DEFINED_RANDOM_CHARS[rangeKey] ?? [];
@@ -108,7 +108,7 @@ const randomUtil = {
     const randomLength = values[0] ? length - values[0].length : length;
 
     for (let index = 0; index < randomLength; index++) {
-      const sample = _.sample(characters);
+      const sample = _sample(characters);
 
       if (sample) {
         values.push(sample);
@@ -124,12 +124,12 @@ const randomUtil = {
 
     return [
       time.getUTCFullYear(),
-      _.padStart(String(time.getUTCMonth() + 1), 2, '0'),
-      _.padStart(String(time.getUTCDate()), 2, '0'),
-      _.padStart(String(time.getUTCHours()), 2, '0'),
-      _.padStart(String(time.getUTCMinutes()), 2, '0'),
-      _.padStart(String(time.getUTCSeconds()), 2, '0'),
-      _.padStart(String(time.getUTCMilliseconds()), 3, '0'),
+      _padStart(String(time.getUTCMonth() + 1), 2, '0'),
+      _padStart(String(time.getUTCDate()), 2, '0'),
+      _padStart(String(time.getUTCHours()), 2, '0'),
+      _padStart(String(time.getUTCMinutes()), 2, '0'),
+      _padStart(String(time.getUTCSeconds()), 2, '0'),
+      _padStart(String(time.getUTCMilliseconds()), 3, '0'),
     ].join('');
   },
 };

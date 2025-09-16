@@ -1,4 +1,4 @@
-import _ from 'lodash-es';
+import { padEnd as _padEnd } from 'lodash-es';
 
 export interface ISplitFloatOptions {
   /** 忽略尾部的0: 默认为true */
@@ -33,7 +33,7 @@ const numberUtil = {
     const ignoreTailZeros = options.ignoreTailZeros !== false;
     const maxTailsCount = options.maxTailsCount ?? 2;
     const s = (value || '0').toString().trim().split('.');
-    const floatPart = (ignoreTailZeros ? s[1] || '' : _.padEnd(s[1] || '', maxTailsCount, '0')).slice(0, maxTailsCount);
+    const floatPart = (ignoreTailZeros ? s[1] || '' : _padEnd(s[1] || '', maxTailsCount, '0')).slice(0, maxTailsCount);
 
     return {
       integer: s[0] || '0',

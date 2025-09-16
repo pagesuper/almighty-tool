@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 import base64Js from 'base64-js';
 import { isPlainObject } from 'is-what';
-import _ from 'lodash-es';
+import { each as _each } from 'lodash-es';
 import qs from 'qs';
 
 export interface AnyObject {
@@ -202,7 +202,7 @@ const basicUtil = {
   cssObjectToString(style: Record<string, string | boolean>): string {
     const styles: string[] = [];
 
-    _.each(style, (value: string | boolean, key: string) => {
+    _each(style, (value: string | boolean, key: string) => {
       if (value !== null && value !== false) {
         styles.push(`${key}: ${value}`);
       }

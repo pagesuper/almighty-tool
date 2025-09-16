@@ -1,4 +1,4 @@
-import _ from 'lodash-es';
+import { keys as _keys } from 'lodash-es';
 export const DEFAULT_LOCALE = process.env.DEFAULT_LOCALE || 'zh-CN';
 export type DATETIME_TYPE = 'long' | 'date' | 'shortDate' | 'shortTime' | 'time';
 export type DATETIME_LANG = 'en-US' | 'zh-CN';
@@ -129,7 +129,7 @@ export default {
   cssStyleObjectToString(style: Record<string, string>): string {
     const styles: string[] = [];
 
-    _.keys(style).forEach((key) => {
+    _keys(style).forEach((key) => {
       styles.push([this.toHyphenName(key), style[key]].join(': '));
     });
 
