@@ -17,16 +17,15 @@ import ValidateSchema, {
 } from 'async-validator';
 import deepmerge from 'deepmerge';
 import inflection from 'inflection';
-import {
-  cloneDeep as _cloneDeep,
-  get as _get,
-  last as _last,
-  omit as _omit,
-  reduce as _reduce,
-  transform as _transform,
-  pick as _pick,
-  isEmpty as _isEmpty,
-} from 'lodash-es';
+import _cloneDeep from 'lodash-es/cloneDeep';
+import _get from 'lodash-es/get';
+import _last from 'lodash-es/last';
+import _omit from 'lodash-es/omit';
+import _reduce from 'lodash-es/reduce';
+import _transform from 'lodash-es/transform';
+import _pick from 'lodash-es/pick';
+import _isEmpty from 'lodash-es/isEmpty';
+
 import { I18n, i18nConfig } from '../i18n/index';
 import { regExps } from './format.util';
 

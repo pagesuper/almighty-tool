@@ -1,4 +1,7 @@
-import { padStart as _padStart, uniq as _uniq, reduce as _reduce, sample as _sample } from 'lodash-es';
+import _padStart from 'lodash-es/padStart';
+import _uniq from 'lodash-es/uniq';
+import _reduce from 'lodash-es/reduce';
+import _sample from 'lodash-es/sample';
 
 export const DEFINED_RANDOM_CHARS = {
   /** 小写字母 */

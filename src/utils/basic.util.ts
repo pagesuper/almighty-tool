@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 import base64Js from 'base64-js';
 import { isPlainObject } from 'is-what';
-import { each as _each } from 'lodash-es';
+import _each from 'lodash-es/each';
 import qs from 'qs';
 
 export interface AnyObject {

@@ -1,4 +1,4 @@
-import { reduce as _reduce } from 'lodash-es';
+import _reduce from 'lodash-es/reduce';
 import { I18n, i18nConfig } from '../i18n/index';
 
 export interface IEnumObjectTranslate {

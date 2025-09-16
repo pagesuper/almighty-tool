@@ -1,5 +1,5 @@
 import deepmerge from 'deepmerge';
-import { get as _get } from 'lodash-es';
+import _get from 'lodash-es/get';
 import mustache from 'mustache';
 import enUSMessages from './en-US/index';
 import zhCNMessages from './zh-CN/index';

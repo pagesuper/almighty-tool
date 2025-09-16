@@ -1,4 +1,4 @@
-import { keys as _keys } from 'lodash-es';
+import _keys from 'lodash-es/keys';
 export const DEFAULT_LOCALE = process.env.DEFAULT_LOCALE || 'zh-CN';
 export type DATETIME_TYPE = 'long' | 'date' | 'shortDate' | 'shortTime' | 'time';
 export type DATETIME_LANG = 'en-US' | 'zh-CN';

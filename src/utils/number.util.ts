@@ -1,4 +1,4 @@
-import { padEnd as _padEnd } from 'lodash-es';
+import _padEnd from 'lodash-es/padEnd';
 
 export interface ISplitFloatOptions {
   /** 忽略尾部的0: 默认为true */

@@ -1,5 +1,7 @@
 // flow
-import { capitalize as _capitalize, forEach as _forEach, isArray as _isArray } from 'lodash-es';
+import _capitalize from 'lodash-es/capitalize';
+import _forEach from 'lodash-es/forEach';
+import _isArray from 'lodash-es/isArray';
 // import debug from 'debug';
 import general from '../common/general';
 
