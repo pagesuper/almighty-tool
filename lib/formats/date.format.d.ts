@@ -1,13 +1,13 @@
 import 'dayjs/locale/en';
 import 'dayjs/locale/vi';
 import '../dayjs/locales/zh-cn';
-export declare type I18nValues = any[] | {
+export type I18nValues = any[] | {
     [key: string]: any;
 };
 export interface IDateFormatI18n {
     t: (key: string, values?: I18nValues) => string;
 }
-export declare type DATE_FORMAT_FORMATTER = 'default' | 'full' | 'long' | 'short' | 'date' | 'time' | 'shortTime' | 'step' | 'shortStep' | 'fromNow' | 'toNow';
+export type DATE_FORMAT_FORMATTER = 'default' | 'full' | 'long' | 'short' | 'date' | 'time' | 'shortTime' | 'step' | 'shortStep' | 'fromNow' | 'toNow';
 export interface IDateFormatOptions {
     /** 格式模板 */
     template?: string;

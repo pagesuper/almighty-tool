@@ -1,7 +1,7 @@
 /**
  * 字符串截断配置选项
  */
-export declare type StringTruncateOptions = {
+export type StringTruncateOptions = {
     /** 截断后字符串的最大长度 */
     length: number;
     /** 截断位置：'end'(默认)|'start'|'middle' */

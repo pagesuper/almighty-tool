@@ -34,23 +34,23 @@ declare const basicUtil: {
     uniqueArrayByField<T>(arr: T[], options: UniqueArrayByFieldOptions<T>): T[];
     isEmpty(value: any): boolean;
     isPresent(value: any): boolean;
-    isPromise<T_1 = any>(obj: any): obj is Promise<T_1>;
+    isPromise<T = any>(obj: any): obj is Promise<T>;
     /**
      * 获取树的子节点
      * @param compareFn 比较函数
      * @param treeChildren 树节点
      * @returns 子节点
      */
-    getTreeChildren<T_2 extends LikeTreeObject<T_2>>(compareFn: (node: T_2) => boolean, treeChildren?: T_2 | T_2[]): T_2[];
+    getTreeChildren<T extends LikeTreeObject<T>>(compareFn: (node: T) => boolean, treeChildren?: T | T[]): T[];
     /**
      * 获取指定节点的父节点
      * @param compareFn 比较函数，用于匹配目标节点
      * @param treeNodes 树节点数组或单个树节点
      * @returns 父节点，如果未找到则返回 null
      */
-    getTreeParent<T_3 extends LikeTreeObject<T_3>>(compareFn: (node: T_3) => boolean, treeNodes?: T_3 | T_3[]): T_3 | null;
+    getTreeParent<T extends LikeTreeObject<T>>(compareFn: (node: T) => boolean, treeNodes?: T | T[]): T | null;
     /** 树遍历 */
-    treeErgodic<T_4 extends LikeTreeObject<T_4>>(treeChildren: T_4 | T_4[], callFn?: ((linkTreeObject: T_4, options: TreeErgodicOptions<T_4>) => void) | undefined, options?: Partial<TreeErgodicOptions<T_4>>): void;
+    treeErgodic<T extends LikeTreeObject<T>>(treeChildren: T | T[], callFn?: (linkTreeObject: T, options: TreeErgodicOptions<T>) => void, options?: Partial<TreeErgodicOptions<T>>): void;
     /** 过滤html标签 */
     escapeHTML(str: string): string;
     /** 将css样式对象转为字符串 */
@@ -111,15 +111,15 @@ declare const basicUtil: {
     objectsGroupByFn(objs: AnyObject[], fn: (obj: AnyObject) => string): {};
     /** 将对象按照特定的key进行排序 */
     sortKeys(obj: AnyObject, options?: {
-        deep?: boolean | undefined;
-        compare?: ((a: string, b: string) => number) | undefined;
-    }): AnyObject;
+        deep?: boolean;
+        compare?: (a: string, b: string) => number;
+    }): {};
     /** 获取两个对象的差异 */
     getDifferences(obj1: any, obj2: any, options?: {
         noStrict?: boolean;
     }): string[];
     getTextWidth(text: string): number;
     /** 空值合并 */
-    nullCoalesce<T_5>(...args: (T_5 | null | undefined)[]): T_5;
+    nullCoalesce<T>(...args: (T | null | undefined)[]): T;
 };
 export default basicUtil;

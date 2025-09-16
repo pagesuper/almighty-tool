@@ -172,7 +172,7 @@ declare const messages: {
         };
     };
 };
-export declare type TranslateOptions = {
+export type TranslateOptions = {
     lang?: string;
     locale?: string;
     fallbackLang?: string;

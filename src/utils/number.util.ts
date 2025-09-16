@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import _ from 'lodash-es';
 
 export interface ISplitFloatOptions {
   /** 忽略尾部的0: 默认为true */

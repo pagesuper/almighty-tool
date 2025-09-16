@@ -17,7 +17,7 @@ import ValidateSchema, {
 } from 'async-validator';
 import deepmerge from 'deepmerge';
 import inflection from 'inflection';
-import _ from 'lodash';
+import _ from 'lodash-es';
 import { I18n, i18nConfig } from '../i18n/index';
 import { regExps } from './format.util';
 

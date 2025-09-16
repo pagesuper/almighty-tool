@@ -1,6 +1,6 @@
 import forge from 'node-forge';
-declare type KeyEncryptionScheme = 'RSAES-PKCS1-V1_5' | 'RSA-OAEP' | 'RAW' | 'NONE' | null;
-declare type CipherAlgorithm = forge.cipher.Algorithm;
+type KeyEncryptionScheme = 'RSAES-PKCS1-V1_5' | 'RSA-OAEP' | 'RAW' | 'NONE' | null;
+type CipherAlgorithm = forge.cipher.Algorithm;
 interface AesEncryptDecryptOptions {
     algorithm?: CipherAlgorithm;
 }

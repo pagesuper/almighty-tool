@@ -8,7 +8,7 @@ export declare const DEFINED_RANDOM_CHARS: {
     /** 符号 */
     symbol: string[];
 };
-export declare type RANDOM_CHARS_RANGE_KEY = 'lower' | 'upper' | 'number' | 'symbol';
+export type RANDOM_CHARS_RANGE_KEY = 'lower' | 'upper' | 'number' | 'symbol';
 export declare const RANDOM_CHARS: {
     /** 全字符 */
     full: string[];
@@ -25,7 +25,7 @@ export declare const RANDOM_CHARS: {
     /** 符号 */
     symbol: string[];
 };
-export declare type RANDOM_CHARS_GROUP_KEY = 'full' | 'downcase' | 'lower' | 'upper' | 'simple' | 'symbol' | 'number' | 'symbol';
+export type RANDOM_CHARS_GROUP_KEY = 'full' | 'downcase' | 'lower' | 'upper' | 'simple' | 'symbol' | 'number' | 'symbol';
 export interface IGenerateRandomStringParams {
     /** 默认32 */
     length?: number;

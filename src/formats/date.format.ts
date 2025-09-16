@@ -3,7 +3,7 @@ import 'dayjs/locale/en';
 import 'dayjs/locale/vi';
 import '../dayjs/locales/zh-cn';
 import relativeTime from 'dayjs/plugin/relativeTime';
-import _ from 'lodash';
+import _ from 'lodash-es';
 import en from '../locales/en';
 import vi from '../locales/vi';
 import zhCN from '../locales/zh-cn';

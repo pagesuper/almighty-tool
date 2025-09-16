@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import _ from 'lodash-es';
 import { I18n, i18nConfig } from '../i18n/index';
 
 export interface IEnumObjectTranslate {

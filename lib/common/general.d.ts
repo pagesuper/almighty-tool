@@ -5,7 +5,7 @@ declare const _default: {
     /** 设置默认值 */
     setDefault<T>(key: string, value: T): void;
     /** 获取默认值 */
-    getDefault<T_1>(key: string): T_1;
+    getDefault<T>(key: string): T;
     /** 获取有效值 */
     getValidValue(inputValue: number, minValue: number, maxValue: number): number;
     /** 获取时间的字符串 */

@@ -1,8 +1,8 @@
 import ValidateSchema, { ValidateError as OriginalValidateError, ValidateOption as OriginalValidateOption, RuleItem as OriginalValidateRuleItem, ValidateCallback, ExecuteRule as ValidateExecuteRule, ExecuteValidator as ValidateExecuteValidator, ValidateFieldsError, InternalRuleItem as ValidateInternalRuleItem, InternalValidateMessages as ValidateInternalValidateMessages, ValidateMessages, ValidateResult, RuleType as ValidateRuleType, RuleValuePackage as ValidateRuleValuePackage, Value as ValidateValue, Values as ValidateValues } from 'async-validator';
 import { I18n } from '../i18n/index';
-export declare type ValidateTrigger = 'blur' | 'change' | Array<'change' | 'blur'>;
-export declare type ValidateTransform = (value: ValidateValue) => ValidateValue;
-export declare type ValidateTransformer = 'toDate' | 'toBoolean' | 'trim' | 'trimLeft' | 'trimRight' | 'trimStart' | 'trimEnd' | 'toLower' | 'toUpper' | 'tryToNumber' | 'toNumber' | 'firstLetterUpper' | 'firstLetterLower' | 'capitalize' | 'camelize' | 'dasherize' | 'underscore' | 'pluralize' | 'singularize' | 'humanize';
+export type ValidateTrigger = 'blur' | 'change' | Array<'change' | 'blur'>;
+export type ValidateTransform = (value: ValidateValue) => ValidateValue;
+export type ValidateTransformer = 'toDate' | 'toBoolean' | 'trim' | 'trimLeft' | 'trimRight' | 'trimStart' | 'trimEnd' | 'toLower' | 'toUpper' | 'tryToNumber' | 'toNumber' | 'firstLetterUpper' | 'firstLetterLower' | 'capitalize' | 'camelize' | 'dasherize' | 'underscore' | 'pluralize' | 'singularize' | 'humanize';
 export interface ParseRulesOptions {
     /**
      * 方向:
@@ -97,8 +97,8 @@ export interface ValidateRuleItem extends Omit<OriginalValidateRuleItem, 'fields
      */
     transformers?: ValidateTransformer[];
 }
-export declare type ValidateRule = ValidateRuleItem | ValidateRuleItem[];
-export declare type ValidateRules = Record<string, ValidateRule>;
+export type ValidateRule = ValidateRuleItem | ValidateRuleItem[];
+export type ValidateRules = Record<string, ValidateRule>;
 export interface ValidateOptionRule extends Omit<ValidateRuleItem, 'fields'> {
     /** 子规则 */
     fields?: Record<string, ValidateOptionRule | ValidateOptionRule[]>;
@@ -131,7 +131,7 @@ export interface GetLocaleRulesOptions extends GetRulesOptions {
     /** 数据 */
     values?: ValidateValues;
 }
-export declare type ValidateOptionRules = Record<string, ValidateOptionRule | ValidateOptionRule[]>;
+export type ValidateOptionRules = Record<string, ValidateOptionRule | ValidateOptionRule[]>;
 export interface GetErrorsOptions extends GetLocaleRulesOptions {
     /** 模型 */
     model?: string;
@@ -183,21 +183,21 @@ declare const validateUtil: {
      * @param rules 校验规则
      * @returns 校验器
      */
-    getSchema: (rules: ValidateOptionRules, options?: ValidateOption | undefined) => ValidateSchema;
+    getSchema: (rules: ValidateOptionRules, options?: ValidateOption) => ValidateSchema;
     /**
      * 获取错误信息
      * @param error 错误信息
      * @param options 选项
      * @returns 错误信息
      */
-    getErrorMessage: (error: unknown, options?: GetErrorsOptions | undefined) => any;
+    getErrorMessage: (error: unknown, options?: GetErrorsOptions) => any;
     /**
      * 获取错误信息
      * @param error 错误信息
      * @param options 选项
      * @returns 错误信息
      */
-    getErrors: (error: unknown, options?: GetErrorsOptions | undefined) => ValidateError[] | {
+    getErrors: (error: unknown, options?: GetErrorsOptions) => ValidateError[] | {
         field: string | undefined;
         fieldValue: any;
         data: ErrorDataJSON;
@@ -210,14 +210,14 @@ declare const validateUtil: {
      * @param rules 校验规则
      * @returns 转换后的数据
      */
-    transform: (values: ValidateValues, rules?: ValidateOptionRules | undefined) => {};
+    transform: (values: ValidateValues, rules?: ValidateOptionRules) => {};
     /**
      * 校验数据
      * @param rules 校验规则
      * @param data 数据
      * @returns 校验结果
      */
-    validate<T extends ValidateValues = ValidateValues>(rules: ValidateOptionRules, values: T, options?: ValidateOption | undefined, callback?: ValidateCallback | undefined): Promise<ValidateResponseInstance<T>>;
+    validate<T extends ValidateValues = ValidateValues>(rules: ValidateOptionRules, values: T, options?: ValidateOption, callback?: ValidateCallback): Promise<ValidateResponseInstance<T>>;
     /**
      * 递归获取国际化规则
      * @param rules 校验规则
@@ -247,7 +247,7 @@ declare const validateUtil: {
      * @param options 选项
      * @returns 校验规则
      */
-    parseRules: (rules: ValidateOptionRules, initialRules?: ValidateRules, options?: ParseRulesOptions | undefined) => ValidateRules;
+    parseRules: (rules: ValidateOptionRules, initialRules?: ValidateRules, options?: ParseRulesOptions) => ValidateRules;
     /**
      * 解析校验规则
      * @param opts 校验规则
@@ -306,7 +306,7 @@ declare const validateUtil: {
      * @param rules 校验规则
      * @returns 校验规则
      */
-    normalizeRules: (rules: ValidateRules, options?: GetRulesOptions | undefined) => ValidateRules;
+    normalizeRules: (rules: ValidateRules, options?: GetRulesOptions) => ValidateRules;
     /** 过滤规则 */
     filterRules: (rules: ValidateRules, settings: Record<string, ValidateOptionSetting>, parentPath?: string) => ValidateRules;
 };

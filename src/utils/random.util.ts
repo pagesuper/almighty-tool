@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import _ from 'lodash-es';
 
 export const DEFINED_RANDOM_CHARS = {
   /** 小写字母 */
