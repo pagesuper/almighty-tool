@@ -55,6 +55,8 @@ export interface IDateFormatOptions {
   formatter?: DATE_FORMAT_FORMATTER;
   /** 语言 */
   locale?: string;
+  /** 当前时间 */
+  now?: Date | dayjs.Dayjs;
 }
 
 /** 日期格式化工具 */
@@ -74,7 +76,7 @@ const dateFormat = {
         const locale = (options.locale ?? _i18n.t('AlmightyTool.DateFormat.locale').toString()).toLowerCase();
         const template = options.template ?? dateFormat.getFormatTemplate(options);
         const day = dayjs(date);
-        const now = dayjs();
+        const now = options.now ? dayjs(options.now) : dayjs();
         const localeDay = day.locale(locale);
         const i18nPrefix = `AlmightyTool.DateFormat.${options.formatter}`;
 

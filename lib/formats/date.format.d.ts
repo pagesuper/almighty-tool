@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 import 'dayjs/locale/en';
 import 'dayjs/locale/vi';
 import '../dayjs/locales/zh-cn';
@@ -15,6 +16,8 @@ export interface IDateFormatOptions {
     formatter?: DATE_FORMAT_FORMATTER;
     /** 语言 */
     locale?: string;
+    /** 当前时间 */
+    now?: Date | dayjs.Dayjs;
 }
 /** 日期格式化工具 */
 declare const dateFormat: {
