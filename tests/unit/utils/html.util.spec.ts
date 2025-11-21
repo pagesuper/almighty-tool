@@ -1,5 +1,7 @@
 /* eslint-disable no-irregular-whitespace */
-import { htmlToPlainText } from '../../../src/utils/html.util'; // 根据实际文件路径调整
+import htmlUtil from '../../../src/utils/html.util'; // 根据实际文件路径调整
+
+const htmlToPlainText = htmlUtil.htmlToPlainText;
 
 describe('htmlToPlainText', () => {
   describe('基本功能测试', () => {
@@ -233,8 +235,6 @@ describe('htmlToPlainText', () => {
       expect(result).toContain('引用来源');
 
       // 验证换行处理
-      const lines = result.split('\n').filter((line) => line.trim().length > 0);
-      expect(lines.length).toBeGreaterThan(5);
       expect(result).toEqual(
         `文章标题\n\n 作者：张三\n 2023年1月1日\n\n这是文章的第一段内容，包含斜体文本和。\n\n这是第二段内容，包含代码片段和数学公式：E = mc2。\n\n二级标题\n\n下面是高亮文本和小号文本。\n\n这是一个引用块，包含重要的引用内容。\n\n— 引用来源\n\n三级标题\n\n无序列表项一\n\n无序列表项二\n\n嵌套列表项一\n\n嵌套列表项二\n\n无序列表项三\n\n有序列表项一\n\n有序列表项二\n\n嵌套有序列表一\n\n嵌套有序列表二\n\n有序列表项三\n\nfunction hello() {\n console.log("Hello, World!");\n}\n\n 姓名\n 年龄\n 职业\n\n 张三\n 25\n 工程师\n\n 李四\n 30\n 设计师\n\n最后一段包含\n换行和\n---\n水平线。\n\n文章结束`,
       );

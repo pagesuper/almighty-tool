@@ -110,7 +110,7 @@ interface ListState {
  * @param options 配置选项
  * @returns 清洗后的纯文本
  */
-export function htmlToPlainText(html: string, options: HtmlToTextOptions = {}): string {
+function htmlToPlainText(html: string, options: HtmlToTextOptions = {}): string {
   const opts: Required<HtmlToTextOptions> = { ...defaultOptions, ...options };
 
   // 第一步：预处理HTML，处理块级元素和列表
@@ -374,3 +374,9 @@ function postprocessText(text: string, options: Required<HtmlToTextOptions>): st
 
   return cleaned;
 }
+
+const htmlUtil = {
+  htmlToPlainText,
+};
+
+export default htmlUtil;

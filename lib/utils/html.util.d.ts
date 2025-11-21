@@ -75,4 +75,8 @@ export interface HtmlToTextOptions {
  * @param options 配置选项
  * @returns 清洗后的纯文本
  */
-export declare function htmlToPlainText(html: string, options?: HtmlToTextOptions): string;
+declare function htmlToPlainText(html: string, options?: HtmlToTextOptions): string;
+declare const htmlUtil: {
+    htmlToPlainText: typeof htmlToPlainText;
+};
+export default htmlUtil;
