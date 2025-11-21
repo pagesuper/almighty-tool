@@ -53,6 +53,14 @@ export interface HtmlToTextOptions {
      */
     tables?: 'remove' | 'newlines' | 'tabs';
     /**
+     * 水平线（<hr>）处理方式
+     * - 'line': 转换为分隔线 "---"（默认）
+     * - 'newline': 转换为单个换行符
+     * - 'space': 转换为单个空格
+     * - 'remove': 完全移除
+     */
+    horizontalRule?: 'line' | 'newline' | 'space' | 'remove';
+    /**
      * 最大连续换行数
      * - 默认值：2
      */

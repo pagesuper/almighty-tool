@@ -62,6 +62,15 @@ export interface HtmlToTextOptions {
   tables?: 'remove' | 'newlines' | 'tabs';
 
   /**
+   * 水平线（<hr>）处理方式
+   * - 'line': 转换为分隔线 "---"（默认）
+   * - 'newline': 转换为单个换行符
+   * - 'space': 转换为单个空格
+   * - 'remove': 完全移除
+   */
+  horizontalRule?: 'line' | 'newline' | 'space' | 'remove';
+
+  /**
    * 最大连续换行数
    * - 默认值：2
    */
@@ -92,6 +101,7 @@ const defaultOptions: Required<HtmlToTextOptions> = {
   lists: 'remove',
   codeBlocks: 'remove',
   tables: 'remove',
+  horizontalRule: 'newline',
   maxNewlines: 2,
   trim: true,
   keepWhitespace: false,
@@ -149,6 +159,9 @@ function preprocessHtml(html: string, options: Required<HtmlToTextOptions>): str
   // 处理图片
   processed = processImages(processed, options.images);
 
+  // 处理水平线
+  processed = processHorizontalRules(processed, options.horizontalRule);
+
   // 定义块级元素
   const blockElements = [
     'div',
@@ -184,9 +197,6 @@ function preprocessHtml(html: string, options: Required<HtmlToTextOptions>): str
     processed = processed.replace(closeTagRegex, '\n');
   });
 
-  // 处理hr标签
-  processed = processed.replace(/<hr\s*\/?>/gi, '\n---\n');
-
   // 处理br标签 - 替换为换行符
   processed = processed.replace(/<br\s*\/?>/gi, '\n');
 
@@ -216,6 +226,25 @@ function preprocessHtml(html: string, options: Required<HtmlToTextOptions>): str
   }
 
   return processed;
+}
+
+/**
+ * 处理水平线标签
+ */
+function processHorizontalRules(html: string, hrOption: string): string {
+  return html.replace(/<hr\s*\/?>/gi, () => {
+    switch (hrOption) {
+      case 'line':
+        return '\n---\n';
+      case 'newline':
+        return '\n';
+      case 'space':
+        return ' ';
+      case 'remove':
+      default:
+        return '';
+    }
+  });
 }
 
 /**

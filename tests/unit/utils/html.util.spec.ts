@@ -71,7 +71,7 @@ describe('htmlToPlainText', () => {
     test('hr标签转换为分隔线', () => {
       const html = '上面内容<hr>下面内容';
       const result = htmlToPlainText(html);
-      expect(result).toBe('上面内容\n---\n下面内容');
+      expect(result).toBe('上面内容\n下面内容');
     });
   });
 
@@ -236,7 +236,7 @@ describe('htmlToPlainText', () => {
 
       // 验证换行处理
       expect(result).toEqual(
-        `文章标题\n\n 作者：张三\n 2023年1月1日\n\n这是文章的第一段内容，包含斜体文本和。\n\n这是第二段内容，包含代码片段和数学公式：E = mc2。\n\n二级标题\n\n下面是高亮文本和小号文本。\n\n这是一个引用块，包含重要的引用内容。\n\n— 引用来源\n\n三级标题\n\n无序列表项一\n\n无序列表项二\n\n嵌套列表项一\n\n嵌套列表项二\n\n无序列表项三\n\n有序列表项一\n\n有序列表项二\n\n嵌套有序列表一\n\n嵌套有序列表二\n\n有序列表项三\n\nfunction hello() {\n console.log("Hello, World!");\n}\n\n 姓名\n 年龄\n 职业\n\n 张三\n 25\n 工程师\n\n 李四\n 30\n 设计师\n\n最后一段包含\n换行和\n---\n水平线。\n\n文章结束`,
+        `文章标题\n\n 作者：张三\n 2023年1月1日\n\n这是文章的第一段内容，包含斜体文本和。\n\n这是第二段内容，包含代码片段和数学公式：E = mc2。\n\n二级标题\n\n下面是高亮文本和小号文本。\n\n这是一个引用块，包含重要的引用内容。\n\n— 引用来源\n\n三级标题\n\n无序列表项一\n\n无序列表项二\n\n嵌套列表项一\n\n嵌套列表项二\n\n无序列表项三\n\n有序列表项一\n\n有序列表项二\n\n嵌套有序列表一\n\n嵌套有序列表二\n\n有序列表项三\n\nfunction hello() {\n console.log("Hello, World!");\n}\n\n 姓名\n 年龄\n 职业\n\n 张三\n 25\n 工程师\n\n 李四\n 30\n 设计师\n\n最后一段包含\n换行和\n水平线。\n\n文章结束`,
       );
     });
 
@@ -499,7 +499,23 @@ describe('htmlToPlainText', () => {
       expect(result).not.toContain('<link');
       expect(result).not.toContain('<!--');
 
-      expect(result).toEqual(`---\n\n 正常文本`);
+      expect(result).toEqual(`正常文本`);
+    });
+
+    test('边界情况：自闭合标签和空标签', () => {
+      const html = `
+        <div>
+          正常文本
+          <hr>
+          <hr>
+          Hello Jack
+          <hr>
+        </div>
+        正常文本
+      `;
+
+      const result = htmlUtil.htmlToPlainText(html);
+      expect(result).toEqual(`正常文本\n\n Hello Jack\n\n 正常文本`);
     });
 
     test('XSS安全测试', () => {
