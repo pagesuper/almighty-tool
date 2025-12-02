@@ -21,8 +21,8 @@ export interface HtmlToTextOptions {
 
   /**
    * 链接处理方式
-   * - 'remove': 完全移除链接，只保留文本（默认）
-   * - 'preserve-text': 保留链接文本
+   * - 'remove': 完全移除链接，只保留文本
+   * - 'preserve-text': 保留链接文本（默认）
    * - 'markdown': 转换为Markdown格式 [文本](URL)
    * - 'with-url': 在文本后添加URL (文本 [URL])
    */
