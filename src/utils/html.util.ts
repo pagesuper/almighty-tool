@@ -96,7 +96,7 @@ export interface HtmlToTextOptions {
 const defaultOptions: Required<HtmlToTextOptions> = {
   newlines: 'preserve',
   preserveInlineSemantics: false,
-  links: 'remove',
+  links: 'preserve-text',
   images: 'remove',
   lists: 'remove',
   codeBlocks: 'remove',
@@ -248,7 +248,7 @@ function processHorizontalRules(html: string, hrOption: string): string {
 }
 
 /**
- * 处理链接
+ * 处理链接: 默认保留文字
  */
 function processLinks(html: string, linkOption: string): string {
   return html.replace(/<a\b[^>]*href=["']([^"']*)["'][^>]*>(.*?)<\/a>/gi, (match, href, text) => {
@@ -257,11 +257,11 @@ function processLinks(html: string, linkOption: string): string {
         return `[${text}](${href})`;
       case 'with-url':
         return href ? `${text} [${href}]` : text;
-      case 'preserve-text':
-        return text;
       case 'remove':
-      default:
         return '';
+      case 'preserve-text':
+      default:
+        return text;
     }
   });
 }
