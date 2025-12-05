@@ -23,7 +23,6 @@ const languageLocaleMap = {
   tha: 'th-TH',
   vie: 'vi-VN',
   ind: 'id-ID',
-  ms: 'ms-MY',
   fil: 'tl-PH',
 
   // 欧洲语言
