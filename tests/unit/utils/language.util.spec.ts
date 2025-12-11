@@ -64,10 +64,16 @@ describe('languageUtil', () => {
       expect(key).toBe('fr-FR');
     });
 
-    test('法语 (fra) 文本应返回 fr-FR', () => {
+    test(' (null) 文本应返回', () => {
       const text = 'Cześć świecie';
       const key = languageUtil.getKeyByText(text, { only });
       expect(key).toBe(null);
+    });
+
+    test(' (null) 文本应返回 default', () => {
+      const text = 'Cześć świecie';
+      const key = languageUtil.getKeyByText(text, { only, default: 'zh-CN' });
+      expect(key).toBe('zh-CN');
     });
   });
 });
