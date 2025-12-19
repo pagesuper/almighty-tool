@@ -27,8 +27,12 @@ const stringUtil = {
    * 3. 最小化字符串操作：使用slice替代substring
    * 4. 优化单词保留逻辑：使用indexOf替代split
    */
-  truncate: (str: string, options: StringTruncateOptions): string => {
+  truncate: (str: string | undefined | null, options: StringTruncateOptions): string => {
     const length = options.length;
+
+    if (typeof str === 'undefined' || str === null) {
+      return '';
+    }
 
     // 快速返回路径：字符串本身已满足长度要求
     if (str.length <= length) {

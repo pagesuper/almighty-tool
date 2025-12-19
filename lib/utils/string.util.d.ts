@@ -26,7 +26,7 @@ declare const stringUtil: {
      * 3. 最小化字符串操作：使用slice替代substring
      * 4. 优化单词保留逻辑：使用indexOf替代split
      */
-    truncate: (str: string, options: StringTruncateOptions) => string;
+    truncate: (str: string | undefined | null, options: StringTruncateOptions) => string;
     /**
      * 简单截断处理（不保留单词）
      */
