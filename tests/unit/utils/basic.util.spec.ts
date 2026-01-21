@@ -93,6 +93,117 @@ describe('basicUtil.getDifferences()', () => {
     expect(basicUtil.getDifferences(value1, value2, { noStrict: true })).toEqual([]);
     expect(basicUtil.getDifferences(value1, value2, {})).toEqual(['school.years', 'users.0.age']);
   });
+
+  test('基本类型比较', async () => {
+    // 字符串比较
+    expect(basicUtil.getDifferences('hello', 'world')).toEqual(['']);
+    expect(basicUtil.getDifferences('hello', 'hello')).toEqual([]);
+
+    // 数字比较
+    expect(basicUtil.getDifferences(123, 456)).toEqual(['']);
+    expect(basicUtil.getDifferences(123, 123)).toEqual([]);
+
+    // 布尔值比较
+    expect(basicUtil.getDifferences(true, false)).toEqual(['']);
+    expect(basicUtil.getDifferences(true, true)).toEqual([]);
+
+    // null/undefined比较
+    expect(basicUtil.getDifferences(null, undefined)).toEqual(['']);
+    expect(basicUtil.getDifferences(null, null)).toEqual([]);
+    expect(basicUtil.getDifferences(undefined, undefined)).toEqual([]);
+  });
+
+  test('数组比较', async () => {
+    // 相同数组
+    expect(basicUtil.getDifferences([1, 2, 3], [1, 2, 3])).toEqual([]);
+
+    // 不同长度数组
+    expect(basicUtil.getDifferences([1, 2], [1, 2, 3])).toEqual(['2']);
+
+    // 数组元素不同
+    expect(basicUtil.getDifferences([1, 2, 3], [1, 4, 3])).toEqual(['1']);
+
+    // 嵌套数组
+    expect(basicUtil.getDifferences([[1, 2], [3, 4]], [[1, 2], [3, 5]])).toEqual(['1.1']);
+
+    // 混合类型数组
+    expect(basicUtil.getDifferences([1, 'hello', true], [1, 'world', true])).toEqual(['1']);
+  });
+
+  test('对象比较', async () => {
+    // 相同对象
+    expect(basicUtil.getDifferences({ a: 1, b: 2 }, { a: 1, b: 2 })).toEqual([]);
+
+    // 属性值不同
+    expect(basicUtil.getDifferences({ a: 1, b: 2 }, { a: 1, b: 3 })).toEqual(['b']);
+
+    // 属性数量不同
+    expect(basicUtil.getDifferences({ a: 1 }, { a: 1, b: 2 })).toEqual(['b']);
+
+    // 嵌套对象
+    expect(basicUtil.getDifferences(
+      { a: { x: 1, y: 2 }, b: 3 },
+      { a: { x: 1, y: 4 }, b: 3 }
+    )).toEqual(['a.y']);
+
+    // 深层嵌套
+    expect(basicUtil.getDifferences(
+      { a: { b: { c: { d: 1 } } } },
+      { a: { b: { c: { d: 2 } } } }
+    )).toEqual(['a.b.c.d']);
+  });
+
+  test('noStrict选项测试', async () => {
+    // 数字和字符串比较（非严格模式）
+    expect(basicUtil.getDifferences({ a: 123 }, { a: '123' }, { noStrict: true })).toEqual([]);
+    expect(basicUtil.getDifferences({ a: 123 }, { a: '123' }, {})).toEqual(['a']);
+
+    // 布尔值和字符串比较（非严格模式）
+    expect(basicUtil.getDifferences({ a: true }, { a: 'true' }, { noStrict: true })).toEqual([]);
+    expect(basicUtil.getDifferences({ a: true }, { a: 'true' }, {})).toEqual(['a']);
+
+    // 布尔值和数字比较（非严格模式）
+    expect(basicUtil.getDifferences({ a: true }, { a: 1 }, { noStrict: true })).toEqual(['a']);
+    expect(basicUtil.getDifferences({ a: true }, { a: 1 }, {})).toEqual(['a']);
+  });
+
+  test('复杂对象比较', async () => {
+    const obj1 = {
+      user: {
+        id: 1,
+        profile: {
+          name: 'John',
+          settings: {
+            theme: 'dark',
+            notifications: true
+          }
+        },
+        hobbies: ['reading', 'swimming']
+      },
+      preferences: {
+        language: 'en'
+      }
+    };
+
+    const obj2 = {
+      user: {
+        id: 1,
+        profile: {
+          name: 'John',
+          settings: {
+            theme: 'light', // 不同
+            notifications: true
+          }
+        },
+        hobbies: ['reading', 'swimming', 'coding'] // 不同
+      },
+      preferences: {
+        language: 'en'
+      }
+    };
+
+    expect(basicUtil.getDifferences(obj1, obj2)).toEqual(['user.profile.settings.theme', 'user.hobbies.2']);
+  });
 });
 
 // describe('textUtil.getTextWidth()', () => {
