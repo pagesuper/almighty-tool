@@ -78,7 +78,7 @@ export class EnumObject<T extends Record<string, string | number>> {
           value,
           translate: _reduce(
             this.langs,
-            (acc, lang) => {
+            (acc: any, lang: any) => {
               Reflect.set(acc, lang, this.getI18n().t(`enum.types.${this.name}.options.${key}`, { lang }));
               return acc;
             },
