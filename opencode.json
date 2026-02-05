@@ -1,0 +1,60 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "theme": "",
+  "model": "opencode/gpt-5.1-codex",
+  "small_model": "opencode/gpt-4o-mini-2024-07-18",
+  "permission": {
+    "edit": "allow",
+    "bash": "allow",
+    "webfetch": "allow"
+  },
+  "tools": {
+    "write": true,
+    "edit": true,
+    "bash": true,
+    "grep": true,
+    "glob": true,
+    "read": true,
+    "question": true,
+    "task": true,
+    "todowrite": true,
+    "webfetch": true
+  },
+  "formatter": {
+    "prettier": {
+      "command": ["npx", "prettier", "--write", "$FILE"],
+      "environment": {
+        "NODE_ENV": "production"
+      },
+      "extensions": [".js", ".ts", ".jsx", ".tsx", ".json", ".md"]
+    }
+  },
+  "autoupdate": true,
+  "share": "manual",
+  "instructions": ["AGENTS.md"],
+  "agent": {
+    "build": {
+      "mode": "primary",
+      "tools": {
+        "write": true,
+        "edit": true,
+        "bash": true
+      }
+    },
+    "plan": {
+      "mode": "primary",
+      "tools": {
+        "write": false,
+        "edit": false,
+        "bash": false
+      }
+    }
+  },
+  "watcher": {
+    "ignore": ["node_modules/**", "lib/**", ".git/**", ".opencode/**"]
+  },
+  "compaction": {
+    "auto": true,
+    "prune": true
+  }
+}
