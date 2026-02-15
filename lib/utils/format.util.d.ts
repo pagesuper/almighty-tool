@@ -44,7 +44,7 @@ export interface FormatBytesOptions {
     /** 分割符 */
     separator?: string;
 }
-declare const _default: {
+declare const formatUtil: {
     isChinaMobileNumber(mobileNumber: string): boolean;
     isMobileNumber(mobileNumber: string, region?: string): boolean;
     /** 是否是纯数字 */
@@ -70,4 +70,5 @@ declare const _default: {
     /** 格式化字节 */
     formatBytes(bytes: number, options?: FormatBytesOptions): string;
 };
-export default _default;
+export default formatUtil;
+export { formatUtil };

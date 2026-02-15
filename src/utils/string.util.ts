@@ -127,3 +127,4 @@ const stringUtil = {
 };
 
 export default stringUtil;
+export { stringUtil };

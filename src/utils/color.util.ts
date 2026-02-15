@@ -103,3 +103,4 @@ const colorUtil = {
 };
 
 export default colorUtil;
+export { colorUtil };

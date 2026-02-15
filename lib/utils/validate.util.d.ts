@@ -311,6 +311,7 @@ declare const validateUtil: {
     filterRules: (rules: ValidateRules, settings: Record<string, ValidateOptionSetting>, parentPath?: string) => ValidateRules;
 };
 export default validateUtil;
+export { validateUtil };
 /**
  * 校验器选项
  */

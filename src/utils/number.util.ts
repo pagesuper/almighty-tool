@@ -44,3 +44,4 @@ const numberUtil = {
 };
 
 export default numberUtil;
+export { numberUtil };

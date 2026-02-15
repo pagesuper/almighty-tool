@@ -12,3 +12,4 @@ declare const languageUtil: {
     getKeyByText: (text: string, options?: Partial<DetectOption>) => string | null;
 };
 export default languageUtil;
+export { languageUtil };

@@ -52,7 +52,7 @@ export interface FormatBytesOptions {
   separator?: string;
 }
 
-export default {
+const formatUtil = {
   isChinaMobileNumber(mobileNumber: string): boolean {
     return regExps['mobile-number-china'].test(mobileNumber);
   },
@@ -117,7 +117,7 @@ export default {
   /** 转为中横线命名 */
   toHumpName(value: string): string {
     if (value) {
-      return value.replace(/-(\w)/g, (_all, letter) => {
+      return value.replace(/-(\w)/g, (_all: string, letter: string) => {
         return letter.toUpperCase();
       });
     }
@@ -152,3 +152,6 @@ export default {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(decimals)) + separator + sizes[i];
   },
 };
+
+export default formatUtil;
+export { formatUtil };

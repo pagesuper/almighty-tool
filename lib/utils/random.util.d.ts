@@ -45,3 +45,4 @@ declare const randomUtil: {
     getUtcTimeString(dateTime?: Date | null): string;
 };
 export default randomUtil;
+export { randomUtil };

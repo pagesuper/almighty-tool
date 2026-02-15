@@ -127,3 +127,4 @@ const languageUtil = {
 };
 
 export default languageUtil;
+export { languageUtil };

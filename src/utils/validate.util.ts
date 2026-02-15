@@ -1344,6 +1344,7 @@ const validateUtil = {
 };
 
 export default validateUtil;
+export { validateUtil };
 
 /**
  * 校验器选项

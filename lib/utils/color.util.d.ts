@@ -7,3 +7,4 @@ declare const colorUtil: {
     mixColor(color1: string, color2: string, weight?: number): string;
 };
 export default colorUtil;
+export { colorUtil };

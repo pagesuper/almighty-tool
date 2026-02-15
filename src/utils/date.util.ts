@@ -259,3 +259,4 @@ const dateUtil = {
 };
 
 export default dateUtil;
+export { dateUtil };

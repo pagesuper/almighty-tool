@@ -42,3 +42,4 @@ declare const stringUtil: {
     }) => string;
 };
 export default stringUtil;
+export { stringUtil };

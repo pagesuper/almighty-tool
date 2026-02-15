@@ -50,3 +50,4 @@ declare const dateUtil: {
     isSameDate(value: Date, value2?: Date): boolean;
 };
 export default dateUtil;
+export { dateUtil };

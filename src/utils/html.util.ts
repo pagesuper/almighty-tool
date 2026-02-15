@@ -409,3 +409,4 @@ const htmlUtil = {
 };
 
 export default htmlUtil;
+export { htmlUtil };

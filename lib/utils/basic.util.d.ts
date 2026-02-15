@@ -123,3 +123,4 @@ declare const basicUtil: {
     nullCoalesce<T>(...args: (T | null | undefined)[]): T;
 };
 export default basicUtil;
+export { basicUtil };

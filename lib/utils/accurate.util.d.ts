@@ -1,7 +1,7 @@
 /**
  * 一些精确的计算方法
  */
-declare const _default: {
+declare const accurateUtil: {
     /** 加法 */
     add(num1: number, num2: number): number;
     /**
@@ -25,4 +25,5 @@ declare const _default: {
      */
     convertToNumber(num: any): number;
 };
-export default _default;
+export default accurateUtil;
+export { accurateUtil };

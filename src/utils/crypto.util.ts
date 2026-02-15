@@ -196,3 +196,4 @@ const cryptoUtil = {
 };
 
 export default cryptoUtil;
+export { cryptoUtil };

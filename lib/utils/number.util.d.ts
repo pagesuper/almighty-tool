@@ -19,3 +19,4 @@ declare const numberUtil: {
     splitFloat(value: number | string, options?: ISplitFloatOptions): ISplitFloatResult;
 };
 export default numberUtil;
+export { numberUtil };

@@ -138,3 +138,4 @@ const randomUtil = {
 };
 
 export default randomUtil;
+export { randomUtil };

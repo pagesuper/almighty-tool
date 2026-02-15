@@ -2,7 +2,7 @@
  * 一些精确的计算方法
  */
 
-export default {
+const accurateUtil = {
   /** 加法 */
   add(num1: number, num2: number): number {
     const decimalPlaces1 = (num1.toString().split('.')[1] || '').length;
@@ -135,3 +135,6 @@ export default {
     return newNum;
   },
 };
+
+export default accurateUtil;
+export { accurateUtil };

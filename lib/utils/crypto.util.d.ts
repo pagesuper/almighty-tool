@@ -44,3 +44,4 @@ declare const cryptoUtil: {
     splitJoinedStrings(str: string, separator: string): string[];
 };
 export default cryptoUtil;
+export { cryptoUtil };

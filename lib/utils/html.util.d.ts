@@ -88,3 +88,4 @@ declare const htmlUtil: {
     htmlToPlainText: typeof htmlToPlainText;
 };
 export default htmlUtil;
+export { htmlUtil };
