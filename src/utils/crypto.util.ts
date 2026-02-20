@@ -1,7 +1,7 @@
 import CryptoJS from 'crypto-js';
-import { v4 as uuidv4 } from 'uuid';
 import randomUtil from './random.util';
 import JSEncrypt from 'jsencrypt';
+import uuidUtils from './uuid.util';
 
 type KeyEncryptionScheme = 'RSAES-PKCS1-V1_5' | 'RSA-OAEP' | 'RAW' | 'NONE' | null;
 type CipherAlgorithm = 'AES-CBC' | 'AES-CTR' | 'AES-GCM' | 'AES-ECB';
@@ -25,7 +25,7 @@ interface LongEncryptDecryptOptions extends EncryptDecryptOptions {
 
 const cryptoUtil = {
   uuid(): string {
-    return uuidv4();
+    return uuidUtils.v4();
   },
 
   md5(value: string): string {
