@@ -594,6 +594,16 @@ const basicUtil = {
     }
     return args[args.length - 1] as T; // 兜底返回最后一个参数（需断言为 T）
   },
+
+  async retry<T>(fn: () => Promise<T>, retries = 3, delay = 300): Promise<T> {
+    try {
+      return await fn();
+    } catch (err) {
+      if (retries <= 0) throw err;
+      await new Promise((resolve) => setTimeout(resolve, delay));
+      return this.retry(fn, retries - 1, delay);
+    }
+  },
 };
 
 export default basicUtil;

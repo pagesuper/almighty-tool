@@ -121,6 +121,7 @@ declare const basicUtil: {
     getTextWidth(text: string): number;
     /** 空值合并 */
     nullCoalesce<T>(...args: (T | null | undefined)[]): T;
+    retry<T>(fn: () => Promise<T>, retries?: number, delay?: number): Promise<T>;
 };
 export default basicUtil;
 export { basicUtil };
