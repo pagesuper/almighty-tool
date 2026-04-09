@@ -1,4 +1,23 @@
 declare const messages: {
+    AlmightyTool: {
+        DurationFormat: {
+            locale: string;
+            default: {
+                year: string;
+                day: string;
+                hour: string;
+                minute: string;
+                second: string;
+            };
+            short: {
+                year: string;
+                day: string;
+                hour: string;
+                minute: string;
+                second: string;
+            };
+        };
+    };
     validate: {
         default: {
             'field-is-invalid': string;

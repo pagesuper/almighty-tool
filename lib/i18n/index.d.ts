@@ -1,5 +1,24 @@
 declare const messages: {
     'en-US': {
+        AlmightyTool: {
+            DurationFormat: {
+                locale: string;
+                default: {
+                    year: string;
+                    day: string;
+                    hour: string;
+                    minute: string;
+                    second: string;
+                };
+                short: {
+                    year: string;
+                    day: string;
+                    hour: string;
+                    minute: string;
+                    second: string;
+                };
+            };
+        };
         validate: {
             default: {
                 'field-is-invalid': string;
@@ -86,6 +105,25 @@ declare const messages: {
         };
     };
     'zh-CN': {
+        AlmightyTool: {
+            DurationFormat: {
+                locale: string;
+                default: {
+                    year: string;
+                    day: string;
+                    hour: string;
+                    minute: string;
+                    second: string;
+                };
+                short: {
+                    year: string;
+                    day: string;
+                    hour: string;
+                    minute: string;
+                    second: string;
+                };
+            };
+        };
         validate: {
             default: {
                 'field-is-invalid': string;

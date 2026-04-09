@@ -11,6 +11,9 @@ module.exports = {
     '^.+\\.js$': 'babel-jest',
     // '.*\\.(vue)$': 'vue-jest',
   },
+  transformIgnorePatterns: [
+    'node_modules/(?!(lodash-es)/)',
+  ],
   collectCoverage: true,
   collectCoverageFrom: [
     // '<rootDir>/components/**/*.vue',
