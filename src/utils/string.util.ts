@@ -14,7 +14,125 @@ export type StringTruncateOptions = {
   preserveWord?: boolean;
 };
 
+/**
+ * 字节长度计算选项
+ */
+export type ByteLengthOptions = {
+  /**
+   * 计算模式：
+   * - 'display': 中文=1, 英文/半角=0.5 (2个英文=1个中文，适合显示宽度计算)
+   * - 'utf8': 实际UTF-8字节数 (中文=3, 英文=1)
+   * - 'gbk': 实际GBK字节数 (中文=2, 英文=1)
+   */
+  mode?: 'display' | 'utf8' | 'gbk';
+};
+
 const stringUtil = {
+  /**
+   * 计算字符串的字节长度
+   * @param str - 原始字符串
+   * @param options - 计算选项
+   * @returns 字节长度
+   *
+   * @example
+   * // 显示模式（默认）：中文=1, 英文=0.5
+   * stringUtil.byteLength('你好ab') // 3 (2 + 0.5 + 0.5)
+   * stringUtil.byteLength('你好ab', { mode: 'display' }) // 3
+   *
+   * // UTF-8模式：中文=3, 英文=1
+   * stringUtil.byteLength('你好ab', { mode: 'utf8' }) // 8 (3*2 + 1*2)
+   *
+   * // GBK模式：中文=2, 英文=1
+   * stringUtil.byteLength('你好ab', { mode: 'gbk' }) // 6 (2*2 + 1*2)
+   */
+  byteLength: (str: string | undefined | null, options?: ByteLengthOptions): number => {
+    if (typeof str === 'undefined' || str === null || str === '') {
+      return 0;
+    }
+
+    const mode = options?.mode ?? 'display';
+
+    switch (mode) {
+      case 'utf8':
+        return stringUtil.utf8ByteLength(str);
+      case 'gbk':
+        return stringUtil.gbkByteLength(str);
+      case 'display':
+      default:
+        return stringUtil.displayByteLength(str);
+    }
+  },
+
+  /**
+   * 显示宽度计算：中文=1, 英文/半角=0.5
+   * 适用于UI显示场景，2个英文字符宽度约等于1个中文字符
+   */
+  displayByteLength: (str: string): number => {
+    let length = 0;
+
+    for (const char of str) {
+      const codePoint = char.codePointAt(0) ?? 0;
+
+      if (stringUtil.isFullWidth(codePoint)) {
+        length += 1;
+      } else {
+        length += 0.5;
+      }
+    }
+
+    return length;
+  },
+
+  /**
+   * UTF-8字节长度计算
+   * 中文=3字节, 英文=1字节
+   */
+  utf8ByteLength: (str: string): number => {
+    return new TextEncoder().encode(str).length;
+  },
+
+  /**
+   * GBK字节长度计算
+   * 中文=2字节, 英文=1字节
+   * 注：纯前端环境无法精确计算GBK字节，此为近似实现
+   */
+  gbkByteLength: (str: string): number => {
+    let length = 0;
+
+    for (const char of str) {
+      const codePoint = char.codePointAt(0) ?? 0;
+
+      if (stringUtil.isFullWidth(codePoint)) {
+        length += 2;
+      } else {
+        length += 1;
+      }
+    }
+
+    return length;
+  },
+
+  /**
+   * 判断字符是否为全角字符
+   * 包括：中文、日文、韩文、全角标点、全角字母数字等
+   */
+  isFullWidth: (codePoint: number): boolean => {
+    return (
+      (codePoint >= 0x4e00 && codePoint <= 0x9fff) ||
+      (codePoint >= 0x3400 && codePoint <= 0x4dbf) ||
+      (codePoint >= 0x20000 && codePoint <= 0x2a6df) ||
+      (codePoint >= 0x2a700 && codePoint <= 0x2b73f) ||
+      (codePoint >= 0x2b740 && codePoint <= 0x2b81f) ||
+      (codePoint >= 0x2b820 && codePoint <= 0x2ceaf) ||
+      (codePoint >= 0xf900 && codePoint <= 0xfaff) ||
+      (codePoint >= 0x2f800 && codePoint <= 0x2fa1f) ||
+      (codePoint >= 0x3000 && codePoint <= 0x303f) ||
+      (codePoint >= 0xff00 && codePoint <= 0xffef) ||
+      (codePoint >= 0xac00 && codePoint <= 0xd7af) ||
+      (codePoint >= 0x3040 && codePoint <= 0x309f) ||
+      (codePoint >= 0x30a0 && codePoint <= 0x30ff)
+    );
+  },
   /**
    * 高性能字符串截断函数
    * @param str - 原始字符串
