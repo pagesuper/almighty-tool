@@ -28,6 +28,7 @@ import _isEmpty from 'lodash-es/isEmpty';
 
 import { I18n, i18nConfig } from '../i18n/index';
 import { regExps } from './format.util';
+import stringUtil from './string.util';
 
 export type ValidateTrigger = 'blur' | 'change' | Array<'change' | 'blur'>;
 export type ValidateTransform = (value: ValidateValue) => ValidateValue;
@@ -152,6 +153,12 @@ export interface ValidateRuleItem extends Omit<OriginalValidateRuleItem, 'fields
    * - humanize 人类化
    */
   transformers?: ValidateTransformer[];
+  /**
+   * 长度计算模式
+   * - default: 默认模式，按字符数计算
+   * - byte: 字节模式，中文=1, 英文/半角=0.5 (2个英文=1个中文)
+   */
+  lengthMode?: 'default' | 'byte';
 }
 
 export type ValidateRule = ValidateRuleItem | ValidateRuleItem[];
@@ -704,6 +711,26 @@ const validateUtil = {
         const ruleLen = _cloneDeep(options);
         delete ruleLen.fields;
         delete ruleLen.defaultField;
+
+        if (options.lengthMode === 'byte') {
+          const byteLen = options.len!;
+          ruleLen.validator = (_rule: any, value: any, callback: any) => {
+            if (typeof value === 'string' && stringUtil.displayByteLength(value) !== byteLen) {
+              callback(
+                new Error(
+                  validateUtil.getErrorDataJSON({
+                    rules: { len: byteLen },
+                    message: 'validate.string.must-be-exactly-characters',
+                  }),
+                ),
+              );
+            } else {
+              callback();
+            }
+          };
+          delete ruleLen.len;
+        }
+
         rules.push(validateUtil.parseRule(ruleLen));
         delete options.len;
       }
@@ -712,6 +739,33 @@ const validateUtil = {
         const ruleMinMax = _cloneDeep(options);
         delete ruleMinMax.fields;
         delete ruleMinMax.defaultField;
+
+        if (options.lengthMode === 'byte') {
+          const byteMin = options.min!;
+          const byteMax = options.max!;
+          ruleMinMax.validator = (_rule: any, value: any, callback: any) => {
+            if (typeof value === 'string') {
+              const byteLength = stringUtil.displayByteLength(value);
+              if (byteLength < byteMin || byteLength > byteMax) {
+                callback(
+                  new Error(
+                    validateUtil.getErrorDataJSON({
+                      rules: { min: byteMin, max: byteMax },
+                      message: 'validate.string.must-be-between-the-range-of-characters',
+                    }),
+                  ),
+                );
+              } else {
+                callback();
+              }
+            } else {
+              callback();
+            }
+          };
+          delete ruleMinMax.min;
+          delete ruleMinMax.max;
+        }
+
         rules.push(validateUtil.parseRule(ruleMinMax));
         delete options.min;
         delete options.max;
@@ -721,6 +775,26 @@ const validateUtil = {
         const ruleMin = _cloneDeep(options);
         delete ruleMin.fields;
         delete ruleMin.defaultField;
+
+        if (options.lengthMode === 'byte') {
+          const byteMin = options.min!;
+          ruleMin.validator = (_rule: any, value: any, callback: any) => {
+            if (typeof value === 'string' && stringUtil.displayByteLength(value) < byteMin) {
+              callback(
+                new Error(
+                  validateUtil.getErrorDataJSON({
+                    rules: { min: byteMin },
+                    message: 'validate.string.must-be-at-least-characters',
+                  }),
+                ),
+              );
+            } else {
+              callback();
+            }
+          };
+          delete ruleMin.min;
+        }
+
         rules.push(validateUtil.parseRule(ruleMin));
         delete options.min;
       }
@@ -729,6 +803,26 @@ const validateUtil = {
         const ruleMax = _cloneDeep(options);
         delete ruleMax.fields;
         delete ruleMax.defaultField;
+
+        if (options.lengthMode === 'byte') {
+          const byteMax = options.max!;
+          ruleMax.validator = (_rule: any, value: any, callback: any) => {
+            if (typeof value === 'string' && stringUtil.displayByteLength(value) > byteMax) {
+              callback(
+                new Error(
+                  validateUtil.getErrorDataJSON({
+                    rules: { max: byteMax },
+                    message: 'validate.string.cannot-be-longer-than-characters',
+                  }),
+                ),
+              );
+            } else {
+              callback();
+            }
+          };
+          delete ruleMax.max;
+        }
+
         rules.push(validateUtil.parseRule(ruleMax));
         delete options.max;
       }
@@ -787,6 +881,7 @@ const validateUtil = {
           'subType',
           'path',
           'data',
+          'lengthMode',
         ];
 
         const omitKeys = ['path', 'data', 'type', 'subType'];

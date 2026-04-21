@@ -96,6 +96,12 @@ export interface ValidateRuleItem extends Omit<OriginalValidateRuleItem, 'fields
      * - humanize 人类化
      */
     transformers?: ValidateTransformer[];
+    /**
+     * 长度计算模式
+     * - default: 默认模式，按字符数计算
+     * - byte: 字节模式，中文=1, 英文/半角=0.5 (2个英文=1个中文)
+     */
+    lengthMode?: 'default' | 'byte';
 }
 export type ValidateRule = ValidateRuleItem | ValidateRuleItem[];
 export type ValidateRules = Record<string, ValidateRule>;

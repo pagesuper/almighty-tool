@@ -2555,3 +2555,327 @@ describe('validateUtil.validate', () => {
     });
   });
 });
+
+describe('validateUtil.validate() lengthMode: byte', () => {
+  describe('max 验证', () => {
+    test('成功: 纯中文，显示长度等于 max', async () => {
+      const rules: ValidateRules = {
+        title: { type: 'string', max: 4, lengthMode: 'byte' },
+      };
+
+      const result = await validateUtil.validate(rules, { title: '你好世界' });
+
+      expect(result.success).toBe(true);
+    });
+
+    test('成功: 纯中文，显示长度小于 max', async () => {
+      const rules: ValidateRules = {
+        title: { type: 'string', max: 4, lengthMode: 'byte' },
+      };
+
+      const result = await validateUtil.validate(rules, { title: '你好' });
+
+      expect(result.success).toBe(true);
+    });
+
+    test('成功: 中英混合，显示长度等于 max', async () => {
+      const rules: ValidateRules = {
+        title: { type: 'string', max: 3, lengthMode: 'byte' },
+      };
+
+      const result = await validateUtil.validate(rules, { title: '你好ab' });
+
+      expect(result.success).toBe(true);
+    });
+
+    test('成功: 纯英文，显示长度等于 max', async () => {
+      const rules: ValidateRules = {
+        title: { type: 'string', max: 2.5, lengthMode: 'byte' },
+      };
+
+      const result = await validateUtil.validate(rules, { title: 'hello' });
+
+      expect(result.success).toBe(true);
+    });
+
+    test('失败: 纯中文，显示长度超过 max', async () => {
+      const rules: ValidateRules = {
+        title: { type: 'string', max: 3, lengthMode: 'byte' },
+      };
+
+      const result = await validateUtil.validate(rules, { title: '你好世界' });
+
+      expect(result.success).toBe(false);
+      expect(result.errors?.[0]?.message).toBe('长度不能超过 3 个字符');
+    });
+
+    test('失败: 中英混合，显示长度超过 max', async () => {
+      const rules: ValidateRules = {
+        title: { type: 'string', max: 2, lengthMode: 'byte' },
+      };
+
+      const result = await validateUtil.validate(rules, { title: '你好ab' });
+
+      expect(result.success).toBe(false);
+      expect(result.errors?.[0]?.message).toBe('长度不能超过 2 个字符');
+    });
+
+    test('失败: 纯英文，显示长度超过 max', async () => {
+      const rules: ValidateRules = {
+        title: { type: 'string', max: 2, lengthMode: 'byte' },
+      };
+
+      const result = await validateUtil.validate(rules, { title: 'hello' });
+
+      expect(result.success).toBe(false);
+      expect(result.errors?.[0]?.message).toBe('长度不能超过 2 个字符');
+    });
+  });
+
+  describe('min 验证', () => {
+    test('成功: 纯中文，显示长度等于 min', async () => {
+      const rules: ValidateRules = {
+        title: { type: 'string', min: 4, lengthMode: 'byte' },
+      };
+
+      const result = await validateUtil.validate(rules, { title: '你好世界' });
+
+      expect(result.success).toBe(true);
+    });
+
+    test('成功: 纯中文，显示长度大于 min', async () => {
+      const rules: ValidateRules = {
+        title: { type: 'string', min: 2, lengthMode: 'byte' },
+      };
+
+      const result = await validateUtil.validate(rules, { title: '你好世界' });
+
+      expect(result.success).toBe(true);
+    });
+
+    test('成功: 中英混合，显示长度等于 min', async () => {
+      const rules: ValidateRules = {
+        title: { type: 'string', min: 3, lengthMode: 'byte' },
+      };
+
+      const result = await validateUtil.validate(rules, { title: '你好ab' });
+
+      expect(result.success).toBe(true);
+    });
+
+    test('失败: 纯中文，显示长度小于 min', async () => {
+      const rules: ValidateRules = {
+        title: { type: 'string', min: 5, lengthMode: 'byte' },
+      };
+
+      const result = await validateUtil.validate(rules, { title: '你好世界' });
+
+      expect(result.success).toBe(false);
+      expect(result.errors?.[0]?.message).toBe('长度至少为 5 个字符');
+    });
+
+    test('失败: 中英混合，显示长度小于 min', async () => {
+      const rules: ValidateRules = {
+        title: { type: 'string', min: 4, lengthMode: 'byte' },
+      };
+
+      const result = await validateUtil.validate(rules, { title: '你好ab' });
+
+      expect(result.success).toBe(false);
+      expect(result.errors?.[0]?.message).toBe('长度至少为 4 个字符');
+    });
+  });
+
+  describe('min 和 max 验证', () => {
+    test('成功: 显示长度在范围内', async () => {
+      const rules: ValidateRules = {
+        title: { type: 'string', min: 2, max: 5, lengthMode: 'byte' },
+      };
+
+      const result = await validateUtil.validate(rules, { title: '你好世界' });
+
+      expect(result.success).toBe(true);
+    });
+
+    test('成功: 显示长度等于 min', async () => {
+      const rules: ValidateRules = {
+        title: { type: 'string', min: 4, max: 6, lengthMode: 'byte' },
+      };
+
+      const result = await validateUtil.validate(rules, { title: '你好世界' });
+
+      expect(result.success).toBe(true);
+    });
+
+    test('成功: 显示长度等于 max', async () => {
+      const rules: ValidateRules = {
+        title: { type: 'string', min: 2, max: 4, lengthMode: 'byte' },
+      };
+
+      const result = await validateUtil.validate(rules, { title: '你好世界' });
+
+      expect(result.success).toBe(true);
+    });
+
+    test('失败: 显示长度小于 min', async () => {
+      const rules: ValidateRules = {
+        title: { type: 'string', min: 5, max: 10, lengthMode: 'byte' },
+      };
+
+      const result = await validateUtil.validate(rules, { title: '你好世界' });
+
+      expect(result.success).toBe(false);
+      expect(result.errors?.[0]?.message).toBe('长度必须在 5 和 10 之间');
+    });
+
+    test('失败: 显示长度大于 max', async () => {
+      const rules: ValidateRules = {
+        title: { type: 'string', min: 1, max: 3, lengthMode: 'byte' },
+      };
+
+      const result = await validateUtil.validate(rules, { title: '你好世界' });
+
+      expect(result.success).toBe(false);
+      expect(result.errors?.[0]?.message).toBe('长度必须在 1 和 3 之间');
+    });
+  });
+
+  describe('len 验证', () => {
+    test('成功: 显示长度等于 len', async () => {
+      const rules: ValidateRules = {
+        title: { type: 'string', len: 4, lengthMode: 'byte' },
+      };
+
+      const result = await validateUtil.validate(rules, { title: '你好世界' });
+
+      expect(result.success).toBe(true);
+    });
+
+    test('成功: 中英混合，显示长度等于 len', async () => {
+      const rules: ValidateRules = {
+        title: { type: 'string', len: 3, lengthMode: 'byte' },
+      };
+
+      const result = await validateUtil.validate(rules, { title: '你好ab' });
+
+      expect(result.success).toBe(true);
+    });
+
+    test('失败: 显示长度不等于 len', async () => {
+      const rules: ValidateRules = {
+        title: { type: 'string', len: 5, lengthMode: 'byte' },
+      };
+
+      const result = await validateUtil.validate(rules, { title: '你好世界' });
+
+      expect(result.success).toBe(false);
+      expect(result.errors?.[0]?.message).toBe('必须为 5 个字符');
+    });
+
+    test('失败: 中英混合，显示长度不等于 len', async () => {
+      const rules: ValidateRules = {
+        title: { type: 'string', len: 4, lengthMode: 'byte' },
+      };
+
+      const result = await validateUtil.validate(rules, { title: '你好ab' });
+
+      expect(result.success).toBe(false);
+      expect(result.errors?.[0]?.message).toBe('必须为 4 个字符');
+    });
+  });
+
+  describe('lengthMode: default (默认行为)', () => {
+    test('成功: 默认模式，按字符数计算', async () => {
+      const rules: ValidateRules = {
+        title: { type: 'string', max: 4 },
+      };
+
+      const result = await validateUtil.validate(rules, { title: '你好世界' });
+
+      expect(result.success).toBe(true);
+    });
+
+    test('成功: 显式指定 default 模式', async () => {
+      const rules: ValidateRules = {
+        title: { type: 'string', max: 4, lengthMode: 'default' },
+      };
+
+      const result = await validateUtil.validate(rules, { title: '你好世界' });
+
+      expect(result.success).toBe(true);
+    });
+
+    test('失败: 默认模式，字符数超过 max', async () => {
+      const rules: ValidateRules = {
+        title: { type: 'string', max: 3 },
+      };
+
+      const result = await validateUtil.validate(rules, { title: '你好世界' });
+
+      expect(result.success).toBe(false);
+      expect(result.errors?.[0]?.message).toBe('长度不能超过 3 个字符');
+    });
+  });
+
+  describe('边界条件', () => {
+    test('成功: 空字符串', async () => {
+      const rules: ValidateRules = {
+        title: { type: 'string', max: 4, lengthMode: 'byte' },
+      };
+
+      const result = await validateUtil.validate(rules, { title: '' });
+
+      expect(result.success).toBe(true);
+    });
+
+    test('成功: null 值', async () => {
+      const rules: ValidateRules = {
+        title: { type: 'string', max: 4, lengthMode: 'byte' },
+      };
+
+      const result = await validateUtil.validate(rules, { title: null });
+
+      expect(result.success).toBe(true);
+    });
+
+    test('成功: undefined 值', async () => {
+      const rules: ValidateRules = {
+        title: { type: 'string', max: 4, lengthMode: 'byte' },
+      };
+
+      const result = await validateUtil.validate(rules, { title: undefined });
+
+      expect(result.success).toBe(true);
+    });
+
+    test('成功: 全角数字和字母', async () => {
+      const rules: ValidateRules = {
+        title: { type: 'string', max: 3, lengthMode: 'byte' },
+      };
+
+      const result = await validateUtil.validate(rules, { title: '１２３' });
+
+      expect(result.success).toBe(true);
+    });
+
+    test('成功: 全角标点', async () => {
+      const rules: ValidateRules = {
+        title: { type: 'string', max: 3, lengthMode: 'byte' },
+      };
+
+      const result = await validateUtil.validate(rules, { title: '，。！' });
+
+      expect(result.success).toBe(true);
+    });
+
+    test('成功: 混合全角半角', async () => {
+      const rules: ValidateRules = {
+        title: { type: 'string', max: 5, lengthMode: 'byte' },
+      };
+
+      const result = await validateUtil.validate(rules, { title: '你好，ab' });
+
+      expect(result.success).toBe(true);
+    });
+  });
+});
