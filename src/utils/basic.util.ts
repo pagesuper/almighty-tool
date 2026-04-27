@@ -604,6 +604,76 @@ const basicUtil = {
       return this.retry(fn, retries - 1, delay);
     }
   },
+
+  /**
+   * 超级健壮版 GraphQL 风格字段筛选
+   * 支持：空格、换行、缩进、多余逗号、多层嵌套、数组
+   */
+  pickFieldsLikeGraphQL(data: any, fields?: string | null): any {
+    // 无筛选 / 空数据 → 直接返回
+    if (!fields || !data) return data;
+    if (typeof data !== 'object') return data;
+
+    // 数组自动递归处理
+    if (Array.isArray(data)) {
+      return data.map((item) => this.pickFieldsLikeGraphQL(item, fields));
+    }
+
+    const result: Record<string, any> = {};
+
+    // 1. 清洗：去掉所有空白字符（空格、换行、tab）
+    const cleanFields = fields.replace(/\s+/g, '');
+
+    // 2. 递归解析函数（真正支持无限层级嵌套）
+    const parseFields = (str: string, target: any, source: any) => {
+      let i = 0;
+      const len = str.length;
+
+      while (i < len) {
+        // 读取字段名
+        let key = '';
+        while (i < len && /\w/.test(str[i])) {
+          key += str[i++];
+        }
+
+        if (!key) {
+          i++;
+          continue;
+        }
+
+        // 如果后面是 { → 嵌套结构
+        if (i < len && str[i] === '{') {
+          i++; // 跳过 {
+          const start = i;
+          let braceCount = 1;
+
+          // 找到匹配的 }
+          while (i < len && braceCount > 0) {
+            if (str[i] === '{') braceCount++;
+            if (str[i] === '}') braceCount--;
+            i++;
+          }
+
+          const innerStr = str.slice(start, i - 1);
+          target[key] = {};
+          parseFields(innerStr, target[key], source[key] || {});
+        } else {
+          // 普通字段
+          if (source[key] !== undefined) {
+            target[key] = source[key];
+          }
+        }
+
+        // 跳过逗号
+        if (i < len && str[i] === ',') {
+          i++;
+        }
+      }
+    };
+
+    parseFields(cleanFields, result, data);
+    return result;
+  },
 };
 
 export default basicUtil;

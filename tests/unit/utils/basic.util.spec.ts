@@ -124,7 +124,18 @@ describe('basicUtil.getDifferences()', () => {
     expect(basicUtil.getDifferences([1, 2, 3], [1, 4, 3])).toEqual(['1']);
 
     // 嵌套数组
-    expect(basicUtil.getDifferences([[1, 2], [3, 4]], [[1, 2], [3, 5]])).toEqual(['1.1']);
+    expect(
+      basicUtil.getDifferences(
+        [
+          [1, 2],
+          [3, 4],
+        ],
+        [
+          [1, 2],
+          [3, 5],
+        ],
+      ),
+    ).toEqual(['1.1']);
 
     // 混合类型数组
     expect(basicUtil.getDifferences([1, 'hello', true], [1, 'world', true])).toEqual(['1']);
@@ -141,16 +152,10 @@ describe('basicUtil.getDifferences()', () => {
     expect(basicUtil.getDifferences({ a: 1 }, { a: 1, b: 2 })).toEqual(['b']);
 
     // 嵌套对象
-    expect(basicUtil.getDifferences(
-      { a: { x: 1, y: 2 }, b: 3 },
-      { a: { x: 1, y: 4 }, b: 3 }
-    )).toEqual(['a.y']);
+    expect(basicUtil.getDifferences({ a: { x: 1, y: 2 }, b: 3 }, { a: { x: 1, y: 4 }, b: 3 })).toEqual(['a.y']);
 
     // 深层嵌套
-    expect(basicUtil.getDifferences(
-      { a: { b: { c: { d: 1 } } } },
-      { a: { b: { c: { d: 2 } } } }
-    )).toEqual(['a.b.c.d']);
+    expect(basicUtil.getDifferences({ a: { b: { c: { d: 1 } } } }, { a: { b: { c: { d: 2 } } } })).toEqual(['a.b.c.d']);
   });
 
   test('noStrict选项测试', async () => {
@@ -175,14 +180,14 @@ describe('basicUtil.getDifferences()', () => {
           name: 'John',
           settings: {
             theme: 'dark',
-            notifications: true
-          }
+            notifications: true,
+          },
         },
-        hobbies: ['reading', 'swimming']
+        hobbies: ['reading', 'swimming'],
       },
       preferences: {
-        language: 'en'
-      }
+        language: 'en',
+      },
     };
 
     const obj2 = {
@@ -192,14 +197,14 @@ describe('basicUtil.getDifferences()', () => {
           name: 'John',
           settings: {
             theme: 'light', // 不同
-            notifications: true
-          }
+            notifications: true,
+          },
         },
-        hobbies: ['reading', 'swimming', 'coding'] // 不同
+        hobbies: ['reading', 'swimming', 'coding'], // 不同
       },
       preferences: {
-        language: 'en'
-      }
+        language: 'en',
+      },
     };
 
     expect(basicUtil.getDifferences(obj1, obj2)).toEqual(['user.profile.settings.theme', 'user.hobbies.2']);
@@ -291,5 +296,151 @@ describe('basicUtil.isPresent()', () => {
     // eslint-disable-next-line symbol-description
     expect(basicUtil.isPresent(Symbol())).toBe(true);
     expect(basicUtil.isPresent(BigInt(0))).toBe(true);
+  });
+});
+
+// 测试用基础数据
+const mockData = {
+  status: 'ok',
+  code: 'SUCCESS',
+  data: {
+    answer: '因为瑞利散射',
+    conversationId: 'conv_123',
+    messageId: 'msg_456',
+    user: {
+      id: 'user_789',
+      name: '张三',
+    },
+  },
+  extra: 'ignore',
+};
+
+const mockArrayData = [mockData, { ...mockData, status: 'done' }];
+
+describe('basicUtil.pickFieldsLikeGraphQL()', () => {
+  // 1. 基础边界测试
+  test('边界：无 fields 配置 → 返回完整数据', () => {
+    expect(basicUtil.pickFieldsLikeGraphQL(mockData, '')).toEqual(mockData);
+    expect(basicUtil.pickFieldsLikeGraphQL(mockData, undefined)).toEqual(mockData);
+    expect(basicUtil.pickFieldsLikeGraphQL(mockData, null)).toEqual(mockData);
+  });
+
+  test('边界：空数据 → 返回原值', () => {
+    expect(basicUtil.pickFieldsLikeGraphQL(null, 'status')).toBeNull();
+    expect(basicUtil.pickFieldsLikeGraphQL(undefined, 'status')).toBeUndefined();
+    expect(basicUtil.pickFieldsLikeGraphQL(123, 'status')).toBe(123);
+    expect(basicUtil.pickFieldsLikeGraphQL('text', 'status')).toBe('text');
+  });
+
+  // 2. 普通字段筛选
+  test('普通：单个字段', () => {
+    expect(basicUtil.pickFieldsLikeGraphQL(mockData, 'status')).toEqual({ status: 'ok' });
+  });
+
+  test('普通：多个字段', () => {
+    expect(basicUtil.pickFieldsLikeGraphQL(mockData, 'status,code')).toEqual({
+      status: 'ok',
+      code: 'SUCCESS',
+    });
+  });
+
+  // 3. 嵌套字段筛选
+  test('嵌套：单层嵌套', () => {
+    expect(basicUtil.pickFieldsLikeGraphQL(mockData, 'data{answer}')).toEqual({
+      data: { answer: '因为瑞利散射' },
+    });
+  });
+
+  test('嵌套：多层嵌套', () => {
+    expect(basicUtil.pickFieldsLikeGraphQL(mockData, 'data{user{id,name}}')).toEqual({
+      data: {
+        user: { id: 'user_789', name: '张三' },
+      },
+    });
+  });
+
+  test('混合：普通 + 嵌套', () => {
+    expect(basicUtil.pickFieldsLikeGraphQL(mockData, 'status,data{answer,user{id}}')).toEqual({
+      status: 'ok',
+      data: {
+        answer: '因为瑞利散射',
+        user: { id: 'user_789' },
+      },
+    });
+  });
+
+  // 4. 数组支持
+  test('数组：基础数组筛选', () => {
+    const result = basicUtil.pickFieldsLikeGraphQL(mockArrayData, 'status,data{answer}');
+    expect(result).toEqual([
+      { status: 'ok', data: { answer: '因为瑞利散射' } },
+      { status: 'done', data: { answer: '因为瑞利散射' } },
+    ]);
+  });
+
+  // 5. 格式兼容（空格、换行、缩进）
+  test('格式兼容：带空格', () => {
+    expect(basicUtil.pickFieldsLikeGraphQL(mockData, 'status,  data  {  answer  }')).toEqual({
+      status: 'ok',
+      data: { answer: '因为瑞利散射' },
+    });
+  });
+
+  test('格式兼容：带换行 + 缩进', () => {
+    const fields = `
+      status,
+      data {
+        answer,
+        user {
+          name
+        }
+      }
+    `;
+    expect(basicUtil.pickFieldsLikeGraphQL(mockData, fields)).toEqual({
+      status: 'ok',
+      data: {
+        answer: '因为瑞利散射',
+        user: { name: '张三' },
+      },
+    });
+  });
+
+  test('格式兼容：多余逗号', () => {
+    expect(basicUtil.pickFieldsLikeGraphQL(mockData, ',status,,data{answer},,')).toEqual({
+      status: 'ok',
+      data: { answer: '因为瑞利散射' },
+    });
+  });
+
+  // 6. 不存在字段（安全过滤）
+  test('安全：不存在的字段自动忽略', () => {
+    expect(basicUtil.pickFieldsLikeGraphQL(mockData, 'status,xxx,data{zzz}')).toEqual({
+      status: 'ok',
+      data: {},
+    });
+  });
+
+  // 7. 完整 GraphQL 风格真实场景
+  test('场景：完整 GraphQL 查询风格', () => {
+    const fields = `
+      status,
+      code,
+      data {
+        answer,
+        conversationId,
+        user {
+          id
+        }
+      }
+    `;
+    expect(basicUtil.pickFieldsLikeGraphQL(mockData, fields)).toEqual({
+      status: 'ok',
+      code: 'SUCCESS',
+      data: {
+        answer: '因为瑞利散射',
+        conversationId: 'conv_123',
+        user: { id: 'user_789' },
+      },
+    });
   });
 });

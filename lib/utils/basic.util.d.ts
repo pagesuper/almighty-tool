@@ -122,6 +122,11 @@ declare const basicUtil: {
     /** 空值合并 */
     nullCoalesce<T>(...args: (T | null | undefined)[]): T;
     retry<T>(fn: () => Promise<T>, retries?: number, delay?: number): Promise<T>;
+    /**
+     * 超级健壮版 GraphQL 风格字段筛选
+     * 支持：空格、换行、缩进、多余逗号、多层嵌套、数组
+     */
+    pickFieldsLikeGraphQL(data: any, fields?: string | null): any;
 };
 export default basicUtil;
 export { basicUtil };
