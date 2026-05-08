@@ -159,6 +159,10 @@ export interface ValidateRuleItem extends Omit<OriginalValidateRuleItem, 'fields
    * - byte: 字节模式，中文=1, 英文/半角=0.5 (2个英文=1个中文)
    */
   lengthMode?: 'default' | 'byte';
+  /** 字段名称 */
+  name?: string;
+  /** 初始值 */
+  initialValue?: ValidateValue;
 }
 
 export type ValidateRule = ValidateRuleItem | ValidateRuleItem[];
@@ -167,10 +171,6 @@ export type ValidateRules = Record<string, ValidateRule>;
 export interface ValidateOptionRule extends Omit<ValidateRuleItem, 'fields'> {
   /** 子规则 */
   fields?: Record<string, ValidateOptionRule | ValidateOptionRule[]>;
-  /** 字段名称 */
-  name?: string;
-  /** 初始值 */
-  initialValue?: ValidateValue;
 }
 
 export interface ParseRuleOptions {
