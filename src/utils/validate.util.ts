@@ -169,6 +169,8 @@ export interface ValidateOptionRule extends Omit<ValidateRuleItem, 'fields'> {
   fields?: Record<string, ValidateOptionRule | ValidateOptionRule[]>;
   /** 字段名称 */
   name?: string;
+  /** 初始值 */
+  initialValue?: ValidateValue;
 }
 
 export interface ParseRuleOptions {
