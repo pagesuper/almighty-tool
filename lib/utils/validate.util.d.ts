@@ -108,6 +108,8 @@ export type ValidateRules = Record<string, ValidateRule>;
 export interface ValidateOptionRule extends Omit<ValidateRuleItem, 'fields'> {
     /** 子规则 */
     fields?: Record<string, ValidateOptionRule | ValidateOptionRule[]>;
+    /** 字段名称 */
+    name?: string;
 }
 export interface ParseRuleOptions {
     /** 是否解析转换器: 默认false */
