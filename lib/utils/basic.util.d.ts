@@ -1,3 +1,19 @@
+export interface CleanEmptyOptions {
+    /** 清理 null */
+    cleanNull?: boolean;
+    /** 清理 undefined */
+    cleanUndefined?: boolean;
+    /** 清理空字符串 '' */
+    cleanEmptyString?: boolean;
+    /** 清理 false */
+    cleanFalse?: boolean;
+    /** 清理 0（默认关闭） */
+    cleanZero?: boolean;
+    /** 清理空对象 {} */
+    cleanEmptyObject?: boolean;
+    /** 清理空数组 [] */
+    cleanEmptyArray?: boolean;
+}
 export interface AnyObject {
     [key: string]: any;
 }
@@ -127,6 +143,6 @@ declare const basicUtil: {
      * 支持：空格、换行、缩进、多余逗号、多层嵌套、数组
      */
     pickFieldsLikeGraphQL(data: any, fields?: string | null): any;
+    cleanEmptyValues<T = any>(obj: T, options?: CleanEmptyOptions): T;
 };
 export default basicUtil;
-export { basicUtil };

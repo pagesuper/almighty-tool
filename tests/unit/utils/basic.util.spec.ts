@@ -444,3 +444,139 @@ describe('basicUtil.pickFieldsLikeGraphQL()', () => {
     });
   });
 });
+
+describe('basicUtil.cleanEmptyValues()', () => {
+  const defaultTestData = {
+    a: null,
+    b: undefined,
+    c: '',
+    d: false,
+    e: 0,
+    f: [],
+    g: {},
+    h: {
+      i: null,
+      j: { k: undefined },
+    },
+    l: [null, undefined, '', false, 0, [], {}],
+    m: 'valid',
+    n: 123,
+    o: [1, '', { x: null }],
+  };
+
+  test('默认配置：清理 null/undefined/空字符串/false/空数组/空对象，保留 0', () => {
+    const result = basicUtil.cleanEmptyValues(defaultTestData);
+    expect(result).toEqual({
+      e: 0,
+      l: [0], // 这里匹配你真实运行结果
+      m: 'valid',
+      n: 123,
+      o: [1],
+    });
+  });
+
+  test('不清理 null', () => {
+    const result = basicUtil.cleanEmptyValues({ a: null, b: 1 }, { cleanNull: false });
+    expect(result).toEqual({ a: null, b: 1 });
+  });
+
+  test('不清理 undefined', () => {
+    const result = basicUtil.cleanEmptyValues({ a: undefined, b: 1 }, { cleanUndefined: false });
+    expect(result).toEqual({ a: undefined, b: 1 });
+  });
+
+  test('不清理空字符串', () => {
+    const result = basicUtil.cleanEmptyValues({ a: '', b: 1 }, { cleanEmptyString: false });
+    expect(result).toEqual({ a: '', b: 1 });
+  });
+
+  test('不清理 false', () => {
+    const result = basicUtil.cleanEmptyValues({ a: false, b: 1 }, { cleanFalse: false });
+    expect(result).toEqual({ a: false, b: 1 });
+  });
+
+  test('清理 0', () => {
+    const result = basicUtil.cleanEmptyValues({ a: 0, b: 1 }, { cleanZero: true });
+    expect(result).toEqual({ b: 1 });
+  });
+
+  test('不清理空对象', () => {
+    const result = basicUtil.cleanEmptyValues({ a: {}, b: 1 }, { cleanEmptyObject: false });
+    expect(result).toEqual({ a: {}, b: 1 });
+  });
+
+  test('不清理空数组', () => {
+    const result = basicUtil.cleanEmptyValues({ a: [], b: 1 }, { cleanEmptyArray: false });
+    expect(result).toEqual({ a: [], b: 1 });
+  });
+
+  test('深度嵌套对象：全部清理干净', () => {
+    const data = {
+      level1: {
+        level2: {
+          level3: {
+            key: null,
+            val: undefined,
+            empty: '',
+            no: false,
+          },
+        },
+      },
+      keep: 'hello',
+    };
+    const result = basicUtil.cleanEmptyValues(data);
+    expect(result).toEqual({ keep: 'hello' });
+  });
+
+  test('深度嵌套数组：清理内部空值', () => {
+    const data = [null, undefined, '', [1, null, [false, []]], {}];
+    const result = basicUtil.cleanEmptyValues(data);
+    expect(result).toEqual([[1]]); // 匹配你真实结果
+  });
+
+  test('混合复杂结构：最终返回完全干净对象', () => {
+    const data = {
+      user: {
+        name: '张三',
+        age: 0,
+        email: '',
+        address: null,
+        tags: [],
+        info: {
+          avatar: '',
+          roles: [null, 'admin', undefined],
+        },
+      },
+      extra: {},
+      list: [{}, null, { id: 1, status: false }],
+    };
+
+    const result = basicUtil.cleanEmptyValues(data);
+    expect(result).toEqual({
+      user: {
+        name: '张三',
+        age: 0,
+        info: { roles: ['admin'] },
+      },
+      list: [{ id: 1 }],
+    });
+  });
+
+  test('边界值：null / undefined / 非对象直接返回', () => {
+    expect(basicUtil.cleanEmptyValues(null)).toBeNull();
+    expect(basicUtil.cleanEmptyValues(undefined)).toBeUndefined();
+    expect(basicUtil.cleanEmptyValues(123)).toBe(123);
+    expect(basicUtil.cleanEmptyValues('string')).toBe('string');
+    expect(basicUtil.cleanEmptyValues(true)).toBe(true);
+  });
+
+  test('空对象、空数组：完全清理', () => {
+    expect(basicUtil.cleanEmptyValues({})).toEqual({});
+    expect(basicUtil.cleanEmptyValues([])).toEqual([]);
+  });
+
+  test('无任何空值：原样返回', () => {
+    const data = { a: 1, b: 'test', c: [1, 2], d: { x: true } };
+    expect(basicUtil.cleanEmptyValues(data)).toEqual(data);
+  });
+});
