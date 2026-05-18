@@ -66,6 +66,8 @@ export interface IGenerateRandomStringParams {
   ranges?: RANDOM_CHARS_RANGE_KEY | RANDOM_CHARS_RANGE_KEY[];
   /** time类型 */
   timeType?: 'date' | 'number' | 'char' | 'none';
+  /** time */
+  time?: Date;
 }
 
 function getCharacters(options: IGenerateRandomStringParams = {}) {
@@ -90,18 +92,19 @@ const randomUtil = {
     const length = options.length ?? 32;
     const values: string[] = [];
     const characters = getCharacters(options);
+    const time = options.time ?? new Date();
 
     switch (options.timeType) {
       case 'date':
-        values.push(this.getUtcTimeString(new Date()));
+        values.push(this.getUtcTimeString(time));
         break;
 
       case 'number':
-        values.push(new Date().valueOf().toString(10));
+        values.push(time.valueOf().toString(10));
         break;
 
       case 'char':
-        values.push(new Date().valueOf().toString(36));
+        values.push(time.valueOf().toString(36));
         break;
 
       default:

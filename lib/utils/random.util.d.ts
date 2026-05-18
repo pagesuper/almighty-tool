@@ -37,6 +37,8 @@ export interface IGenerateRandomStringParams {
     ranges?: RANDOM_CHARS_RANGE_KEY | RANDOM_CHARS_RANGE_KEY[];
     /** time类型 */
     timeType?: 'date' | 'number' | 'char' | 'none';
+    /** time */
+    time?: Date;
 }
 declare const randomUtil: {
     /** 生成随机的字符串 */
