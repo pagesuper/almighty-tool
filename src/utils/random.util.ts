@@ -68,6 +68,8 @@ export interface IGenerateRandomStringParams {
   timeType?: 'date' | 'number' | 'char' | 'none';
   /** time */
   time?: Date;
+  /** time长度 */
+  timeLength?: number;
 }
 
 function getCharacters(options: IGenerateRandomStringParams = {}) {
@@ -89,27 +91,30 @@ function getCharacters(options: IGenerateRandomStringParams = {}) {
 const randomUtil = {
   /** 生成随机的字符串 */
   generateRandomString(options: IGenerateRandomStringParams = {}): string {
-    const length = options.length ?? 32;
+    const timeType = options.timeType ?? 'none';
+    const timeLength = options.timeLength ?? timeType === 'none' ? 0 : 18;
+    const length = Math.max(options.length ?? 32, timeLength);
     const values: string[] = [];
     const characters = getCharacters(options);
     const time = options.time ?? new Date();
 
-    switch (options.timeType) {
-      case 'date':
-        values.push(this.getUtcTimeString(time));
-        break;
+    const timeString = (() => {
+      switch (timeType) {
+        case 'date':
+          return _padStart(this.getUtcTimeString(time), timeLength, '0');
 
-      case 'number':
-        values.push(time.valueOf().toString(10));
-        break;
+        case 'number':
+          return _padStart(time.valueOf().toString(10), timeLength, '0');
 
-      case 'char':
-        values.push(time.valueOf().toString(36));
-        break;
+        case 'char':
+          return _padStart(time.valueOf().toString(36), timeLength, '0');
 
-      default:
-        break;
-    }
+        default:
+          return '';
+      }
+    })();
+
+    values.push(timeString);
 
     const randomLength = values[0] ? length - values[0].length : length;
 

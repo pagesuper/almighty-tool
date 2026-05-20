@@ -39,6 +39,8 @@ export interface IGenerateRandomStringParams {
     timeType?: 'date' | 'number' | 'char' | 'none';
     /** time */
     time?: Date;
+    /** time长度 */
+    timeLength?: number;
 }
 declare const randomUtil: {
     /** 生成随机的字符串 */
